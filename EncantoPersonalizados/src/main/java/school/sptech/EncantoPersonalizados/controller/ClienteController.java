@@ -22,16 +22,16 @@ public class ClienteController {
 
     @Operation(description = "Cria um cliente")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Sucesso ao criar cliente"),
-            @ApiResponse(responseCode = "204", description = "Lista de clientes vazia")
+            @ApiResponse(responseCode = "201", description = "Sucesso ao criar cliente"),
+            @ApiResponse(responseCode = "400", description = "Lista não encontrada")
     })
     @PostMapping
     public final ResponseEntity<ResponseClienteDTO> criar (@RequestBody CreateClienteDTO dto){
 
-        if(dto == null) return ResponseEntity.status(204).build();
+        if(dto == null) return ResponseEntity.status(400).build();
 
         ResponseClienteDTO response = clienteService.store(dto);
-        return ResponseEntity.status(200).body(response);
+        return ResponseEntity.status(201).body(response);
 
 
     }
@@ -39,23 +39,27 @@ public class ClienteController {
     @Operation(description = "Lista todos os clientes")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Retorna lista de clientes"),
-            @ApiResponse(responseCode = "204", description = "Lista de clientes vazia")
+            @ApiResponse(responseCode = "204", description = "Lista de clientes sem conteúdo")
     })
     @GetMapping()
     public final ResponseEntity<List<ResponseClienteDTO>> listar(){
         
         List<ResponseClienteDTO> lista = clienteService.getAll();
         if (lista.isEmpty()) return ResponseEntity.status(204).build();
-        return ResponseEntity.status(201).body(lista);
+        return ResponseEntity.status(200).body(lista);
         
     }
 
     @Operation(description = "Exclui um cliente por id")
     @ApiResponses({
+            @ApiResponse(responseCode = "404", description = "Cliente não encontrado"),
             @ApiResponse(responseCode = "204", description = "Cliente excluido com sucesso")
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> remover(@PathVariable Integer id) {
+        if(id == null){
+            return ResponseEntity.status(404).build();
+        }
         clienteService.removerPorId(id);
         return ResponseEntity.status(204).build();
     }
