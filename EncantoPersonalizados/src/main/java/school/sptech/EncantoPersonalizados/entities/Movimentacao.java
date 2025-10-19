@@ -18,6 +18,9 @@ public class Movimentacao {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    @ManyToOne
+    private CategoriaMovimentacao categoriaMovimentacao;
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }

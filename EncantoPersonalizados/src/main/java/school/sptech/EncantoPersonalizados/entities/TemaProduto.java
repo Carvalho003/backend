@@ -16,6 +16,17 @@ public class TemaProduto {
     @OneToMany(mappedBy = "temaProduto")
     private List<Produto>  produtos;
 
+    @ManyToOne
+    private CategoriaTema categoriaTema;
+
+    public CategoriaTema getCategoriaTema() {
+        return categoriaTema;
+    }
+
+    public void setCategoriaTema(CategoriaTema categoriaTema) {
+        this.categoriaTema = categoriaTema;
+    }
+
     public Integer getId() {
         return id;
     }

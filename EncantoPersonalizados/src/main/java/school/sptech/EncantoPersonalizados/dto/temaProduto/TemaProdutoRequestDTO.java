@@ -8,6 +8,9 @@ public record TemaProdutoRequestDTO(
         @Schema(description = "Descrição do que é o tema", example = "Barbie")
         @NotBlank
         @NotNull
-        String descricao
+        String descricao,
+        @NotNull
+        @Schema(description = "Id da categoria de tema", example = "1")
+        Integer categoriaTemaId
 ) {
 }
