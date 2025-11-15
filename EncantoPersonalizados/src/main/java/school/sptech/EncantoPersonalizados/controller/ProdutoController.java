@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import school.sptech.EncantoPersonalizados.dto.produto.ProdutoMapper;
 import school.sptech.EncantoPersonalizados.dto.produto.ProdutoRequestDTO;
 import school.sptech.EncantoPersonalizados.dto.produto.ProdutoResponseDTO;
 import school.sptech.EncantoPersonalizados.entities.Produto;
@@ -33,14 +34,15 @@ public class ProdutoController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<Produto>> get(
+    public ResponseEntity<Page<ProdutoResponseDTO>> get(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String categoria,
             @RequestParam(required = false) String tema,
             @RequestParam(required = false) String item,
+            @RequestParam(defaultValue = "0") int ativo,
             @RequestParam(defaultValue = "0") int page
     ){
-        Page<Produto> resposta = service.get(search, categoria, tema, item, page);
-        return ResponseEntity.status(200).body(resposta);
+        Page<Produto> resposta = service.get(search, categoria, tema, item, ativo, page);
+        return ResponseEntity.status(200).body(resposta.map(ProdutoMapper::toDto));
     }
 }

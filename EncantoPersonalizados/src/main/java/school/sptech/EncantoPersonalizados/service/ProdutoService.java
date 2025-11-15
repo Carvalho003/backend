@@ -27,6 +27,7 @@ public class ProdutoService {
         String categoria,
         String tema,
         String item,
+        int ativo,
         int page
     ){
         int size = 10;
@@ -36,7 +37,7 @@ public class ProdutoService {
         tema = vazioParaNull(tema);
         item = vazioParaNull(item);
 
-        return repository.filtrar(search, categoria, tema, item, pageable);
+        return repository.filtrar(search, categoria, tema, item,ativo, pageable);
     }
 
     public Produto findById(Integer id){
