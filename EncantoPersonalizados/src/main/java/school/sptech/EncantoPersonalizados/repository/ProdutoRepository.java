@@ -14,7 +14,7 @@ public interface ProdutoRepository extends JpaRepository<Produto, Integer> {
         AND (:categoria IS NULL OR p.temaProduto.categoriaTema.titulo = :categoria)
         AND (:tema IS NULL OR p.temaProduto.descricao = :tema)
         AND (:item IS NULL OR p.itemProduto.descricao = :item)
-        AMD (p.ativo = :ativo)
+        AND (p.ativo = :ativo)
     """)
     Page<Produto> filtrar(
             @Param("search") String search,

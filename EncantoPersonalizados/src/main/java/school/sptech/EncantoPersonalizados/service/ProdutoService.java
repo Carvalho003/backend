@@ -8,6 +8,7 @@ import school.sptech.EncantoPersonalizados.dto.produto.ProdutoMapper;
 import school.sptech.EncantoPersonalizados.dto.produto.ProdutoRequestDTO;
 import school.sptech.EncantoPersonalizados.dto.produto.ProdutoResponseDTO;
 import school.sptech.EncantoPersonalizados.entities.Produto;
+import school.sptech.EncantoPersonalizados.exceptions.ProdutoNaoEncontradoException;
 import school.sptech.EncantoPersonalizados.repository.ProdutoRepository;
 
 import java.util.List;
@@ -44,6 +45,17 @@ public class ProdutoService {
         Optional<Produto> optionalProduto = repository.findById(id);
         if(optionalProduto.isEmpty()) return null;
         return optionalProduto.get();
+    }
+
+    public void mudarEstado(Integer id)
+    {
+        Produto entity = this.findById(id);
+        if(entity == null) throw new ProdutoNaoEncontradoException("Produto não encontrado");
+        if(entity.getAtivo()){
+            entity.setAtivo(false);
+        }else{
+            entity.setAtivo(true);
+        }
     }
 
     public Produto store(Produto entity){

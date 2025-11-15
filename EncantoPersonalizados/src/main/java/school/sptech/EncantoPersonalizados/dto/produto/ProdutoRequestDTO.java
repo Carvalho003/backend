@@ -8,7 +8,6 @@ import java.util.List;
 public record ProdutoRequestDTO(
          String descricao,
          String titulo,
-         List<FotoProdutoRequestDTO> fotos,
          Integer temaId,
          Integer itemId
 ) {

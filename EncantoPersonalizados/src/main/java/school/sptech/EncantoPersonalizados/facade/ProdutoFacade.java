@@ -22,6 +22,7 @@ import school.sptech.EncantoPersonalizados.service.ItemProdutoService;
 import school.sptech.EncantoPersonalizados.service.ProdutoService;
 import school.sptech.EncantoPersonalizados.service.TemaProdutoService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -54,14 +55,37 @@ public class ProdutoFacade {
         Produto produtoSalvo = produtoService.store(entityProduto);
 
 
-        for(FotoProdutoRequestDTO dtoFoto: dto.fotos() ){
-            fotoProdutoService.store(dtoFoto, produtoSalvo);
-        }
-
-        Produto produtoComFoto = produtoService.findById(produtoSalvo.getId());
-        if(produtoComFoto == null) throw new ProdutoNaoEncontradoException("Produto não encontrado");
+        return ProdutoMapper.toDto(
+                produtoSalvo
+        );
 
 
+
+
+    }
+
+
+    public ProdutoResponseDTO update(ProdutoRequestDTO dto, Integer id){
+
+        Produto produtoAntigo = produtoService.findById(id);
+
+        if(produtoAntigo == null ) throw new ProdutoNaoEncontradoException("Produto não encontrado");
+
+        ItemProduto entityItem = itemProdutoService.findByid(dto.itemId());
+        // validar se existe
+        if (entityItem == null) throw new ItemProdutoNaoEncontradoException("Item não encontrado");
+        TemaProduto entityTema = temaProdutoService.findById(dto.temaId());
+        if(entityTema == null) throw new TemaProdutoNaoEncontradoException("Tema não encontrado");
+
+        Produto entityProduto = ProdutoMapper.toEntity(dto);
+
+        produtoAntigo.setItemProduto(entityItem);
+        produtoAntigo.setTemaProduto(entityTema);
+        produtoAntigo.setUpdatedAt(LocalDateTime.now());
+        produtoAntigo.setTitulo(entityProduto.getTitulo());
+        produtoAntigo.setDescricao(entityProduto.getDescricao());
+
+        Produto produtoSalvo = produtoService.store(produtoAntigo);
 
 
         return ProdutoMapper.toDto(
