@@ -1,5 +1,8 @@
 package school.sptech.EncantoPersonalizados.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import school.sptech.EncantoPersonalizados.dto.produto.ProdutoMapper;
 import school.sptech.EncantoPersonalizados.dto.produto.ProdutoRequestDTO;
@@ -19,18 +22,34 @@ public class ProdutoService {
         this.repository = repository;
     }
 
+    public Page<Produto> get(
+        String search,
+        String categoria,
+        String tema,
+        String item,
+        int page
+    ){
+        int size = 10;
+        Pageable pageable = PageRequest.of(page, size);
+        search = vazioParaNull(search);
+        categoria = vazioParaNull(categoria);
+        tema = vazioParaNull(tema);
+        item = vazioParaNull(item);
+
+        return repository.filtrar(search, categoria, tema, item, pageable);
+    }
+
     public Produto findById(Integer id){
         Optional<Produto> optionalProduto = repository.findById(id);
         if(optionalProduto.isEmpty()) return null;
         return optionalProduto.get();
     }
 
-    public List<ProdutoResponseDTO> get(){
-        List<Produto> produtos = repository.findAll();
-        return ProdutoMapper.toDto(produtos);
-    }
-
     public Produto store(Produto entity){
         return repository.save(entity);
+    }
+
+    private String vazioParaNull(String valor) {
+        return (valor == null || valor.isBlank()) ? null : valor;
     }
 }

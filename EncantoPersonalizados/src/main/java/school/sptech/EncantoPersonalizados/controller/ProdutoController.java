@@ -1,10 +1,12 @@
 package school.sptech.EncantoPersonalizados.controller;
 
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import school.sptech.EncantoPersonalizados.dto.produto.ProdutoRequestDTO;
 import school.sptech.EncantoPersonalizados.dto.produto.ProdutoResponseDTO;
+import school.sptech.EncantoPersonalizados.entities.Produto;
 import school.sptech.EncantoPersonalizados.facade.ProdutoFacade;
 import school.sptech.EncantoPersonalizados.service.ProdutoService;
 
@@ -31,9 +33,14 @@ public class ProdutoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ProdutoResponseDTO>> listar(){
-        List<ProdutoResponseDTO> produtos = service.get();
-        if(produtos.isEmpty()) return ResponseEntity.status(204).build();
-        return ResponseEntity.status(200).body(produtos);
+    public ResponseEntity<Page<Produto>> get(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String categoria,
+            @RequestParam(required = false) String tema,
+            @RequestParam(required = false) String item,
+            @RequestParam(defaultValue = "0") int page
+    ){
+        Page<Produto> resposta = service.get(search, categoria, tema, item, page);
+        return ResponseEntity.status(200).body(resposta);
     }
 }

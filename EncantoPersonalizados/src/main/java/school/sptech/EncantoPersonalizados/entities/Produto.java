@@ -18,6 +18,7 @@ public class Produto {
     private ItemProduto itemProduto;
     @OneToMany(mappedBy = "produto")
     private List<FotoProduto> fotoProdutos;
+    private Boolean ativo;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -85,4 +86,9 @@ public class Produto {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    public Boolean getAtivo() { return ativo; }
+
+    public void setAtivo(Boolean ativo) { this.ativo = ativo; }
+
 }
