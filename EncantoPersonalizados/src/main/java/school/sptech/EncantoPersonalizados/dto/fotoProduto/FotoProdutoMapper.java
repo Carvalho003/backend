@@ -17,6 +17,7 @@ public class FotoProdutoMapper {
     public static FotoProdutoResponseDTO toDto(FotoProduto entity){
         if(entity == null) return null;
         FotoProdutoResponseDTO dto = new FotoProdutoResponseDTO(
+                entity.getId(),
                 entity.getFoto(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt()
@@ -30,6 +31,7 @@ public class FotoProdutoMapper {
         return entity
                 .stream()
                 .map(e -> new FotoProdutoResponseDTO(
+                        e.getId(),
                         e.getFoto(),
                         e.getCreatedAt(),
                         e.getUpdatedAt()

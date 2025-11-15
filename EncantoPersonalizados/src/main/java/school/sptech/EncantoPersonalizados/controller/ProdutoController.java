@@ -80,7 +80,7 @@ public class ProdutoController {
             @RequestParam(required = false) String categoria,
             @RequestParam(required = false) String tema,
             @RequestParam(required = false) String item,
-            @RequestParam(defaultValue = "0") int ativo,
+            @RequestParam(defaultValue = "true") boolean ativo,
             @RequestParam(defaultValue = "0") int page
     ){
         Page<Produto> resposta = service.get(search, categoria, tema, item, ativo, page);
@@ -101,6 +101,11 @@ public class ProdutoController {
         return ResponseEntity.status(200).build();
     }
 
+    @Operation(description = "Criar foto para o produto")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Criou a foto do produto"),
+            @ApiResponse(responseCode = "404", description = "Não encontrou o produto")
+    })
     @PostMapping("/fotos/{produtoId}")
     public ResponseEntity<FotoProdutoResponseDTO> uploadFoto(
             @PathVariable Integer produtoId,
@@ -111,6 +116,11 @@ public class ProdutoController {
         return ResponseEntity.status(201).body(dto);
     }
 
+    @Operation(description = "Excluir foto do produto")
+    @ApiResponses({
+            @ApiResponse(responseCode = "202", description = "Sucesso ao exluir foto"),
+            @ApiResponse(responseCode = "404", description = "Não encontrou a foto do produto")
+    })
     @DeleteMapping("/fotos/{fotoId}")
     public ResponseEntity<Void> deleteFoto(@PathVariable Integer fotoId) throws IOException {
         fotoProdutoService.deletarFoto(fotoId);

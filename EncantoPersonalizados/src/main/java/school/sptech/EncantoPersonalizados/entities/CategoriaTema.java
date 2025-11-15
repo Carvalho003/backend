@@ -10,6 +10,15 @@ public class CategoriaTema {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String titulo;
+    private Boolean ativo;
+
+    public Boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
+    }
 
     @OneToMany(mappedBy = "categoriaTema")
     private List<TemaProduto> temaProdutos;

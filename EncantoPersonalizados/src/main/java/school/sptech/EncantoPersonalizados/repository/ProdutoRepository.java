@@ -21,7 +21,7 @@ public interface ProdutoRepository extends JpaRepository<Produto, Integer> {
             @Param("categoria") String categoria,
             @Param("tema") String tema,
             @Param("item") String item,
-            @Param("ativo") Integer ativo,
+            @Param("ativo") Boolean ativo,
             Pageable pageable
     );
 }

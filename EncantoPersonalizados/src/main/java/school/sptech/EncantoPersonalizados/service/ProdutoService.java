@@ -28,7 +28,7 @@ public class ProdutoService {
         String categoria,
         String tema,
         String item,
-        int ativo,
+        boolean ativo,
         int page
     ){
         int size = 10;
@@ -56,6 +56,7 @@ public class ProdutoService {
         }else{
             entity.setAtivo(true);
         }
+        repository.save(entity);
     }
 
     public Produto store(Produto entity){
