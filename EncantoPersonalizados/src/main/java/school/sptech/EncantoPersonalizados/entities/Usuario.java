@@ -21,11 +21,16 @@ public class Usuario {
     private String cpf;
     private LocalDate dataNasc;
     private String cargo;
+    private Boolean status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     public Usuario() {
     }
+
+    public Boolean getStatus() { return status; }
+
+    public void setStatus(Boolean status) { this.status = status; }
 
     public Integer getId() {
         return id;

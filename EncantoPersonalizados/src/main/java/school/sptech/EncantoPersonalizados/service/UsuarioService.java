@@ -1,5 +1,8 @@
 package school.sptech.EncantoPersonalizados.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,6 +18,7 @@ import school.sptech.EncantoPersonalizados.dto.usuario.UserTokenDTO;
 import school.sptech.EncantoPersonalizados.entities.Usuario;
 import school.sptech.EncantoPersonalizados.repository.UsuarioRepository;
 
+import javax.swing.plaf.PanelUI;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,18 +45,32 @@ public class UsuarioService {
     }
 
     public boolean destroy(Integer id) {
-        var user = repository.findById(id);
-        if (user.isPresent()) {
-            repository.deleteById(id);
+        Optional<Usuario> usuarioAtualizar = repository.findById(id);
+        if (usuarioAtualizar.isPresent()) {
+            var usuarioAtual = usuarioAtualizar.get();
+            usuarioAtual.setStatus(false);
+            repository.save(usuarioAtual);
             return true;
         }
         return false;
     }
 
-    public List<UsuarioResponseDTO> get() {
-         List<Usuario> entities = repository.findAll();
-         List<UsuarioResponseDTO> dtos = UsuarioMapper.toResponseDTO(entities);
-         return dtos;
+    public Page<Usuario> get(
+            String search,
+            String cargo,
+            Boolean status,
+            int page
+    ) {
+        int size =  10;
+        Pageable pageable = PageRequest.of(page, size);
+        search = vazioParaNull(search);
+        cargo = vazioParaNull(cargo);
+
+        return repository.filtrar(search, cargo, status, pageable);
+    }
+
+    private String vazioParaNull(String valor) {
+        return (valor == null || valor.isBlank()) ? null : valor;
     }
 
     public UsuarioResponseDTO getById(Integer id) {
@@ -91,6 +109,27 @@ public class UsuarioService {
         return null;
     }
 
+    public UsuarioResponseDTO updatePassword(String oldPassword, String newPassword, Integer id) {
+        Optional<Usuario> usuarioAtualizar = repository.findById(id);
+        if (usuarioAtualizar.isPresent()) {
+            var usuarioAtual = usuarioAtualizar.get();
+            if (!passwordEncoder.matches(oldPassword, usuarioAtual.getPassword())) {
+                throw new RuntimeException("Senha atual incorreta");
+            }
+
+            if (passwordEncoder.matches(newPassword, usuarioAtual.getPassword())) {
+                throw new RuntimeException("A nova senha não pode ser igual a atual");
+            }
+
+            usuarioAtual.setPassword(passwordEncoder.encode(newPassword));
+            Usuario usuarioSalvo = repository.save(usuarioAtual);
+
+            return UsuarioMapper.toResponseDTO(usuarioSalvo);
+        }
+
+        return null;
+    }
+;
     // INÍCIO DE IMPLEMENTAÇÃO DE ORDENAÇÃO RECURSIVA DE LISTA
     public List<Usuario> getUsuariosComMergeSortPorNome() {
         List<Usuario> usuarios = repository.findAll();

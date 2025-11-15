@@ -9,11 +9,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import school.sptech.EncantoPersonalizados.dto.produto.ProdutoMapper;
 import school.sptech.EncantoPersonalizados.dto.usuario.UsuarioMapper;
 import school.sptech.EncantoPersonalizados.dto.usuario.UsuarioRequestDTO;
 import school.sptech.EncantoPersonalizados.dto.usuario.UsuarioResponseDTO;
+import school.sptech.EncantoPersonalizados.entities.Produto;
 import school.sptech.EncantoPersonalizados.entities.Usuario;
 import school.sptech.EncantoPersonalizados.service.UsuarioService;
 
@@ -47,16 +50,21 @@ import java.util.List;
 
         @Operation(description = "Listar todos os usuários")
         @ApiResponses({
-                @ApiResponse(responseCode = "200", description = "Retorna uma lista de usuários",
+                @ApiResponse(responseCode = "200", description = "Retorna uma lista de usuários (Aceita filtros por status, cargo e nome)",
                 content = @Content(array = @ArraySchema(schema =  @Schema(implementation = UsuarioResponseDTO.class)))),
                 @ApiResponse(responseCode = "204", description = "Não encontrou usuários")
         })
         @GetMapping
         @SecurityRequirement(name = "Bearer")
-        public ResponseEntity<List<UsuarioResponseDTO>> get(){
-            List<UsuarioResponseDTO> usuarios = service.get();
-            if(!usuarios.isEmpty()){
-                return ResponseEntity.status(200).body(usuarios);
+        public ResponseEntity<Page<UsuarioResponseDTO>> get(
+                @RequestParam(required = false) String search,
+                @RequestParam(required = false) String cargo,
+                @RequestParam(required = false) Boolean status,
+                @RequestParam(defaultValue = "0") int page
+        ){
+            Page<Usuario> resposta = service.get(search, cargo, status, page);
+            if(!resposta.isEmpty()){
+                return ResponseEntity.status(200).body(resposta.map(UsuarioMapper::toResponseDTO));
             }
             return ResponseEntity.status(204).build();
         }
@@ -93,9 +101,10 @@ import java.util.List;
             if(dto == null) return ResponseEntity.status(404).build();
             return ResponseEntity.status(200).body(dto);
         }
+
         @Operation(description = "Atualizar usuário")
         @ApiResponses({
-                @ApiResponse(responseCode = "204", description = "Sucesso ao deletar"),
+                @ApiResponse(responseCode = "204", description = "Sucesso ao desativar"),
                 @ApiResponse(responseCode = "404", description = "Não encontra o usuário")
         })
         @DeleteMapping("/{id}")
@@ -123,6 +132,44 @@ import java.util.List;
             }
 
             return ResponseEntity.status(200).body(usuariosOrdenados);
+        }
+
+        @Operation(description = "Mudar a senha")
+        @ApiResponses({
+                @ApiResponse(responseCode = "200", description = "Senha alterada com sucesso"),
+                @ApiResponse(responseCode = "400", description = "Erro na validação de dados"),
+                @ApiResponse(responseCode = "401", description = "Senha atual incorreta"),
+                @ApiResponse(responseCode = "404", description = "Usuário não encontrado"),
+        })
+        @PatchMapping("/{id}")
+        public ResponseEntity<Void> updatePassword(
+                @Parameter(description = "Id do usuário", example = "1")
+                @PathVariable Integer id,
+                @Parameter(description = "Senha nova do usuário", example = "Senha123!@")
+                @RequestParam String newPassword,
+                @Parameter(description = "Senha antiga do usuário", example = "Senha123!@")
+                @RequestParam String oldPassword
+        ){
+                try {
+                    UsuarioResponseDTO dto = service.updatePassword(oldPassword, newPassword, id);
+
+                    if (dto == null) {
+                        return  ResponseEntity.status(404).build();
+                    }
+
+                    return ResponseEntity.status(200).build();
+                } catch (RuntimeException e) {
+                    if (e.getMessage().equals("Senha atual incorreta")) {
+                        return ResponseEntity.status(401).build();
+                    }
+
+                    if (e.getMessage().equals("A nova senha não pode ser igual a atual")) {
+                        return ResponseEntity.status(400).build();
+                    }
+
+                    return ResponseEntity.status(500).build();
+                }
+
         }
     }
 
