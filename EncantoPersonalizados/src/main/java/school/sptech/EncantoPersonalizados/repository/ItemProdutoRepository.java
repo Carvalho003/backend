@@ -16,7 +16,7 @@ public interface ItemProdutoRepository extends JpaRepository<ItemProduto, Intege
     @Query(
             """
             SELECT i FROM ItemProduto i
-            WHERE (:search IS NULL OR LOWER(i.decricao) LIKE LOWER(CONCAT('%', :search, '%')) )
+            WHERE (:search IS NULL OR LOWER(i.descricao) LIKE LOWER(CONCAT('%', :search, '%')) )
             AND :ativo = i.ativo        
             """
     )

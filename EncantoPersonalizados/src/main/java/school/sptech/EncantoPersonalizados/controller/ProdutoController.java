@@ -106,7 +106,7 @@ public class ProdutoController {
             @ApiResponse(responseCode = "200", description = "Criou a foto do produto"),
             @ApiResponse(responseCode = "404", description = "Não encontrou o produto")
     })
-    @PostMapping("/{produtoId}}/fotos")
+    @PostMapping("/{produtoId}/fotos")
     public ResponseEntity<FotoProdutoResponseDTO> uploadFoto(
             @PathVariable Integer produtoId,
             @RequestParam("foto") MultipartFile file
