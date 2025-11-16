@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import school.sptech.EncantoPersonalizados.entities.StatusPedido;
 
+import java.util.Optional;
+
 public interface StatusPedidoRepository extends JpaRepository<StatusPedido, Integer> {
 
     @Query("""
@@ -18,4 +20,7 @@ public interface StatusPedidoRepository extends JpaRepository<StatusPedido, Inte
             @Param("ativo") Boolean ativo,
             Pageable pageable
     );
+
+
+    Optional<StatusPedido> findFirstByOrderByOrdemKanbanAsc();
 }

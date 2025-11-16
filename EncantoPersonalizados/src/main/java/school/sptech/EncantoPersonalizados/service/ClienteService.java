@@ -82,6 +82,10 @@ public class ClienteService {
         }
     }
 
+    public Cliente findById(Integer id) {
+        return repository.findById(id).orElse(null);
+    }
+
 
 
 }

@@ -59,4 +59,12 @@ public class StatusPedidoService {
 
     }
 
+    public StatusPedido findById(Integer id){
+        return statusPedidoRepository.findById(id).orElse(null);
+    }
+
+    public StatusPedido findFirstOfKanbanOrder(){
+        return statusPedidoRepository.findFirstByOrderByOrdemKanbanAsc().orElse(null);
+    }
+
 }

@@ -18,7 +18,7 @@ public class ProdutoPedido {
     private Pedido pedido;
     @ManyToOne
     private Produto produto;
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime updatedAt;
 
     public Integer getId() {

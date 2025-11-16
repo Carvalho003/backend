@@ -19,6 +19,7 @@ import school.sptech.EncantoPersonalizados.dto.produto.ProdutoResponseDTO;
 import school.sptech.EncantoPersonalizados.dto.usuario.UsuarioResponseDTO;
 import school.sptech.EncantoPersonalizados.entities.FotoProduto;
 import school.sptech.EncantoPersonalizados.entities.Produto;
+import school.sptech.EncantoPersonalizados.exceptions.ProdutoNaoEncontradoException;
 import school.sptech.EncantoPersonalizados.facade.ProdutoFacade;
 import school.sptech.EncantoPersonalizados.service.FotoProdutoService;
 import school.sptech.EncantoPersonalizados.service.ProdutoService;
@@ -40,7 +41,7 @@ public class ProdutoController {
         this.service = service;
     }
 
-    @Operation(description = "Criar um usuario")
+    @Operation(description = "Criar um produto")
     @ApiResponse(responseCode = "201", description = "Cria um produto",
             content =  @Content(schema = @Schema(implementation = ProdutoResponseDTO.class)))
     @PostMapping
@@ -85,6 +86,20 @@ public class ProdutoController {
     ){
         Page<Produto> resposta = service.get(search, categoria, tema, item, ativo, page);
         return ResponseEntity.status(200).body(resposta.map(ProdutoMapper::toDto));
+    }
+
+    @Operation(description = "Trazer produto especifico")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Retorna o produto especifico pelo ID",
+                    content =  @Content(schema = @Schema(implementation = ProdutoResponseDTO.class))),
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<ProdutoResponseDTO> getById(
+            @PathVariable Integer id
+    ){
+        Produto resposta = service.findById(id);
+        if(resposta == null) throw new ProdutoNaoEncontradoException("Produto não encotrado");
+        return ResponseEntity.status(200).body(ProdutoMapper.toDto(resposta));
     }
 
     @Operation(description = "Mudar estado ativo e inativo")
