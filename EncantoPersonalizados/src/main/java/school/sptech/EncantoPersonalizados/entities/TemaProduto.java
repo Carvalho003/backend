@@ -15,7 +15,7 @@ public class TemaProduto {
     private LocalDateTime updatedAt;
     @OneToMany(mappedBy = "temaProduto")
     private List<Produto>  produtos;
-    private boolean ativo;
+    private boolean ativo = true;
 
     public boolean getAtivo() {
         return ativo;

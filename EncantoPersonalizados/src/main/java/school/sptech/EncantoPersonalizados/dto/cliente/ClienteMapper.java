@@ -84,6 +84,7 @@ public class ClienteMapper {
                 ee.getEstado(),
                 ee.getMunicipio(),
                 ee.getComplemento(),
+                ee.getAtivo(),
                 ee.getCreatedAt(),
                 ee.getUpdatedAt()
         );
@@ -112,6 +113,7 @@ public class ClienteMapper {
                                     ee.getEstado(),
                                     ee.getMunicipio(),
                                     ee.getComplemento(),
+                                    ee.getAtivo(),
                                     ee.getCreatedAt(),
                                     ee.getUpdatedAt()
                             );
@@ -153,6 +155,7 @@ public class ClienteMapper {
                                                 ee.getEstado(),
                                                 ee.getMunicipio(),
                                                 ee.getComplemento(),
+                                                ee.getAtivo(),
                                                 ee.getCreatedAt(),
                                                 ee.getUpdatedAt()
                                         );

@@ -13,6 +13,7 @@ public record EnderecoClienteResponseDTO(
         String estado,
         String municipio,
         String complemento,
+        Boolean ativo,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {

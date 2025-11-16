@@ -11,6 +11,7 @@ import school.sptech.EncantoPersonalizados.repository.ClienteRepository;
 import school.sptech.EncantoPersonalizados.repository.EnderecoClienteRepository;
 
 import javax.swing.text.html.Option;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -32,11 +33,23 @@ public class EnderecoClienteService{
 
     }
 
-    public EnderecoCliente update(EnderecoClienteRequestDTO dto, Integer enderecoId){
+    public EnderecoCliente update(EnderecoClienteRequestDTO d, Integer enderecoId){
         Optional<EnderecoCliente> enderecoCliente = repository.findById(enderecoId);
         if(enderecoCliente.isEmpty()) throw  new EntidadeNaoEncontradaException("Endereco não encontrado");
-        EnderecoCliente entity = ClienteMapper.toEntity(dto, enderecoCliente.get().getCliente());
-        return repository.save(entity);
+
+        EnderecoCliente e = enderecoCliente.get();
+
+        e.setLogradouro(d.logradouro());
+        e.setNumLogradouro(d.numLogradouro());
+        e.setBairro(d.bairro());
+        e.setCep(d.cep());
+        e.setUf(d.uf());
+        e.setCidade(d.cidade());
+        e.setEstado(d.estado());
+        e.setMunicipio(d.municipio());
+        e.setComplemento(d.complemento());
+        e.setCreatedAt(LocalDateTime.now());
+        return repository.save(e);
 
 
     }

@@ -38,16 +38,15 @@ public class ClienteService {
         Cliente entity = repository.save(ClienteMapper.toEntity(dto));
 
         List<EnderecoCliente> enderecoClientes = ClienteMapper.toEntity(dto.enderecos(), entity);
-
         for(EnderecoCliente e: enderecoClientes){
             enderecoClienteRepository.save(e);
         }
 
-        Optional<Cliente> entityAtualizada = repository.findById(entity.getId());
+        entity.setEnderecoClientes(enderecoClientes);
 
-        if(entityAtualizada.isEmpty()) throw  new EntidadeNaoEncontradaException("Cliente nao encontrado");
 
-        return entityAtualizada.get();
+
+        return entity;
     }
 
     public Cliente update(CreateClienteDTO dto, Integer id){

@@ -47,7 +47,7 @@ public class ClienteController {
             @ApiResponse(responseCode = "201", description = "Sucesso ao atualizar cliente"),
             @ApiResponse(responseCode = "400", description = "Cliente não encontrada")
     })
-    @PutMapping
+    @PutMapping("/{id}")
     public final ResponseEntity<ResponseClienteDTO> update (@RequestBody CreateClienteDTO dto, @PathVariable Integer id){
 
         if(dto == null) return ResponseEntity.status(400).build();
@@ -107,7 +107,7 @@ public class ClienteController {
             @ApiResponse(responseCode = "201", description = "Sucesso ao atualizar endereço de  cliente"),
             @ApiResponse(responseCode = "400", description = "Endereco não encontrada")
     })
-    @PostMapping("/enderecos/{id}")
+    @PutMapping("/enderecos/{id}")
     public final ResponseEntity<EnderecoClienteResponseDTO> atualizar (
             @RequestBody EnderecoClienteRequestDTO dto,
             @PathVariable Integer id
@@ -128,7 +128,7 @@ public class ClienteController {
             @ApiResponse(responseCode = "200", description = "Sucesso ao mudar estado do endereco"),
             @ApiResponse(responseCode = "404", description = "Não encontrou categoria")
     })
-    @PatchMapping("mudar-estado/{id}")
+    @PatchMapping("/enderecos/{id}/mudar-estado")
     public ResponseEntity<Void> mudarEstado(
             @PathVariable Integer id
     ){

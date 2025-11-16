@@ -10,7 +10,8 @@ public class CategoriaTema {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String titulo;
-    private Boolean ativo;
+
+    private Boolean ativo = true;
 
     public Boolean getAtivo() {
         return ativo;

@@ -14,12 +14,22 @@ public class Pedido {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     @OneToMany(mappedBy = "pedido")
-    private List<StatusPedido> statusPedidos;
+    private List<PedidoStatusPedido> pedidoStatusPedidos;
     @ManyToOne
     private Cliente cliente;
     @OneToMany(mappedBy = "pedido")
     private List<ProdutoPedido> produtoPedidos;
 
+    private boolean ativo = true;
+
+
+    public List<PedidoStatusPedido> getPedidoStatusPedidos() {
+        return pedidoStatusPedidos;
+    }
+
+    public void setPedidoStatusPedidos(List<PedidoStatusPedido> pedidoStatusPedidos) {
+        this.pedidoStatusPedidos = pedidoStatusPedidos;
+    }
 
     public Integer getId() {
         return id;
@@ -53,13 +63,6 @@ public class Pedido {
         this.updatedAt = updatedAt;
     }
 
-    public List<StatusPedido> getStatusPedidos() {
-        return statusPedidos;
-    }
-
-    public void setStatusPedidos(List<StatusPedido> statusPedidos) {
-        this.statusPedidos = statusPedidos;
-    }
 
     public Cliente getCliente() {
         return cliente;

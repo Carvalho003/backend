@@ -24,7 +24,7 @@ public class ItemProduto {
     private Double precoPromocional;
     @OneToMany(mappedBy = "itemProduto")
     private List<Produto> produtos;
-    private boolean ativo;
+    private boolean ativo = true;
 
 
     public boolean getAtivo() {

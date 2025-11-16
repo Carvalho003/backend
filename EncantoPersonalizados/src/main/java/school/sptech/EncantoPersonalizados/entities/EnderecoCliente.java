@@ -19,7 +19,7 @@ public class EnderecoCliente {
     private String estado;
     private String municipio;
     private String complemento;
-    private boolean ativo;
+    private boolean ativo = true;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

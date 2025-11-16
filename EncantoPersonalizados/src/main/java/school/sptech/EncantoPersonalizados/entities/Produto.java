@@ -18,7 +18,7 @@ public class Produto {
     private ItemProduto itemProduto;
     @OneToMany(mappedBy = "produto")
     private List<FotoProduto> fotoProdutos;
-    private Boolean ativo;
+    private Boolean ativo = true;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
