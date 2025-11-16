@@ -14,12 +14,27 @@ public class Movimentacao {
     private String descricao;
     private Double valor;
     @ManyToOne
+    @JoinColumn(name = "contraparte_id")
     private Contraparte contraparte;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Boolean status;
 
     @ManyToOne
+    @JoinColumn(name = "categoria_movimentacao_id")
     private CategoriaMovimentacao categoriaMovimentacao;
+
+    @PrePersist
+    public void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        if (status == null) status = true;
+    }
+
+    @PreUpdate
+    public void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
@@ -76,4 +91,12 @@ public class Movimentacao {
     public void setContraparte(Contraparte contraparte) {
         this.contraparte = contraparte;
     }
+
+    public CategoriaMovimentacao getCategoriaMovimentacao() { return categoriaMovimentacao; }
+
+    public void setCategoriaMovimentacao(CategoriaMovimentacao categoriaMovimentacao) { this.categoriaMovimentacao = categoriaMovimentacao; }
+
+    public Boolean getStatus() { return status; }
+
+    public void setStatus(Boolean status) { this.status = status; }
 }

@@ -17,7 +17,7 @@ import school.sptech.EncantoPersonalizados.service.CategoriaMovimentacaoService;
 import java.util.List;
 
 @RestController
-@RequestMapping("/categoria-movimentacao")
+@RequestMapping("/categoria-movimentacoes")
 public class CategoriaMovimentacaoController {
     private final CategoriaMovimentacaoService service;
 
@@ -26,7 +26,7 @@ public class CategoriaMovimentacaoController {
     }
 
     @Operation(description = "Criar categoria de movimentação")
-    @ApiResponse(responseCode = "200", description = "Sucesso ao criar categoria")
+    @ApiResponse(responseCode = "201", description = "Sucesso ao criar categoria")
     @PostMapping
     public ResponseEntity<ResponseCategoriaMovimentacaoDTO> create(
             @Valid @RequestBody RequestCategoriaMovimentacaoDTO dto

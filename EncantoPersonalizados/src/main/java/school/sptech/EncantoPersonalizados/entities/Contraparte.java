@@ -18,7 +18,23 @@ public class Contraparte {
     private LocalDateTime updatedAt;
     @OneToMany(mappedBy = "contraparte")
     private List<Movimentacao> movimentacao;
+    private Boolean status;
 
+    @PrePersist
+    public void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+        if (status == null) status = true;
+    }
+
+    @PreUpdate
+    public void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public Boolean getStatus() { return status; }
+
+    public void setStatus(Boolean status) { this.status = status; }
 
     public Integer getId() {
         return id;

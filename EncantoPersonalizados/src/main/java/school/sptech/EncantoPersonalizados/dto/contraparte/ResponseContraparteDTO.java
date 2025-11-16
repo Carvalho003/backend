@@ -1,17 +1,17 @@
 package school.sptech.EncantoPersonalizados.dto.contraparte;
 
+import jakarta.validation.constraints.NotBlank;
 import school.sptech.EncantoPersonalizados.dto.movimentacao.ResponseMovimentacaoDTO;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 public record ResponseContraparteDTO(
-        Integer id,
+        @NotBlank
         String nome,
         String descricao,
+        @NotBlank
         String segmento,
-        String tipoContrato,
-        List<ResponseMovimentacaoDTO> movimentacoes,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt
+        @NotBlank
+        String tipoContrato
 ) {}
