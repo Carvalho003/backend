@@ -10,8 +10,13 @@ public class CategoriaMovimentacao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String descricao;
+    private Boolean status;
     @OneToMany(mappedBy = "categoriaMovimentacao")
     List<Movimentacao> movimentacaos;
+
+    public Boolean getStatus() { return status; }
+
+    public void setStatus(Boolean status) { this.status = status; }
 
     public Integer getId() {
         return id;

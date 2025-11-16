@@ -84,6 +84,7 @@ public class UsuarioService {
         String encryptedPassword = passwordEncoder.encode(usuario.getPassword());
         usuario.setPassword(encryptedPassword);
         usuario.setCreatedAt(LocalDateTime.now());
+        usuario.setStatus(true);
 
         Usuario newEntity = repository.save(usuario);
         return UsuarioMapper.toResponseDTO(newEntity);
