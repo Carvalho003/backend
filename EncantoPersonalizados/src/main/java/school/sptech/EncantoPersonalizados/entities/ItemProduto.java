@@ -24,7 +24,16 @@ public class ItemProduto {
     private Double precoPromocional;
     @OneToMany(mappedBy = "itemProduto")
     private List<Produto> produtos;
+    private boolean ativo;
 
+
+    public boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
+    }
 
     public Double getPrecoPromocional() {
         return precoPromocional;

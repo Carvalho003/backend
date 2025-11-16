@@ -19,6 +19,7 @@ public class EnderecoCliente {
     private String estado;
     private String municipio;
     private String complemento;
+    private boolean ativo;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -26,6 +27,14 @@ public class EnderecoCliente {
     @ManyToOne
 
     private Cliente cliente;
+
+    public boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
+    }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;

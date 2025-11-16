@@ -1,4 +1,7 @@
 package school.sptech.EncantoPersonalizados.repository;
 
-public interface EnderecoClienteRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+import school.sptech.EncantoPersonalizados.entities.EnderecoCliente;
+
+public interface EnderecoClienteRepository extends JpaRepository<EnderecoCliente, Integer> {
 }

@@ -1,7 +1,20 @@
 package school.sptech.EncantoPersonalizados.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import school.sptech.EncantoPersonalizados.entities.Cliente;
 
 public interface ClienteRepository extends JpaRepository<Cliente, Integer> {
+
+    @Query("""
+            SELECT c FROM Cliente c
+            WHERE (:search IS NULL OR LOWER(c.nome) LIKE LOWER(CONCAT('%', :search, '%')) )
+            """)
+    Page<Cliente> filtrar(
+            @Param("search") String search,
+            Pageable pageable
+    );
 }

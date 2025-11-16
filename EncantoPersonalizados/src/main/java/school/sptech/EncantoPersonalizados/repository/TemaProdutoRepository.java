@@ -11,8 +11,8 @@ public interface TemaProdutoRepository extends JpaRepository<TemaProduto, Intege
     @Query(
             """
             SELECT tp FROM TemaProduto tp
-            WHERE (:search IS NULL OR LOWER(:search) LIKE CONCAT('%', :search, '%'))  
-            AND (:categoria = tp.categoriaTema.titulo)
+            WHERE (:search IS NULL OR LOWER(tp.descricao) LIKE LOWER(CONCAT('%', :search, '%')) )  
+            AND (:categoria IS NULL OR :categoria = tp.categoriaTema.titulo)
             AND tp.ativo = :ativo      
             """
     )

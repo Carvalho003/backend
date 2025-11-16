@@ -8,8 +8,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.apache.coyote.Response;
 import org.hibernate.cache.spi.support.AbstractReadWriteAccess;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import school.sptech.EncantoPersonalizados.dto.itemProduto.ItemProdutoMapper;
 import school.sptech.EncantoPersonalizados.dto.itemProduto.ItemProdutoRequestDTO;
 import school.sptech.EncantoPersonalizados.dto.itemProduto.ItemProdutoResponseDTO;
 import school.sptech.EncantoPersonalizados.dto.usuario.UsuarioResponseDTO;
@@ -46,12 +48,17 @@ public class ItemProdutoController {
             @ApiResponse(responseCode = "204", description = "Sucesso ao listar, sem conteúdo")
     })
     @GetMapping
-    public ResponseEntity<List<ItemProdutoResponseDTO>> listar(){
-        List<ItemProdutoResponseDTO> itens = service.listar();
-        if(!itens.isEmpty()){
-            return ResponseEntity.status(200).body(itens);
-        }
-        return ResponseEntity.status(204).build();
+    public ResponseEntity<Page<ItemProdutoResponseDTO>> listar(
+            @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "true") boolean ativo,
+            @RequestParam(defaultValue = "true") int page
+
+    ){
+        Page<ItemProduto> itens = service.listar(search, ativo, page);
+
+        Page<ItemProdutoResponseDTO> dtos = itens.map(ItemProdutoMapper::toDto);
+
+        return ResponseEntity.status(200).body(dtos);
     }
 
     @Operation(description = "Lista produtos menor do que o valor especificado")
@@ -83,14 +90,14 @@ public class ItemProdutoController {
         return ResponseEntity.status(200).body(itemAtualizado);
      }
 
-     @Operation(description = "Exclui produto")
-     @ApiResponses(@ApiResponse(responseCode = "204", description = "Produto excluído, sem conteúdo"))
+     @Operation(description = "Muda o estado do item")
+     @ApiResponses(@ApiResponse(responseCode = "204", description = "Item não encontrado"))
     @DeleteMapping("/{id}")
      public ResponseEntity<Void> excluirPorId(
             @Parameter(description = "Id do produto", example = "1", required = true)
             @PathVariable Integer id
     ){
-         service.delete(id);
+         service.mudarEstado(id);
          return ResponseEntity.status(204).build();
      }
 }

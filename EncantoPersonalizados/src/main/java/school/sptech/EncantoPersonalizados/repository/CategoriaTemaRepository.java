@@ -11,7 +11,7 @@ public interface CategoriaTemaRepository extends JpaRepository<CategoriaTema, In
 
     @Query("""
             SELECT ct FROM CategoriaTema ct
-            WHERE (:search IS NULL OR LOWER(ct.titulo) LIKE CONCAT('%', :search, '%'))
+            WHERE (:search IS NULL OR LOWER(ct.titulo) LIKE LOWER(CONCAT('%', :search, '%')) )
             AND (ct.ativo = :ativo)
             """)
     Page<CategoriaTema> filtrar(
