@@ -17,7 +17,7 @@ public interface MovimentacaoRepository extends JpaRepository<Movimentacao, Inte
         SELECT m FROM Movimentacao m
         WHERE (:search IS NULL OR LOWER(m.descricao) LIKE LOWER(CONCAT('%', :search, '%')))
         AND (:tipo IS NULL OR LOWER(m.tipo) LIKE LOWER(CONCAT('%', :tipo, '%')))
-        AND (:valor IS NULL OR LOWER(m.valor) LIKE LOWER(CONCAT('%', :valor, '%')))
+        AND (:valor IS NULL OR m.valor = :valor)
         AND (:categoria IS NULL OR LOWER(m.categoriaMovimentacao.descricao) LIKE LOWER(CONCAT('%', :categoria, '%')))
         AND (:contraparte IS NULL OR LOWER(m.contraparte.descricao) LIKE LOWER(CONCAT('%', :contraparte, '%')))
         AND (:nome IS NULL OR LOWER(m.contraparte.nome) LIKE LOWER(CONCAT('%', :nome, '%')))

@@ -72,7 +72,7 @@ public class ContraparteController {
     @PutMapping("/{id}")
     public ResponseEntity<ResponseContraparteDTO> update(
             @PathVariable Integer id,
-            @RequestBody @Valid RequestContraparteDTO dto
+            @RequestBody RequestContraparteDTO dto
     ){
         ResponseContraparteDTO response = service.update(id, dto);
 
