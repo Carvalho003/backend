@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import school.sptech.EncantoPersonalizados.dto.produto.ProdutoMapper;
 import school.sptech.EncantoPersonalizados.dto.usuario.UsuarioMapper;
 import school.sptech.EncantoPersonalizados.dto.usuario.UsuarioRequestDTO;
@@ -20,6 +21,7 @@ import school.sptech.EncantoPersonalizados.entities.Produto;
 import school.sptech.EncantoPersonalizados.entities.Usuario;
 import school.sptech.EncantoPersonalizados.service.UsuarioService;
 
+import java.io.IOException;
 import java.util.List;
 
 
@@ -170,6 +172,36 @@ import java.util.List;
                     return ResponseEntity.status(500).build();
                 }
 
+        }
+
+        @Operation(description = "Inserção de foto")
+        @ApiResponses({
+                @ApiResponse(responseCode = "201", description = "Foto salva com sucesso"),
+                @ApiResponse(responseCode = "400", description = "Parâmetros incorretos"),
+                @ApiResponse(responseCode = "404", description = "Funcionário não encontrado")
+        })
+        @PostMapping("/foto/{id}")
+        public ResponseEntity<UsuarioResponseDTO> storeFoto(
+                @PathVariable Integer id,
+                @RequestParam("foto") MultipartFile file
+        ) throws IOException {
+            Usuario usuario = service.storeFoto(id, file);
+
+            return ResponseEntity.status(201).body(UsuarioMapper.toResponseDTO(usuario));
+        };
+
+        @Operation(description = "Deletar foto")
+        @ApiResponses({
+                @ApiResponse(responseCode = "204", description = "Foto deletada com sucesso"),
+                @ApiResponse(responseCode = "404", description = "Foto não encontrado"),
+                @ApiResponse(responseCode = "400", description = "Parâmetros incorretos")
+        })
+        @DeleteMapping("/foto/{id}")
+        public ResponseEntity<Void> deleteFoto(
+                @PathVariable Integer id
+        ) throws IOException {
+            service.deleteFoto(id);
+            return ResponseEntity.status(204).build();
         }
     }
 

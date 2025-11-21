@@ -1,5 +1,6 @@
 package school.sptech.EncantoPersonalizados.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -9,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import school.sptech.EncantoPersonalizados.config.GerenciadorTokenJwt;
 import school.sptech.EncantoPersonalizados.dto.usuario.UsuarioMapper;
 import school.sptech.EncantoPersonalizados.dto.usuario.UsuarioResponseDTO;
@@ -19,10 +21,16 @@ import school.sptech.EncantoPersonalizados.entities.Usuario;
 import school.sptech.EncantoPersonalizados.repository.UsuarioRepository;
 
 import javax.swing.plaf.PanelUI;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UsuarioService {
@@ -88,6 +96,54 @@ public class UsuarioService {
 
         Usuario newEntity = repository.save(usuario);
         return UsuarioMapper.toResponseDTO(newEntity);
+    }
+
+    @Value("uploads")
+    private String uploadDir;
+
+    public Usuario storeFoto(Integer id, MultipartFile file) throws IOException {
+        if (file == null) {
+            throw new RuntimeException("Foto não informada");
+        }
+
+        Path usuarioFolder = Paths.get(uploadDir, "funcionarios", id.toString());
+        Files.createDirectories(usuarioFolder);
+        String nomeArquivo = UUID.randomUUID() + "-" + file.getOriginalFilename();
+
+        Path caminhoCompleto = usuarioFolder.resolve(nomeArquivo);
+        Files.copy(file.getInputStream(), caminhoCompleto, StandardCopyOption.REPLACE_EXISTING);
+
+        String caminhoRelativo = "/uploads/funcionarios" + id + "/" + nomeArquivo;
+
+        Optional<Usuario> find = repository.findById(id);
+
+        if (find.isEmpty()) {
+            throw new RuntimeException("Funcionário não encontrado");
+        }
+
+        Usuario funcionario = find.get();
+
+        funcionario.setFoto(caminhoRelativo);
+
+        return repository.save(funcionario);
+    }
+
+    public void deleteFoto(Integer id) throws IOException {
+        Optional<Usuario> find = repository.findById(id);
+
+        if (find.isEmpty()) {
+            throw new RuntimeException("Funcionário não encontrado");
+        }
+
+        Usuario funcionario = find.get();
+        String caminho = funcionario.getFoto();
+
+        Path caminhoArquivo = Paths.get(caminho.replace("/uploads", "uploads"));
+        Files.deleteIfExists(caminhoArquivo);
+
+        funcionario.setFoto("");
+
+        repository.save(funcionario);
     }
 
     public UsuarioResponseDTO update(Usuario usuario, Integer id) {

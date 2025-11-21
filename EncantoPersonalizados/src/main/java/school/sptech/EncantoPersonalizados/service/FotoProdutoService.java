@@ -58,7 +58,6 @@ public class FotoProdutoService {
         fotoProduto.setCreatedAt(LocalDateTime.now());
 
         return repository.save(fotoProduto);
-
     }
 
     public void deletarFoto(Integer fotoId) throws IOException {
