@@ -16,16 +16,25 @@ import school.sptech.EncantoPersonalizados.dto.pedido.PedidoRequestDto;
 import school.sptech.EncantoPersonalizados.dto.pedido.PedidoResponseDto;
 import school.sptech.EncantoPersonalizados.dto.pedidoStatusPedido.PedidoStatusPedidoRequestDto;
 import school.sptech.EncantoPersonalizados.dto.produto.ProdutoResponseDTO;
+import school.sptech.EncantoPersonalizados.dto.produtosEmUmPedido.ProdutosPedidoMapper;
+import school.sptech.EncantoPersonalizados.dto.produtosEmUmPedido.ProdutosPedidoRequestDto;
+import school.sptech.EncantoPersonalizados.dto.produtosEmUmPedido.ProdutosPedidoResponseDto;
+import school.sptech.EncantoPersonalizados.entities.ProdutoPedido;
 import school.sptech.EncantoPersonalizados.facade.PedidoFacade;
+import school.sptech.EncantoPersonalizados.service.ProdutoPedidoService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/pedidos")
 public class PedidoController {
 
     private final PedidoFacade facade;
+    private final ProdutoPedidoService produtoPedidoService;
 
-    public PedidoController(PedidoFacade facade) {
+    public PedidoController(PedidoFacade facade,ProdutoPedidoService produtoPedidoService) {
         this.facade = facade;
+        this.produtoPedidoService = produtoPedidoService;
     }
 
     @Operation(description = "Criar um novo pedido")
@@ -101,6 +110,70 @@ public class PedidoController {
             ){
         facade.mudarStatus(dto);
         return ResponseEntity.status(200).build();
+    }
+
+    @Operation(description = "Adicionar novo produto a um pedido")
+    @ApiResponse(responseCode = "200", description = "Adicionou novo produto ao pedido",
+            content =  @Content(schema = @Schema(implementation = ProdutosPedidoResponseDto.class)))
+    @PostMapping("/produtos")
+    public ResponseEntity<ProdutosPedidoResponseDto> criarProdutoParaOPedido(
+            @RequestBody ProdutosPedidoRequestDto dto
+    ){
+        ProdutoPedido produtoPedido = ProdutosPedidoMapper.toEntity(dto);
+
+
+
+        ProdutoPedido produtoPedidoSalvo = produtoPedidoService.salvar(produtoPedido, dto.idProduto(), dto.idPedido());
+
+        facade.atualizarPrecoPesoDoPedido(true, produtoPedidoSalvo.getPrecoTotal(), produtoPedidoSalvo.getPesoTotal(), dto.idPedido());
+
+
+        ProdutosPedidoResponseDto response =
+                new ProdutosPedidoResponseDto(
+                        produtoPedidoSalvo.getId(),
+                        dto.idProduto(),
+                        dto.idPedido(),
+                        produtoPedidoSalvo.getQtdProduto(),
+                        produtoPedidoSalvo.getPesoTotal(),
+                        produtoPedidoSalvo.getPesoUnitario(),
+                        produtoPedidoSalvo.getPrecoUnitario(),
+                        produtoPedidoSalvo.getPrecoTotal(),
+                        produtoPedidoSalvo.getCreatedAt(),
+                        produtoPedidoSalvo.getUpdatedAt()
+                );
+        return ResponseEntity.status(200).body(response);
+
+    }
+
+    @Operation(description = "Remover produto de um pedido")
+    @ApiResponse(responseCode = "200", description = "removeu o produto do pedido")
+    @DeleteMapping("/produtos/{id}")
+    public ResponseEntity<Void> removerProdutoDeUmPedido(
+            @PathVariable Integer id
+    ){
+        ProdutoPedido produtoPedido = produtoPedidoService.removerProduto(id);
+        facade.atualizarPrecoPesoDoPedido(false, produtoPedido.getPrecoTotal(), produtoPedido.getPesoTotal(), produtoPedido.getPedido().getId());
+
+        return ResponseEntity.status(204).build();
+    }
+
+    @Operation(description = "Atualizar produto de um pedido")
+    @ApiResponse(responseCode = "200", description = "Atualizou o produto do pedido")
+    @PutMapping("/produtos/{id}")
+    public ResponseEntity<Void> atualizarProdutoDeUmPedido(
+            @PathVariable Integer id,
+            @RequestBody ProdutosPedidoRequestDto dto
+    ){
+
+
+        List<?> novosTotais = produtoPedidoService.atualizarProduto(id, dto.quantidade());
+        Double pesoAdicionar = (Double) novosTotais.get(0);
+        Double precoAdicionar = (Double) novosTotais.get(1);
+        Integer pedidoId = (Integer) novosTotais.get(2);
+
+        facade.atualizarPrecoPesoDoPedido(true, precoAdicionar, pesoAdicionar, pedidoId);
+
+        return ResponseEntity.status(204).build();
     }
 
     // endpoints, criar novo produto para o pedido, atualizar pedido existente no produto

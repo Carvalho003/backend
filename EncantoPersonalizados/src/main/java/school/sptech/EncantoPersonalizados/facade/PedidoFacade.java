@@ -15,6 +15,7 @@ import school.sptech.EncantoPersonalizados.dto.produtosEmUmPedido.ProdutosPedido
 import school.sptech.EncantoPersonalizados.dto.produtosEmUmPedido.ProdutosPedidoRequestDto;
 import school.sptech.EncantoPersonalizados.dto.produtosEmUmPedido.ProdutosPedidoResponseDto;
 import school.sptech.EncantoPersonalizados.entities.*;
+import school.sptech.EncantoPersonalizados.exceptions.EntidadeNaoEncontradaException;
 import school.sptech.EncantoPersonalizados.repository.PedidoRepository;
 import school.sptech.EncantoPersonalizados.repository.PedidoStatusPedidoRepository;
 import school.sptech.EncantoPersonalizados.service.*;
@@ -91,31 +92,22 @@ public class PedidoFacade {
 
             // antes de salvar preciso preencher o restante dos campos de pedido produto, do dto so vem a quantidade
             produtoPedido.setPedido(pedido);
-            produtoPedido.setCreatedAt(LocalDateTime.now());
+
             produtoPedido.setProduto(produto);
-            produtoPedido.setPesoUnitario(produto.getItemProduto().getPeso());
-            Double precoUnitario = 0.0;
 
-            if(produto.getItemProduto().getPrecoPromocional() != null){
-                precoUnitario = produto.getItemProduto().getPrecoPromocional();
-            }else{
-                precoUnitario = produto.getItemProduto().getPrecoVenda();
-            }
-            produtoPedido.setPrecoUnitario(precoUnitario);
 
-            produtoPedido.setPrecoTotal(produtoPedido.getQtdProduto() * produtoPedido.getPesoUnitario());;
-            produtoPedido.setPesoTotal(produtoPedido.getQtdProduto() * produtoPedido.getPesoUnitario());
 
-            precoTotalPedido += produtoPedido.getPrecoTotal();
-            pesoTotalPedido += produtoPedido.getPesoTotal();
-
-            ProdutoPedido produtoPedidoSalvo = produtoPedidoService.salvar(produtoPedido);
+            ProdutoPedido produtoPedidoSalvo = produtoPedidoService.salvar(produtoPedido, produto.getId(), pedido.getId());
             ProdutosPedidoResponseDto dtoProdutoPedido = ProdutosPedidoMapper.toDto(produtoPedidoSalvo);
             produtosPedidoResponseDtos.add(dtoProdutoPedido);
 
             if(produtoPedido.getProduto().getItemProduto().getPrazoProducao() > diasDeProducaoMaisLongoDosProdutos){
                 diasDeProducaoMaisLongoDosProdutos = produtoPedido.getProduto().getItemProduto().getPrazoProducao();
             }
+
+            precoTotalPedido += produtoPedidoSalvo.getPrecoTotal();
+            pesoTotalPedido += produtoPedidoSalvo.getPesoTotal();
+
 
         }
         LocalDateTime dataLimite = LocalDateTime.now().plusDays(diasDeProducaoMaisLongoDosProdutos);
@@ -209,6 +201,27 @@ public class PedidoFacade {
 
         pedidoStatusPedidoService.salvar(pedidoStatusPedido);
 
+
+
+
+    }
+
+    public void atualizarPrecoPesoDoPedido(boolean aumentar, Double preco, Double peso, Integer pedidoId){
+        // verificar se o pedido existe
+
+        Pedido pedido = pedidoRepository.findById(pedidoId).orElseThrow(() -> new EntidadeNaoEncontradaException("Pedido não encontrado"));
+
+        // Verificar o se precisa retirar o peso/preço ou aumentar
+
+        if(aumentar) {
+            pedido.setPesoTotal(pedido.getPesoTotal() + peso);
+            pedido.setPrecoTotal(pedido.getPrecoTotal() + preco);
+        }else{
+            pedido.setPesoTotal(pedido.getPesoTotal() - peso);
+            pedido.setPrecoTotal(pedido.getPrecoTotal() - preco);
+        }
+
+        pedidoRepository.save(pedido);
 
 
 
