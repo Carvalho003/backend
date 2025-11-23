@@ -8,6 +8,8 @@ import school.sptech.EncantoPersonalizados.dto.pedidoStatusPedido.PedidoStatusPe
 import school.sptech.EncantoPersonalizados.dto.produtosEmUmPedido.ProdutosPedidoMapper;
 import school.sptech.EncantoPersonalizados.dto.produtosEmUmPedido.ProdutosPedidoResponseDto;
 import school.sptech.EncantoPersonalizados.dto.statusPedido.StatusPedidoResponseDto;
+import school.sptech.EncantoPersonalizados.dto.usuario.UsuarioMapper;
+import school.sptech.EncantoPersonalizados.dto.usuario.UsuarioResponseDTO;
 import school.sptech.EncantoPersonalizados.entities.Pedido;
 import school.sptech.EncantoPersonalizados.entities.PedidoStatusPedido;
 
@@ -28,6 +30,7 @@ public class PedidoMapper {
         ResponseClienteDTO cliente = ClienteMapper.toDto(pedido.getCliente());
         List<ProdutosPedidoResponseDto> produtos = ProdutosPedidoMapper.toDtoList(pedido.getProdutoPedidos());
         List<PedidoStatusPedidoResponseDto> historicoPedidos = PedidoStatusPedidoMapper.toResponseDtoList(pedido.getPedidoStatusPedidos());
+        UsuarioResponseDTO usuarioDto = UsuarioMapper.toResponseDTO(pedido.getUsuario());
 
         return new PedidoResponseDto(
                 pedido.getId(),
@@ -37,6 +40,7 @@ public class PedidoMapper {
                 pedido.getPrecoTotal(),
                 pedido.getPesoTotal(),
                 cliente,
+                usuarioDto,
                 produtos,
                 pedido.isAtivo(),
                 pedido.getCreatedAt(),

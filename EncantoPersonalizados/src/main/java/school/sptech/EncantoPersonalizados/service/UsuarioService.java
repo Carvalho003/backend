@@ -88,6 +88,13 @@ public class UsuarioService {
 
     }
 
+    public Usuario getEntityById(Integer id) {
+        Optional<Usuario> entity = repository.findById(id);
+        if (entity.isEmpty()) return null;
+        return entity.get();
+
+    }
+
     public UsuarioResponseDTO store(Usuario usuario) {
         String encryptedPassword = passwordEncoder.encode(usuario.getPassword());
         usuario.setPassword(encryptedPassword);

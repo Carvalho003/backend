@@ -20,6 +20,9 @@ public class Pedido {
     @OneToMany(mappedBy = "pedido")
     private List<PedidoStatusPedido> pedidoStatusPedidos;
     @ManyToOne
+    private Usuario usuario;
+
+    @ManyToOne
     private Cliente cliente;
     @OneToMany(mappedBy = "pedido")
     private List<ProdutoPedido> produtoPedidos;
@@ -29,6 +32,13 @@ public class Pedido {
 
     private Double pesoTotal;
 
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
 
     public LocalDateTime getDataLimite() {
         return dataLimite;

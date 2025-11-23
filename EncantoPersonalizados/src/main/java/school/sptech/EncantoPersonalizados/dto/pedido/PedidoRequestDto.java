@@ -8,6 +8,7 @@ public record PedidoRequestDto(
         String observacoes,
         String origem,
         Integer clienteId,
+        Integer usuarioId,
         List<ProdutosPedidoRequestDto> produtos
 ) {
 }

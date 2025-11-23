@@ -33,7 +33,7 @@ public class PedidoFacade {
     private final PedidoRepository pedidoRepository;
     private final StatusPedidoService statusPedidoService;
     private final PedidoStatusPedidoRepository pedidoStatusPedidoRepository;
-
+    private final UsuarioService usuarioService;
 
     public PedidoFacade(
             ProdutoService produtoService,
@@ -42,7 +42,8 @@ public class PedidoFacade {
             ProdutoPedidoService produtoPedidoService,
             PedidoRepository pedidoRepository,
             StatusPedidoService statusPedidoService,
-            PedidoStatusPedidoRepository pedidoStatusPedidoRepository
+            PedidoStatusPedidoRepository pedidoStatusPedidoRepository,
+            UsuarioService usuarioService
     ) {
         this.statusPedidoService = statusPedidoService;
         this.produtoService = produtoService;
@@ -51,6 +52,7 @@ public class PedidoFacade {
         this.produtoPedidoService = produtoPedidoService;
         this.pedidoRepository = pedidoRepository;
         this.pedidoStatusPedidoRepository = pedidoStatusPedidoRepository;
+        this.usuarioService = usuarioService;
     }
 
     public PedidoCreatedResponseDto store(PedidoRequestDto pedidoDto) {
@@ -62,8 +64,15 @@ public class PedidoFacade {
             throw new RuntimeException("Cliente não encontrado");
         }
 
+        // verificar se o usuario(funcionario) existe
+
+        Usuario usuario = usuarioService.getEntityById(pedidoDto.usuarioId());
+
+        if(usuario == null) throw  new EntidadeNaoEncontradaException("Usuario responsável não encontrado");
+
         Pedido entity = PedidoMapper.toEntity(pedidoDto);
         entity.setCliente(cliente);
+        entity.setUsuario(usuario);
 
         StatusPedido statusPedido = statusPedidoService.findFirstOfKanbanOrder();
         if(statusPedido == null){
