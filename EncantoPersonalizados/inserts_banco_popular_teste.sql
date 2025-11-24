@@ -1,3 +1,4 @@
+USE encanto_personalizados;
 -- categoria_movimentacao
 INSERT INTO categoria_movimentacao (descricao, status) VALUES
 ('Tempore', 0),
