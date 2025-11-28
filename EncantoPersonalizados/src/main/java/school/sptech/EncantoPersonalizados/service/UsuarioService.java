@@ -92,7 +92,6 @@ public class UsuarioService {
         Optional<Usuario> entity = repository.findById(id);
         if (entity.isEmpty()) return null;
         return entity.get();
-
     }
 
     public UsuarioResponseDTO store(Usuario usuario) {
