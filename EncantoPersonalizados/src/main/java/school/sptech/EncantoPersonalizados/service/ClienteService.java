@@ -34,7 +34,6 @@ public class ClienteService {
 
     public Cliente store(CreateClienteDTO dto){
 
-
         Cliente entity = repository.save(ClienteMapper.toEntity(dto));
 
         List<EnderecoCliente> enderecoClientes = ClienteMapper.toEntity(dto.enderecos(), entity);
@@ -43,8 +42,6 @@ public class ClienteService {
         }
 
         entity.setEnderecoClientes(enderecoClientes);
-
-
 
         return entity;
     }
