@@ -9,15 +9,15 @@ SELECT
 FROM produto_pedido PP
          JOIN pedido P ON PP.pedido_id = P.id
          JOIN produto PR ON PP.produto_id = PR.id
-         JOIN tema_produto T ON PR.tema_produto_id = T.id      -- Seus campos corretos
-         JOIN categoria_tema C ON T.categoria_tema_id = C.id   -- Seus campos corretos
+         JOIN tema_produto T ON PR.tema_produto_id = T.id
+         JOIN categoria_tema C ON T.categoria_tema_id = C.id
 GROUP BY C.id, C.titulo, DATE(P.created_at);
 
 CREATE OR REPLACE VIEW v_dash_despesas_categoria AS
 SELECT
     ROW_NUMBER() OVER (ORDER BY CM.id, MIN(M.created_at)) AS id,
     CM.id AS categoria_id,
-    CM.descricao AS nome_categoria,  -- Seu campo correto (descricao)
+    CM.descricao AS nome_categoria,
     SUM(M.valor) AS valor_total,
     DATE(M.created_at) AS data_referencia
 FROM movimentacao M
