@@ -1,0 +1,633 @@
+package school.sptech.EncantoPersonalizados.facade;
+
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import school.sptech.EncantoPersonalizados.dto.pedido.PedidoCreatedResponseDto;
+import school.sptech.EncantoPersonalizados.dto.pedido.PedidoRequestDto;
+import school.sptech.EncantoPersonalizados.dto.pedido.PedidoResponseDto;
+import school.sptech.EncantoPersonalizados.dto.pedidoStatusPedido.PedidoStatusPedidoRequestDto;
+import school.sptech.EncantoPersonalizados.dto.produtosEmUmPedido.ProdutosPedidoRequestDto;
+import school.sptech.EncantoPersonalizados.entities.*;
+import school.sptech.EncantoPersonalizados.exceptions.EntidadeNaoEncontradaException;
+import school.sptech.EncantoPersonalizados.repository.PedidoRepository;
+import school.sptech.EncantoPersonalizados.repository.PedidoStatusPedidoRepository;
+import school.sptech.EncantoPersonalizados.service.*;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class PedidoFacadeTest {
+    @Mock
+    private ProdutoService produtoService;
+
+    @Mock
+    private ClienteService clienteService;
+
+    @Mock
+    private PedidoStatusPedidoService pedidoStatusPedidoService;
+
+    @Mock
+    private ProdutoPedidoService produtoPedidoService;
+
+    @Mock
+    private PedidoRepository pedidoRepository;
+
+    @Mock
+    private StatusPedidoService statusPedidoService;
+
+    @Mock
+    private PedidoStatusPedidoRepository pedidoStatusPedidoRepository;
+
+    @Mock
+    private UsuarioService usuarioService;
+
+    @InjectMocks
+    private PedidoFacade facade;
+
+
+    //function store
+    @Test
+    @DisplayName("Lançar exceção quando o cliente não existe")
+    void LancarExcecaoQuandoClienteNaoExiste() {
+        PedidoRequestDto dto = new PedidoRequestDto(
+                "a",
+                "a",
+                1,
+                1,
+                List.of()
+        );
+
+        when(clienteService.findById(dto.clienteId())).thenReturn(null);
+
+        RuntimeException excecao = assertThrows(RuntimeException.class,
+                () -> facade.store(dto));
+
+        assertEquals("Cliente não encontrado", excecao.getMessage());
+    }
+
+    @Test
+    @DisplayName("Lançar exceção quando o usuário não existe")
+    void LancarExcecaoQuandoUsuarioNaoExiste() {
+        PedidoRequestDto dto = new PedidoRequestDto(
+                "a",
+                "a",
+                1,
+                1,
+                List.of()
+        );
+
+        Cliente cliente = new Cliente();
+        cliente.setId(1);
+
+        when(clienteService.findById(1)).thenReturn(cliente);
+        when(usuarioService.getEntityById(1)).thenReturn(null);
+
+        EntidadeNaoEncontradaException excecao = assertThrows(
+                EntidadeNaoEncontradaException.class,
+                () -> facade.store(dto)
+        );
+
+        assertEquals("Usuario responsável não encontrado", excecao.getMessage());
+    }
+
+    @Test
+    @DisplayName("Lançar exceção quando status inicial do Kanban não existe")
+    void LancarExcecaoQuandoStatusInicialNaoExiste() {
+        PedidoRequestDto dto = new PedidoRequestDto(
+                "a",
+                "a",
+                1,
+                1,
+                List.of()
+        );
+
+        Cliente cliente = new Cliente();
+        Usuario usuario = new Usuario();
+
+        when(clienteService.findById(1)).thenReturn(cliente);
+        when(usuarioService.getEntityById(1)).thenReturn(usuario);
+        when(statusPedidoService.findFirstOfKanbanOrder()).thenReturn(null);
+
+        RuntimeException excecao = assertThrows(RuntimeException.class,
+                () -> facade.store(dto));
+
+        assertEquals("Status do pedido não encontrado", excecao.getMessage());
+    }
+
+    @Test
+    @DisplayName("Store - Deve lançar exceção quando um produto não existe")
+    void store_DeveLancarExcecaoQuandoProdutoNaoExiste() {
+        ProdutosPedidoRequestDto produtosPedidoRequestDto = new ProdutosPedidoRequestDto(
+                1,
+                1,
+                1
+        );
+        PedidoRequestDto dto = new PedidoRequestDto(
+                "a",
+                "a",
+                1,
+                1,
+                List.of(produtosPedidoRequestDto)
+        );
+
+        Cliente cliente = new Cliente();
+        cliente.setId(1);
+
+        Usuario usuario = new Usuario();
+        usuario.setId(1);
+
+        StatusPedido statusInicial = new StatusPedido();
+        statusInicial.setId(1);
+
+        when(clienteService.findById(1)).thenReturn(cliente);
+        when(usuarioService.getEntityById(1)).thenReturn(usuario);
+        when(statusPedidoService.findFirstOfKanbanOrder()).thenReturn(statusInicial);
+
+        when(produtoService.findById(1)).thenReturn(null);
+
+        RuntimeException excecao = assertThrows(RuntimeException.class,
+                () -> facade.store(dto));
+
+        assertEquals("Produto não encontrado", excecao.getMessage());
+    }
+
+    @Test
+    @DisplayName("Salvar pedido com sucesso")
+    void salvarPedidoComSucesso() {
+        ProdutosPedidoRequestDto produtoReq = new ProdutosPedidoRequestDto(1, 1, 1);
+        PedidoRequestDto pedidoDto = new PedidoRequestDto(
+                "Observações de teste",
+                "Online",
+                1,
+                1,
+                List.of(produtoReq)
+        );
+
+        Cliente cliente = new Cliente();
+        cliente.setId(1);
+
+        Usuario usuario = new Usuario();
+        usuario.setId(1);
+
+        StatusPedido statusInicial = new StatusPedido();
+        statusInicial.setId(1);
+
+        Produto produto = new Produto();
+        produto.setId(1);
+        ItemProduto item = new ItemProduto();
+        item.setPrazoProducao(3);
+        produto.setItemProduto(item);
+
+        Pedido pedidoSalvo = new Pedido();
+        pedidoSalvo.setId(1);
+
+        PedidoStatusPedido statusParaSalvar = new PedidoStatusPedido();
+        statusParaSalvar.setStatus(statusInicial);
+        statusParaSalvar.setStatusAtual(true);
+
+        when(clienteService.findById(1)).thenReturn(cliente);
+        when(usuarioService.getEntityById(1)).thenReturn(usuario);
+        when(statusPedidoService.findFirstOfKanbanOrder()).thenReturn(statusInicial);
+        when(produtoService.findById(1)).thenReturn(produto);
+        when(pedidoRepository.save(any(Pedido.class))).thenAnswer(invocation -> {
+            Pedido p = invocation.getArgument(0);
+            p.setId(1);
+            return p;
+        });
+        when(produtoPedidoService.salvar(any(ProdutoPedido.class), eq(1), eq(1)))
+                .thenAnswer(invocation -> {
+                    ProdutoPedido pp = invocation.getArgument(0);
+                    pp.setPrecoTotal(50.0);
+                    pp.setPesoTotal(1.5);
+                    return pp;
+                });
+        when(pedidoStatusPedidoService.salvar(any(PedidoStatusPedido.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        PedidoCreatedResponseDto resultado = facade.store(pedidoDto);
+
+        assertNotNull(resultado);
+        assertEquals(1, resultado.id());
+        assertEquals(pedidoDto.observacoes(), resultado.observacoes());
+        assertEquals(pedidoDto.origem(), resultado.origem());
+        assertNotNull(resultado.dataLimite());
+
+        verify(clienteService).findById(1);
+        verify(usuarioService).getEntityById(1);
+        verify(statusPedidoService).findFirstOfKanbanOrder();
+        verify(produtoService).findById(1);
+        verify(pedidoRepository, times(2)).save(any(Pedido.class));
+        verify(produtoPedidoService).salvar(any(ProdutoPedido.class), eq(1), eq(1));
+        verify(pedidoStatusPedidoService).salvar(any(PedidoStatusPedido.class));
+    }
+
+    //function listar
+    @Test
+    @DisplayName("Retornar página vazia quando não há pedidos")
+    void RetornarPaginaVaziaQuandoNaoHaPedidos() {
+        String search = "teste";
+        Integer page = 0;
+        Boolean ativo = true;
+
+        Pageable pageable = PageRequest.of(page, 10);
+
+        when(pedidoRepository.filtrar(search, ativo, pageable))
+                .thenReturn(Page.empty());
+
+        Page<PedidoResponseDto> resultado = facade.listar(search, page, ativo);
+
+        assertTrue(resultado.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Verificar se filtro pelo search funciona corretamente")
+    void filtroComSearchFuncional() {
+        String search = "online";
+        Integer page = 0;
+        Boolean ativo = true;
+
+        Pedido pedido = new Pedido();
+        pedido.setId(1);
+        pedido.setObservacoes("Pedido Online");
+        pedido.setOrigem("Online");
+        pedido.setProdutoPedidos(new ArrayList<>());
+        pedido.setPedidoStatusPedidos(new ArrayList<>());
+
+        StatusPedido statusPedido = new StatusPedido();
+        statusPedido.setId(1);
+        statusPedido.setStatus("Em Produção");
+
+        PedidoStatusPedido statusAtual = new PedidoStatusPedido();
+        statusAtual.setId(1);
+        statusAtual.setPedido(pedido);
+        statusAtual.setStatus(statusPedido);
+        statusAtual.setStatusAtual(true);
+
+        Page<Pedido> pedidosPage = new PageImpl<>(List.of(pedido));
+
+        when(pedidoRepository.filtrar(eq(search), eq(ativo), any(Pageable.class)))
+                .thenReturn(pedidosPage);
+        when(pedidoStatusPedidoRepository.findStatusAtualByPedidoId(pedido.getId()))
+                .thenReturn(List.of(statusAtual));
+
+        Page<PedidoResponseDto> resultado = facade.listar(search, page, ativo);
+
+        assertNotNull(resultado);
+        assertEquals(1, resultado.getTotalElements());
+
+        PedidoResponseDto dto = resultado.getContent().get(0);
+        assertEquals(pedido.getObservacoes(), dto.observacoes());
+        assertEquals(pedido.getOrigem(), dto.origem());
+
+        assertNotNull(dto.statusAtual());
+        assertEquals(statusAtual.getId(), dto.statusAtual().id());
+        assertEquals(statusAtual.getPedido().getId(), dto.statusAtual().idPedido());
+        assertEquals(statusAtual.getStatus().getId(), dto.statusAtual().idStatusPedido());
+        assertTrue(dto.statusAtual().statusAtual());
+
+        verify(pedidoRepository).filtrar(eq(search), eq(ativo), any(Pageable.class));
+        verify(pedidoStatusPedidoRepository).findStatusAtualByPedidoId(pedido.getId());
+    }
+
+    @Test
+    @DisplayName("Mapeamento para DTO está funcionando corretamente")
+    void mapeamentoDtoFuncionandoCorretamente() {
+        String search = null;
+        Integer page = 0;
+        Boolean ativo = true;
+
+        Pedido pedido = new Pedido();
+        pedido.setId(1);
+        pedido.setObservacoes("Teste DTO");
+        pedido.setOrigem("Loja Física");
+        pedido.setPedidoStatusPedidos(new ArrayList<>());
+        pedido.setProdutoPedidos(new ArrayList<>());
+
+        StatusPedido statusPedido = new StatusPedido();
+        statusPedido.setId(1);
+        statusPedido.setStatus("Concluído");
+
+        PedidoStatusPedido statusAtual = new PedidoStatusPedido();
+        statusAtual.setStatus(statusPedido);
+        statusAtual.setPedido(pedido);
+        statusAtual.setStatusAtual(true);
+        statusAtual.setId(1);
+
+        Page<Pedido> pedidosPage = new PageImpl<>(List.of(pedido));
+
+        when(pedidoRepository.filtrar(eq(search), eq(ativo), any(Pageable.class)))
+                .thenReturn(pedidosPage);
+        when(pedidoStatusPedidoRepository.findStatusAtualByPedidoId(pedido.getId()))
+                .thenReturn(List.of(statusAtual));
+
+        Page<PedidoResponseDto> resultado = facade.listar(search, page, ativo);
+        PedidoResponseDto dto = resultado.getContent().get(0);
+
+        assertEquals(pedido.getId(), dto.id());
+        assertEquals(pedido.getObservacoes(), dto.observacoes());
+        assertEquals(pedido.getOrigem(), dto.origem());
+        assertNotNull(dto.statusAtual());
+        assertEquals(statusAtual.getId(), dto.statusAtual().id());
+        assertEquals("Concluído", statusAtual.getStatus().getStatus());
+
+        verify(pedidoRepository).filtrar(eq(search), eq(ativo), any(Pageable.class));
+        verify(pedidoStatusPedidoRepository).findStatusAtualByPedidoId(pedido.getId());
+    }
+
+    //function getById
+    @Test
+    @DisplayName("Lançar exceção quando pedido não existe")
+    void LancarExcecaoQuandoPedidoNaoExistir() {
+        when(pedidoRepository.findByIdWithDetails(1))
+                .thenReturn(Optional.empty());
+
+        RuntimeException excecao = assertThrows(RuntimeException.class,
+                () -> facade.getById(1));
+
+        assertEquals("Pedido não encontrado", excecao.getMessage());
+    }
+
+    @Test
+    @DisplayName("Retornar PedidoResponseDto quando pedido existe")
+    void RetornarPedidoResponseDtoQuandoPedidoExistir() {
+
+        Pedido pedido = new Pedido();
+        pedido.setId(1);
+        pedido.setObservacoes("Pedido teste");
+        pedido.setOrigem("Online");
+        pedido.setProdutoPedidos(new ArrayList<>());
+        pedido.setPedidoStatusPedidos(new ArrayList<>());
+
+        PedidoStatusPedido statusAtual = new PedidoStatusPedido();
+        StatusPedido statusPedido = new StatusPedido();
+        statusPedido.setId(1);
+        statusPedido.setStatus("Em Produção");
+        statusAtual.setPedido(pedido);
+        statusAtual.setStatus(statusPedido);
+        statusAtual.setStatusAtual(true);
+        statusAtual.setId(1);
+
+        when(pedidoRepository.findByIdWithDetails(1)).thenReturn(Optional.of(pedido));
+        when(pedidoStatusPedidoRepository.findStatusAtualByPedidoId(1))
+                .thenReturn(List.of(statusAtual));
+
+        PedidoResponseDto resultado = facade.getById(1);
+
+        assertNotNull(resultado);
+        assertEquals(1, resultado.id());
+        assertEquals("Pedido teste", resultado.observacoes());
+        assertEquals("Online", resultado.origem());
+
+        assertNotNull(resultado.statusAtual());
+        assertEquals(statusAtual.getId(), resultado.statusAtual().id());
+        assertEquals(1, resultado.statusAtual().idPedido());
+        assertEquals(statusPedido.getId(), resultado.statusAtual().idStatusPedido());
+        assertTrue(resultado.statusAtual().statusAtual());
+
+        verify(pedidoRepository).findByIdWithDetails(1);
+        verify(pedidoStatusPedidoRepository).findStatusAtualByPedidoId(1);
+    }
+
+    //function update
+    @Test
+    @DisplayName("Lançar exceção quando o pedido não existe")
+    void LancarExcecaoQuandoAtualizarMasPedidoNaoExiste() {
+        PedidoRequestDto dto = new PedidoRequestDto(
+                "Observação X",
+                "Online",
+                1,
+                1,
+                List.of()
+        );
+
+        when(pedidoRepository.findById(1)).thenReturn(Optional.empty());
+
+        RuntimeException excecao = assertThrows(RuntimeException.class,
+                () -> facade.update(1, dto));
+
+        assertEquals("Pedido não encontrado", excecao.getMessage());
+    }
+
+    @Test
+    @DisplayName("Atualizar o pedido com sucesso")
+    void AtualizarPedidoComSucesso() {
+        PedidoRequestDto dto = new PedidoRequestDto(
+                "a",
+                "a",
+                1,
+                1,
+                List.of()
+        );
+
+        Pedido pedidoExistente = new Pedido();
+        pedidoExistente.setId(1);
+        pedidoExistente.setObservacoes("b");
+        pedidoExistente.setOrigem("b");
+        pedidoExistente.setDataLimite(LocalDateTime.now());
+
+        Pedido pedidoAtualizado = new Pedido();
+        pedidoAtualizado.setId(1);
+        pedidoAtualizado.setObservacoes(dto.observacoes());
+        pedidoAtualizado.setOrigem(dto.origem());
+        pedidoAtualizado.setDataLimite(pedidoExistente.getDataLimite());
+
+        when(pedidoRepository.findById(1)).thenReturn(Optional.of(pedidoExistente));
+        when(pedidoRepository.save(pedidoExistente)).thenReturn(pedidoAtualizado);
+
+        PedidoCreatedResponseDto resposta = facade.update(1, dto);
+
+        assertEquals(1, resposta.id());
+        assertEquals("a", resposta.observacoes());
+        assertEquals("a", resposta.origem());
+        assertEquals(pedidoExistente.getDataLimite(), resposta.dataLimite());
+
+        verify(pedidoRepository).findById(1);
+        verify(pedidoRepository, times(1)).save(pedidoExistente);
+    }
+
+    //function mudarEstado
+    @Test
+    @DisplayName("Lançar exceção quando mudar estado e o pedido não existe")
+    void LancarExcecaoMudarEstadoMasPedidoNaoExiste() {
+        PedidoRequestDto dto = new PedidoRequestDto(
+                "Observação X",
+                "Online",
+                1,
+                1,
+                List.of()
+        );
+
+        when(pedidoRepository.findById(1)).thenReturn(Optional.empty());
+
+        RuntimeException excecao = assertThrows(RuntimeException.class,
+                () -> facade.update(1, dto));
+
+        assertEquals("Pedido não encontrado", excecao.getMessage());
+    }
+
+    @Test
+    @DisplayName("Mudar o estado do pedido e salvar")
+    void MudarEstadoComSucesso() {
+        Pedido pedido = new Pedido();
+        pedido.setId(1);
+        pedido.setAtivo(true);
+
+        when(pedidoRepository.findById(1))
+                .thenReturn(Optional.of(pedido));
+
+        when(pedidoRepository.save(pedido))
+                .thenReturn(pedido);
+
+        facade.mudarEstado(1);
+
+        assertFalse(pedido.isAtivo());
+
+        verify(pedidoRepository).findById(1);
+        verify(pedidoRepository, times(1)).save(pedido);
+    }
+
+    //function mudarStatus
+    @Test
+    @DisplayName("mudarStatus - Deve lançar exceção quando o pedido não existe")
+    void LancarExcecaoQuandoMudarStatusMasPedidoNaoExiste() {
+        PedidoStatusPedidoRequestDto dto = new PedidoStatusPedidoRequestDto(
+                1,
+                2
+        );
+
+        when(pedidoRepository.findById(dto.idPedido()))
+                .thenReturn(Optional.empty());
+
+        RuntimeException excecao = assertThrows(RuntimeException.class,
+                () -> facade.mudarStatus(dto));
+
+        assertEquals("Pedido não encontrado", excecao.getMessage());
+    }
+
+    @Test
+    @DisplayName("Lançar exceção quando o statusPedido não existe")
+    void LancarExcecaoQuandoStatusPedidoNaoExiste() {
+        Pedido pedido = new Pedido();
+        pedido.setId(1);
+
+        PedidoStatusPedidoRequestDto dto = new PedidoStatusPedidoRequestDto(1, 1);
+
+        when(pedidoRepository.findById(1)).thenReturn(Optional.of(pedido));
+        when(statusPedidoService.findById(dto.idStatusPedido()))
+                .thenReturn(null);
+
+        RuntimeException excecao = assertThrows(RuntimeException.class,
+                () -> facade.mudarStatus(dto));
+
+        assertEquals("Status do pedido não encontrado", excecao.getMessage());
+    }
+
+    @Test
+    @DisplayName("Criar e salvar corretamente um novo PedidoStatusPedido")
+    void SalvarNovoPedidoStatusPedidoComSucesso() {
+        Pedido pedido = new Pedido();
+        pedido.setId(1);
+
+        StatusPedido status = new StatusPedido();
+        status.setId(5);
+
+        PedidoStatusPedidoRequestDto dto = new PedidoStatusPedidoRequestDto(
+                1,
+                5
+        );
+
+        when(pedidoRepository.findById(dto.idPedido())).thenReturn(Optional.of(pedido));
+        when(statusPedidoService.findById(dto.idStatusPedido())).thenReturn(status);
+
+        when(pedidoStatusPedidoService.salvar(any(PedidoStatusPedido.class)))
+                .thenAnswer(inv -> inv.getArgument(0));
+
+        facade.mudarStatus(dto);
+
+        verify(pedidoRepository).findById(1);
+        verify(statusPedidoService).findById(5);
+        verify(pedidoStatusPedidoService, times(1))
+                .salvar(any(PedidoStatusPedido.class));
+    }
+
+    //function atualizarPrecoPesoDoPedido
+    @Test
+    @DisplayName("Lançar exceção quando atualizar o preço e o peso do pedido mas o pedido não existe")
+    void LancarExcecaoQuandoAtualizarPrecoPesoDoPedidoMasPedidoNaoExiste() {
+        when(pedidoRepository.findById(1)).thenReturn(Optional.empty());
+
+        EntidadeNaoEncontradaException excecao = assertThrows(
+                EntidadeNaoEncontradaException.class,
+                () -> facade.atualizarPrecoPesoDoPedido(
+                        true,
+                        10.0,
+                        2.0,
+                        1
+                )
+        );
+
+        assertEquals("Pedido não encontrado", excecao.getMessage());
+
+        verify(pedidoRepository).findById(1);
+    }
+
+    @Test
+    @DisplayName("Aumentar preço e peso corretamente")
+    void AumentarPrecoPesoCorretamente() {
+        Pedido pedido = new Pedido();
+        pedido.setId(1);
+        pedido.setPrecoTotal(1.0);
+        pedido.setPesoTotal(1.0);
+
+        when(pedidoRepository.findById(1)).thenReturn(Optional.of(pedido));
+
+        facade.atualizarPrecoPesoDoPedido(
+                true,
+                1.0,
+                1.0,
+                1
+        );
+
+        assertEquals(2.0, pedido.getPrecoTotal());
+        assertEquals(2.0, pedido.getPesoTotal());
+
+        verify(pedidoRepository, times(1)).save(pedido);
+    }
+
+    @Test
+    @DisplayName("Diminuir preço e peso corretamente")
+    void DiminuirPrecoPesoCorretamente() {
+        Pedido pedido = new Pedido();
+        pedido.setId(1);
+        pedido.setPrecoTotal(2.0);
+        pedido.setPesoTotal(2.0);
+
+        when(pedidoRepository.findById(1)).thenReturn(Optional.of(pedido));
+
+        facade.atualizarPrecoPesoDoPedido(
+                false,
+                1.0,
+                1.0,
+                1
+        );
+
+        assertEquals(1.0, pedido.getPrecoTotal());
+        assertEquals(1.0, pedido.getPesoTotal());
+
+        verify(pedidoRepository, times(1)).save(pedido);
+    }
+}
