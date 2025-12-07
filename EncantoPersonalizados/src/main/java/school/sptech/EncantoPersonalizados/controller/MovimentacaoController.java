@@ -16,6 +16,7 @@ import school.sptech.EncantoPersonalizados.entities.Movimentacao;
 import school.sptech.EncantoPersonalizados.service.MovimentacaoService;
 
 import javax.print.DocFlavor;
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/movimentacoes")
@@ -48,9 +49,15 @@ public class MovimentacaoController {
             @RequestParam(required = false) String contraparte,
             @RequestParam(required = false) String nome,
             @RequestParam(required = false) Boolean status,
+            @RequestParam(required = false) String statusPagamento,
+            @RequestParam(required = false) LocalDate dataVencInicio,
+            @RequestParam(required = false) LocalDate dataVencFim,
+            @RequestParam(required = false) LocalDate dataPagInicio,
+            @RequestParam(required = false) LocalDate dataPagFim,
             @RequestParam(defaultValue = "0") int page
     ){
-        Page<ResponseMovimentacaoDTO> resposta = service.get(search, tipo, valor, categoria, contraparte, nome, status, page);
+        Page<ResponseMovimentacaoDTO> resposta = service.get(search, tipo, valor, categoria, contraparte, nome, status, statusPagamento,
+                dataVencInicio, dataVencFim, dataPagInicio, dataPagFim, page);
 
         if (resposta.isEmpty()) {
             return ResponseEntity.status(204).build();

@@ -59,3 +59,12 @@ SELECT
         END AS percentual_variacao,
     STR_TO_DATE(T.MES_REFERENCIA_FORMATADA, '%Y-%m-%d') AS mes_referencia
 FROM ValoresComPeriodoAnterior T;
+
+# CREATE OR REPLACE VIEW v_dash_kpi_a_pagar AS
+# SELECT
+#     ROW_NUMBER() OVER (ORDER BY M.dataVencimento) AS id,
+#     SUM(M.valor) AS total_a_pagar
+# FROM movimentacao M
+# WHERE M.tipo = 'DESPESA'
+#   AND M.statusPagamento = 'PENDENTE'
+#   AND M.status = TRUE;

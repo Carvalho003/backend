@@ -61,7 +61,7 @@ public class ContraparteService {
         var entity = repository.findByIdAndStatusTrue(id)
                 .orElseThrow(() -> new RuntimeException("Contraparte não encontrada"));
 
-        entity.setTipoContrato(dto.nome());
+        entity.setNome(dto.nome());
         entity.setDescricao((dto.descricao()));
         entity.setSegmento(dto.segmento());
         entity.setTipoContrato(dto.tipoContrato());

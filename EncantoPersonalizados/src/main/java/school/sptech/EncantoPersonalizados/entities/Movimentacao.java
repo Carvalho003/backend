@@ -3,6 +3,7 @@ package school.sptech.EncantoPersonalizados.entities;
 import jakarta.persistence.*;
 
 import javax.annotation.processing.Generated;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -18,6 +19,9 @@ public class Movimentacao {
     private Contraparte contraparte;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String statusPagamento;
+    private LocalDate dataVencimento;
+    private LocalDate dataPagamento;
     private Boolean status;
 
     @ManyToOne
@@ -98,4 +102,16 @@ public class Movimentacao {
     public Boolean getStatus() { return status; }
 
     public void setStatus(Boolean status) { this.status = status; }
+
+    public String getStatusPagamento() { return statusPagamento; }
+
+    public void setStatusPagamento(String statusPagamento) { this.statusPagamento = statusPagamento; }
+
+    public LocalDate getDataVencimento() { return dataVencimento; }
+
+    public void setDataVencimento(LocalDate dataVencimento) { this.dataVencimento = dataVencimento; }
+
+    public LocalDate getDataPagamento() { return dataPagamento; }
+
+    public void setDataPagamento(LocalDate dataPagamento) { this.dataPagamento = dataPagamento; }
 }

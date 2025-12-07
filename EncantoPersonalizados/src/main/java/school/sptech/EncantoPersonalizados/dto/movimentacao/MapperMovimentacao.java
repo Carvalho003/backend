@@ -14,6 +14,9 @@ public class MapperMovimentacao {
         entity.setTipo(dto.tipo());
         entity.setDescricao(dto.descricao());
         entity.setValor(dto.valor());
+        entity.setStatusPagamento(dto.statusPagamento());
+        entity.setDataVencimento(dto.dataVencimento());
+        entity.setDataPagamento(dto.dataPagamento());
         entity.setContraparte(contraparte);
         entity.setCategoriaMovimentacao(categoriaMovimentacao);
         entity.setStatus(true);
@@ -35,6 +38,9 @@ public class MapperMovimentacao {
                 movimentacao.getTipo(),
                 movimentacao.getDescricao(),
                 movimentacao.getValor(),
+                movimentacao.getStatusPagamento(),
+                movimentacao.getDataVencimento(),
+                movimentacao.getDataPagamento(),
                 categoriaDTO,
                 contraparteDTO
         );

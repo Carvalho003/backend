@@ -3,6 +3,7 @@ package school.sptech.EncantoPersonalizados.service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import school.sptech.EncantoPersonalizados.dto.categoriaMovimentacao.MapperCategoriaMovimentacao;
 import school.sptech.EncantoPersonalizados.dto.contraparte.MapperContraparteDTO;
@@ -14,6 +15,7 @@ import school.sptech.EncantoPersonalizados.repository.CategoriaMovimentacaoRepos
 import school.sptech.EncantoPersonalizados.repository.ContraparteRepository;
 import school.sptech.EncantoPersonalizados.repository.MovimentacaoRepository;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
@@ -56,6 +58,11 @@ public class MovimentacaoService {
             String contraparte,
             String nome,
             Boolean status,
+            String statusPagamento,
+            LocalDate dataVencInicio,
+            LocalDate dataVencFim,
+            LocalDate dataPagInicio,
+            LocalDate dataPagFim,
             int page
     ) {
         int size = 10;
@@ -67,9 +74,14 @@ public class MovimentacaoService {
         categoria = vazioParaNull(categoria);
         contraparte = vazioParaNull(contraparte);
         nome = vazioParaNull(nome);
-
+        statusPagamento = vazioParaNull(statusPagamento);
+        dataVencInicio = dateParaNull(dataVencInicio);
+        dataVencFim = dateParaNull(dataVencFim);
+        dataPagInicio = dateParaNull(dataPagInicio);
+        dataPagFim = dateParaNull(dataPagFim);
         Page<Movimentacao> pagina = repository.filtrar(
-                search, tipo, valor, categoria, contraparte, nome, status, pageable
+                search, tipo, valor, categoria, contraparte, nome, status, statusPagamento, dataVencInicio,
+                dataVencFim, dataPagInicio, dataPagFim, pageable
         );
 
         return pagina.map(MapperMovimentacao::toDto);
@@ -124,4 +136,6 @@ public class MovimentacaoService {
     private Double doubleParaNull(Double valor) {
         return (valor == null || valor.isNaN()) ? null : valor;
     }
+
+    private LocalDate dateParaNull(LocalDate date) { return (date == null) ? null : date; }
 }
