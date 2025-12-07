@@ -1,3 +1,18 @@
+DROP TABLE IF EXISTS v_dash_kpi_mes;
+DROP VIEW IF EXISTS v_dash_kpi_mes;
+
+DROP TABLE IF EXISTS v_dash_vendas_categoria;
+DROP VIEW IF EXISTS v_dash_vendas_categoria;
+
+DROP TABLE IF EXISTS v_dash_despesas_categoria;
+DROP VIEW IF EXISTS v_dash_despesas_categoria;
+
+DROP TABLE IF EXISTS v_dash_kpi_a_pagar;
+DROP VIEW IF EXISTS v_dash_kpi_a_pagar;
+
+DROP TABLE IF EXISTS v_dash_proximos_pagamentos;
+DROP VIEW IF EXISTS v_dash_proximos_pagamentos;
+
 CREATE OR REPLACE VIEW v_dash_vendas_categoria AS
 SELECT
     ROW_NUMBER() OVER (ORDER BY C.id, MIN(P.created_at)) AS id,
@@ -15,24 +30,29 @@ GROUP BY C.id, C.titulo, DATE(P.created_at);
 
 CREATE OR REPLACE VIEW v_dash_despesas_categoria AS
 SELECT
-    ROW_NUMBER() OVER (ORDER BY CM.id, MIN(M.created_at)) AS id,
+    ROW_NUMBER() OVER (ORDER BY CM.id, MIN(M.data_pagamento)) AS id,
     CM.id AS categoria_id,
     CM.descricao AS nome_categoria,
     SUM(M.valor) AS valor_total,
-    DATE(M.created_at) AS data_referencia
+    DATE(M.data_pagamento) AS data_referencia
 FROM movimentacao M
          JOIN categoria_movimentacao CM ON M.categoria_movimentacao_id = CM.id
 WHERE M.tipo = 'DESPESA'
-GROUP BY CM.id, CM.descricao, DATE(M.created_at);
+  AND M.status_pagamento = 'PAGO'
+  AND M.status = true
+GROUP BY CM.id, CM.descricao, DATE(M.data_pagamento);
 
 CREATE OR REPLACE VIEW v_dash_kpi_mes AS
 WITH DadosMensais AS (
     SELECT
-        DATE_FORMAT(M.created_at, '%Y-%m-01') AS MES_REFERENCIA_FORMATADA,
+        DATE_FORMAT(M.data_pagamento, '%Y-%m-01') AS MES_REFERENCIA_FORMATADA,
         M.tipo AS TIPO_MOVIMENTACAO,
         SUM(M.valor) AS VALOR_MES
     FROM movimentacao M
              JOIN categoria_movimentacao CM ON M.categoria_movimentacao_id = CM.id
+    WHERE M.status_pagamento = 'PAGO'
+      AND M.status = true
+      AND M.data_pagamento IS NOT NULL
     GROUP BY 1, 2
 ),
      ValoresComPeriodoAnterior AS (
@@ -60,11 +80,26 @@ SELECT
     STR_TO_DATE(T.MES_REFERENCIA_FORMATADA, '%Y-%m-%d') AS mes_referencia
 FROM ValoresComPeriodoAnterior T;
 
-# CREATE OR REPLACE VIEW v_dash_kpi_a_pagar AS
-# SELECT
-#     ROW_NUMBER() OVER (ORDER BY M.dataVencimento) AS id,
-#     SUM(M.valor) AS total_a_pagar
-# FROM movimentacao M
-# WHERE M.tipo = 'DESPESA'
-#   AND M.statusPagamento = 'PENDENTE'
-#   AND M.status = TRUE;
+CREATE OR REPLACE VIEW v_dash_kpi_a_pagar AS
+SELECT
+    M.id AS id,
+    M.valor AS valor,
+    M.data_vencimento AS data_vencimento
+FROM movimentacao M
+WHERE M.tipo = 'DESPESA'
+  AND M.status_pagamento = 'PENDENTE'
+  AND M.status = true;
+
+CREATE OR REPLACE VIEW v_dash_proximos_pagamentos AS
+SELECT
+    M.id AS id,
+    M.descricao AS descricao,
+    M.valor AS valor,
+    M.data_vencimento AS data_vencimento,
+    CM.descricao AS categoria,
+    DATEDIFF(CURDATE(), M.data_vencimento) AS dias_atraso
+FROM movimentacao M
+         JOIN categoria_movimentacao CM ON M.categoria_movimentacao_id = CM.id
+WHERE M.tipo = 'DESPESA'
+  AND M.status_pagamento = 'PENDENTE'
+  AND M.status = true;

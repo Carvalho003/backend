@@ -10,6 +10,6 @@ import java.util.List;
 
 public interface DashboardKpiRepository extends JpaRepository<DashboardKpi, Long> {
 
-    @Query(value = "SELECT * FROM V_DASH_KPI_MES WHERE mes_referencia BETWEEN :inicio AND :fim", nativeQuery = true)
+    @Query(value = "SELECT * FROM v_dash_kpi_mes WHERE mes_referencia BETWEEN :inicio AND :fim", nativeQuery = true)
     List<DashboardKpi> findByPeriodo(@Param("inicio") LocalDate inicio, @Param("fim") LocalDate fim);
 }

@@ -1,5 +1,6 @@
 package school.sptech.EncantoPersonalizados.entities.dashboardFinanceiro;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -11,8 +12,14 @@ import java.time.LocalDate;
 public class DashboardDespesas {
     @Id
     private Long id;
+
+    @Column(name = "nome_categoria")
     private String nomeCategoria;
+
+    @Column(name = "valor_total")
     private BigDecimal valorTotal;
+
+    @Column(name = "data_referencia")
     private LocalDate dataReferencia;
 
     public String getNomeCategoria() { return nomeCategoria; }
