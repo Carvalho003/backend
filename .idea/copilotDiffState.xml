@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotDiffPersistence">
+    <option name="pendingDiffs">
+      <map>
+        <entry key="$PROJECT_DIR$/EncantoPersonalizados/src/test/java/school/sptech/EncantoPersonalizados/repository/ItemProdutoRepositoryTest.java">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/EncantoPersonalizados/src/test/java/school/sptech/EncantoPersonalizados/repository/ItemProdutoRepositoryTest.java" />
+              <option name="originalContent" value="package school.sptech.EncantoPersonalizados.repository;&#10;&#10;import org.junit.jupiter.api.DisplayName;&#10;import org.junit.jupiter.api.Test;&#10;import org.springframework.beans.factory.annotation.Autowired;&#10;import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;&#10;import school.sptech.EncantoPersonalizados.entities.ItemProduto;&#10;&#10;import static org.junit.jupiter.api.Assertions.*;&#10;&#10;@DataJpaTest(properties = &quot;spring.sql.init.mode=never&quot;)&#10;class ItemProdutoRepositoryTest {&#10;&#10;    @Autowired&#10;    private ItemProdutoRepository repo;&#10;&#10;    @Test&#10;    @DisplayName(&quot;Repository - ItemProduto - deve salvar e recuperar item de produto&quot;)&#10;    void saveAndFind_shouldWork() {&#10;        ItemProduto i = new ItemProduto();&#10;        i.setDescricao(&quot;Item Teste&quot;);&#10;        i.setPrecoVenda(10.0);&#10;        i = repo.save(i);&#10;&#10;        assertNotNull(i.getId());&#10;        assertTrue(repo.findById(i.getId()).isPresent());&#10;    }&#10;}&#10;" />
+              <option name="updatedContent" value="package school.sptech.EncantoPersonalizados.repository;&#10;&#10;import org.junit.jupiter.api.DisplayName;&#10;import org.junit.jupiter.api.Test;&#10;import org.springframework.beans.factory.annotation.Autowired;&#10;import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;&#10;import school.sptech.EncantoPersonalizados.entities.ItemProduto;&#10;&#10;import static org.junit.jupiter.api.Assertions.*;&#10;&#10;@DataJpaTest(properties = &quot;spring.sql.init.mode=never&quot;)&#10;class ItemProdutoRepositoryTest {&#10;&#10;    @Autowired&#10;    private ItemProdutoRepository repo;&#10;&#10;    @Test&#10;    @DisplayName(&quot;Repository - ItemProduto - deve salvar e recuperar item de produto&quot;)&#10;    void saveAndFind_shouldWork() {&#10;        ItemProduto i = new ItemProduto();&#10;        i.setDescricao(&quot;Item Teste&quot;);&#10;        i.setPrecoVenda(10.0);&#10;        i = repo.save(i);&#10;&#10;        assertNotNull(i.getId());&#10;        assertTrue(repo.findById(i.getId()).isPresent());&#10;    }&#10;}&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
