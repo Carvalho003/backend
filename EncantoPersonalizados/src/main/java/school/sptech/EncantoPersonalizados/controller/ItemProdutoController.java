@@ -51,7 +51,7 @@ public class ItemProdutoController {
     public ResponseEntity<Page<ItemProdutoResponseDTO>> listar(
             @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "true") boolean ativo,
-            @RequestParam(defaultValue = "true") int page
+            @RequestParam(defaultValue = "0") int page
 
     ){
         Page<ItemProduto> itens = service.listar(search, ativo, page);
