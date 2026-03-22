@@ -2,7 +2,7 @@ package school.sptech.EncantoPersonalizados.dto.usuario;
 
 public class UserTokenDTO {
     private Integer userId;
-    private String nome, email, token;
+    private String nome, email, token, foto, cargo;
 
     public Integer getUserId() {
         return userId;
@@ -34,5 +34,21 @@ public class UserTokenDTO {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public String getFoto() {
+        return foto;
+    }
+
+    public void setFoto(String foto) {
+        this.foto = foto;
+    }
+
+    public String getCargo() {
+        return cargo;
+    }
+
+    public void setCargo(String cargo) {
+        this.cargo = cargo;
     }
 }
