@@ -5,9 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.PageRequest;
-import school.sptech.EncantoPersonalizados.entities.CategoriaTema;
-import school.sptech.EncantoPersonalizados.entities.TemaProduto;
+import school.sptech.EncantoPersonalizados.core.domain.CategoriaTema;
+import school.sptech.EncantoPersonalizados.core.domain.TemaProduto;
 
+import school.sptech.EncantoPersonalizados.infrastructure.persistence.repository.CategoriaTemaRepository;
+import school.sptech.EncantoPersonalizados.infrastructure.persistence.repository.TemaProdutoRepository;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest(properties = "spring.sql.init.mode=never")

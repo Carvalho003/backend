@@ -4,12 +4,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import school.sptech.EncantoPersonalizados.dto.dashboardFinanceiro.CategoriaDTO;
-import school.sptech.EncantoPersonalizados.dto.dashboardFinanceiro.KpiDTO;
-import school.sptech.EncantoPersonalizados.entities.dashboardFinanceiro.DashboardKpi;
-import school.sptech.EncantoPersonalizados.repository.dashboardFinanceiro.DashboardDespesasRepository;
-import school.sptech.EncantoPersonalizados.repository.dashboardFinanceiro.DashboardKpiRepository;
-import school.sptech.EncantoPersonalizados.repository.dashboardFinanceiro.DashboardVendasRepository;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.dashboardFinanceiro.CategoriaDTO;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.dashboardFinanceiro.KpiDTO;
+import school.sptech.EncantoPersonalizados.core.domain.dashboard.DashboardKpi;
+import school.sptech.EncantoPersonalizados.infrastructure.persistence.repository.dashboard.DashboardDespesasRepository;
+import school.sptech.EncantoPersonalizados.infrastructure.persistence.repository.dashboard.DashboardKpiRepository;
+import school.sptech.EncantoPersonalizados.infrastructure.persistence.repository.dashboard.DashboardVendasRepository;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

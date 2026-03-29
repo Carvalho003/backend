@@ -1,4 +1,4 @@
-package school.sptech.EncantoPersonalizados.config;
+package school.sptech.EncantoPersonalizados.infrastructure.config;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -12,7 +12,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
-import school.sptech.EncantoPersonalizados.service.AutenticacaoService;
+import school.sptech.EncantoPersonalizados.infrastructure.adapter.AutenticacaoAdapter;
+import school.sptech.EncantoPersonalizados.infrastructure.config.AutenticacaoFilter;
+import school.sptech.EncantoPersonalizados.infrastructure.config.GerenciadorTokenJwt;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -22,13 +24,13 @@ import static org.mockito.Mockito.*;
 
 class AutenticacaoFilterTest {
 
-    private AutenticacaoService autenticacaoService;
+    private AutenticacaoAdapter autenticacaoService;
     private GerenciadorTokenJwt gerenciadorTokenJwt;
     private AutenticacaoFilter filter;
 
     @BeforeEach
     void setUp() {
-        autenticacaoService = mock(AutenticacaoService.class);
+        autenticacaoService = mock(AutenticacaoAdapter.class);
         gerenciadorTokenJwt = mock(GerenciadorTokenJwt.class);
         filter = new AutenticacaoFilter(autenticacaoService, gerenciadorTokenJwt);
         SecurityContextHolder.clearContext();

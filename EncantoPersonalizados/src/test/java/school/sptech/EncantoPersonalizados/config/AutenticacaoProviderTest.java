@@ -8,7 +8,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import school.sptech.EncantoPersonalizados.service.AutenticacaoService;
+import school.sptech.EncantoPersonalizados.infrastructure.adapter.AutenticacaoAdapter;
+import school.sptech.EncantoPersonalizados.infrastructure.config.AutenticacaoProvider;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -18,7 +19,7 @@ class AutenticacaoProviderTest {
     @Test
     @DisplayName("Config - AutenticacaoProvider - autentica quando senha confere")
     void authenticate_shouldReturnAuthenticationWhenPasswordMatches() {
-        AutenticacaoService service = mock(AutenticacaoService.class);
+        AutenticacaoAdapter service = mock(AutenticacaoAdapter.class);
         PasswordEncoder encoder = mock(PasswordEncoder.class);
         AutenticacaoProvider provider = new AutenticacaoProvider(service, encoder);
 
@@ -37,7 +38,7 @@ class AutenticacaoProviderTest {
     @Test
     @DisplayName("Config - AutenticacaoProvider - lança BadCredentials quando senha inválida")
     void authenticate_shouldThrowBadCredentialsWhenPasswordDoesNotMatch() {
-        AutenticacaoService service = mock(AutenticacaoService.class);
+        AutenticacaoAdapter service = mock(AutenticacaoAdapter.class);
         PasswordEncoder encoder = mock(PasswordEncoder.class);
         AutenticacaoProvider provider = new AutenticacaoProvider(service, encoder);
 
@@ -53,7 +54,7 @@ class AutenticacaoProviderTest {
     @Test
     @DisplayName("Config - AutenticacaoProvider - suporta UsernamePasswordAuthenticationToken")
     void supports_shouldReturnTrueForUsernamePasswordAuthenticationToken() {
-        AutenticacaoService service = mock(AutenticacaoService.class);
+        AutenticacaoAdapter service = mock(AutenticacaoAdapter.class);
         PasswordEncoder encoder = mock(PasswordEncoder.class);
         AutenticacaoProvider provider = new AutenticacaoProvider(service, encoder);
 

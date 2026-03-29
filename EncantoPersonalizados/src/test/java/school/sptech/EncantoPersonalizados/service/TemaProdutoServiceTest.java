@@ -11,12 +11,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import school.sptech.EncantoPersonalizados.dto.temaProduto.TemaProdutoRequestDTO;
-import school.sptech.EncantoPersonalizados.entities.CategoriaTema;
-import school.sptech.EncantoPersonalizados.entities.TemaProduto;
-import school.sptech.EncantoPersonalizados.exceptions.CategoriaTemaNaoEncontradaException;
-import school.sptech.EncantoPersonalizados.exceptions.TemaProdutoNaoEncontradoException;
-import school.sptech.EncantoPersonalizados.repository.TemaProdutoRepository;
+import school.sptech.EncantoPersonalizados.core.application.gateway.CategoriaTemaGateway;
+import school.sptech.EncantoPersonalizados.core.application.usecase.temaProduto.TemaProdutoUseCaseImpl;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.temaProduto.TemaProdutoRequestDTO;
+import school.sptech.EncantoPersonalizados.core.domain.CategoriaTema;
+import school.sptech.EncantoPersonalizados.core.domain.TemaProduto;
+import school.sptech.EncantoPersonalizados.core.domain.exception.CategoriaTemaNaoEncontradaException;
+import school.sptech.EncantoPersonalizados.core.domain.exception.TemaProdutoNaoEncontradoException;
+import school.sptech.EncantoPersonalizados.core.application.gateway.TemaProdutoGateway;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,16 +29,16 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class TemaProdutoServiceTest {
+class TemaProdutoUseCaseImplTest {
 
     @InjectMocks
-    private TemaProdutoService service;
+    private TemaProdutoUseCaseImpl service;
 
     @Mock
-    private TemaProdutoRepository repository;
+    private TemaProdutoGateway repository;
 
     @Mock
-    private CategoriaTemaService categoriaTemaService;
+    private CategoriaTemaGateway categoriaTemaGateway;
 
     @Test
     @DisplayName("Deve retornar tema existente por ID")
@@ -96,7 +98,7 @@ class TemaProdutoServiceTest {
         tema.setDescricao("Descricao");
         tema.setCategoriaTema(categoria);
 
-        when(categoriaTemaService.findById(1)).thenReturn(categoria);
+        when(categoriaTemaGateway.findById(1)).thenReturn(Optional.of(categoria));
         when(repository.save(any(TemaProduto.class))).thenReturn(tema);
 
         TemaProduto resultado = service.store(dto);
@@ -111,7 +113,7 @@ class TemaProdutoServiceTest {
     void deveLancarExcecaoAoSalvarTemaComCategoriaInexistente() {
         TemaProdutoRequestDTO dto = new TemaProdutoRequestDTO("Descricao",  999);
 
-        when(categoriaTemaService.findById(999)).thenReturn(null);
+        when(categoriaTemaGateway.findById(999)).thenReturn(Optional.empty());
 
         assertThrows(
                 CategoriaTemaNaoEncontradaException.class,
@@ -134,7 +136,7 @@ class TemaProdutoServiceTest {
         TemaProdutoRequestDTO dto = new TemaProdutoRequestDTO("Novo",  1);
 
         when(repository.findById(1)).thenReturn(Optional.of(existente));
-        when(categoriaTemaService.findById(1)).thenReturn(categoria);
+        when(categoriaTemaGateway.findById(1)).thenReturn(Optional.of(categoria));
         when(repository.save(any(TemaProduto.class))).thenReturn(existente);
 
         TemaProduto resultado = service.update(dto, 1);
@@ -168,7 +170,7 @@ class TemaProdutoServiceTest {
         TemaProdutoRequestDTO dto = new TemaProdutoRequestDTO("Novo",  999);
 
         when(repository.findById(1)).thenReturn(Optional.of(existente));
-        when(categoriaTemaService.findById(999)).thenReturn(null);
+        when(categoriaTemaGateway.findById(999)).thenReturn(Optional.empty());
 
         assertThrows(
                 CategoriaTemaNaoEncontradaException.class,

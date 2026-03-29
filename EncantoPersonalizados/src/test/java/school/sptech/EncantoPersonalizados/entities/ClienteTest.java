@@ -1,5 +1,6 @@
 package school.sptech.EncantoPersonalizados.entities;
 
+import school.sptech.EncantoPersonalizados.core.domain.Cliente;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

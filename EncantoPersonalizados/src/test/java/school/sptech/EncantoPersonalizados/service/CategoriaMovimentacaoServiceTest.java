@@ -8,10 +8,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import school.sptech.EncantoPersonalizados.dto.categoriaMovimentacao.RequestCategoriaMovimentacaoDTO;
-import school.sptech.EncantoPersonalizados.dto.categoriaMovimentacao.ResponseCategoriaMovimentacaoDTO;
-import school.sptech.EncantoPersonalizados.entities.CategoriaMovimentacao;
-import school.sptech.EncantoPersonalizados.repository.CategoriaMovimentacaoRepository;
+import school.sptech.EncantoPersonalizados.core.application.usecase.categoriaMovimentacao.CategoriaMovimentacaoUseCaseImpl;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.categoriaMovimentacao.RequestCategoriaMovimentacaoDTO;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.categoriaMovimentacao.ResponseCategoriaMovimentacaoDTO;
+import school.sptech.EncantoPersonalizados.core.domain.CategoriaMovimentacao;
+import school.sptech.EncantoPersonalizados.core.application.gateway.CategoriaMovimentacaoGateway;
+import school.sptech.EncantoPersonalizados.infrastructure.persistence.repository.CategoriaMovimentacaoRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,13 +22,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class CategoriaMovimentacaoServiceTest {
+class CategoriaMovimentacaoUseCaseImplTest {
 
     @Mock
-    private CategoriaMovimentacaoRepository repository;
+    private CategoriaMovimentacaoGateway repository;
 
     @InjectMocks
-    private CategoriaMovimentacaoService service;
+    private CategoriaMovimentacaoUseCaseImpl service;
 
     @Test
     void deveCriarCategoriaComSucesso() {

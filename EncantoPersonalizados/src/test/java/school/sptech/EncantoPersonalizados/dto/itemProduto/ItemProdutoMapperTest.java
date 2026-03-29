@@ -1,7 +1,7 @@
-package school.sptech.EncantoPersonalizados.dto.itemProduto;
+package school.sptech.EncantoPersonalizados.infrastructure.dto.itemProduto;
 
 import org.junit.jupiter.api.Test;
-import school.sptech.EncantoPersonalizados.entities.ItemProduto;
+import school.sptech.EncantoPersonalizados.core.domain.ItemProduto;
 
 import java.time.LocalDateTime;
 

@@ -1,8 +1,8 @@
-package school.sptech.EncantoPersonalizados.dto.cliente;
+package school.sptech.EncantoPersonalizados.infrastructure.dto.cliente;
 
 import org.junit.jupiter.api.Test;
-import school.sptech.EncantoPersonalizados.entities.Cliente;
-import school.sptech.EncantoPersonalizados.entities.EnderecoCliente;
+import school.sptech.EncantoPersonalizados.core.domain.Cliente;
+import school.sptech.EncantoPersonalizados.core.domain.EnderecoCliente;
 
 import java.time.LocalDateTime;
 import java.util.List;

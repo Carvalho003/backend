@@ -6,13 +6,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import school.sptech.EncantoPersonalizados.dto.cliente.EnderecoClienteRequestDTO;
-import school.sptech.EncantoPersonalizados.entities.Cliente;
-import school.sptech.EncantoPersonalizados.entities.EnderecoCliente;
-import school.sptech.EncantoPersonalizados.exceptions.CategoriaTemaNaoEncontradaException;
-import school.sptech.EncantoPersonalizados.exceptions.EntidadeNaoEncontradaException;
-import school.sptech.EncantoPersonalizados.repository.ClienteRepository;
-import school.sptech.EncantoPersonalizados.repository.EnderecoClienteRepository;
+import school.sptech.EncantoPersonalizados.core.application.usecase.enderecoCliente.EnderecoClienteUseCaseImpl;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.cliente.EnderecoClienteRequestDTO;
+import school.sptech.EncantoPersonalizados.core.domain.Cliente;
+import school.sptech.EncantoPersonalizados.core.domain.EnderecoCliente;
+import school.sptech.EncantoPersonalizados.core.domain.exception.CategoriaTemaNaoEncontradaException;
+import school.sptech.EncantoPersonalizados.core.domain.exception.EntidadeNaoEncontradaException;
+import school.sptech.EncantoPersonalizados.core.application.gateway.ClienteGateway;
+import school.sptech.EncantoPersonalizados.core.application.gateway.EnderecoClienteGateway;
 
 import java.util.Optional;
 
@@ -21,15 +22,15 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class EnderecoClienteServiceTest {
+class EnderecoClienteUseCaseImplTest {
     @Mock
-    EnderecoClienteRepository repository;
+    EnderecoClienteGateway repository;
 
     @Mock
-    ClienteRepository clienteRepository;
+    ClienteGateway clienteRepository;
 
     @InjectMocks
-    EnderecoClienteService service;
+    EnderecoClienteUseCaseImpl service;
 
     //function store
     @Test
@@ -48,7 +49,7 @@ class EnderecoClienteServiceTest {
         );
 
         when(clienteRepository.findById(1))
-                .thenReturn(Optional.empty());
+                .thenReturn(null);
 
         EntidadeNaoEncontradaException excecao = assertThrows(
                 EntidadeNaoEncontradaException.class,
@@ -77,7 +78,7 @@ class EnderecoClienteServiceTest {
         cliente.setId(1);
 
         when(clienteRepository.findById(1))
-                .thenReturn(Optional.of(cliente));
+                .thenReturn(cliente);
 
         EnderecoCliente enderecoSalvo = new EnderecoCliente();
         enderecoSalvo.setId(1);

@@ -11,6 +11,8 @@ import org.springframework.security.core.AuthenticationException;
 
 import java.io.IOException;
 
+import school.sptech.EncantoPersonalizados.infrastructure.config.AutenticacaoEntryPoint;
+
 import static org.mockito.Mockito.*;
 
 class AutenticacaoEntryPointTest {

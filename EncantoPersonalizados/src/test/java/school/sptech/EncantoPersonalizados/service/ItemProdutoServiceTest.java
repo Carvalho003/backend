@@ -11,12 +11,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import school.sptech.EncantoPersonalizados.dto.itemProduto.ItemProdutoRequestDTO;
-import school.sptech.EncantoPersonalizados.dto.itemProduto.ItemProdutoResponseDTO;
-import school.sptech.EncantoPersonalizados.entities.ItemProduto;
-import school.sptech.EncantoPersonalizados.exceptions.EntidadeNaoEncontradaException;
-import school.sptech.EncantoPersonalizados.repository.ItemProdutoRepository;
-import school.sptech.EncantoPersonalizados.service.ItemProdutoService;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.itemProduto.ItemProdutoRequestDTO;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.itemProduto.ItemProdutoResponseDTO;
+import school.sptech.EncantoPersonalizados.core.domain.ItemProduto;
+import school.sptech.EncantoPersonalizados.core.domain.exception.EntidadeNaoEncontradaException;
+import school.sptech.EncantoPersonalizados.core.application.gateway.ItemProdutoGateway;
+import school.sptech.EncantoPersonalizados.core.application.usecase.itemProduto.ItemProdutoUseCaseImpl;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,13 +25,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class ItemProdutoServiceTest {
+class ItemProdutoUseCaseImplTest {
 
     @Mock
-    private ItemProdutoRepository repository;
+    private ItemProdutoGateway repository;
 
     @InjectMocks
-    private ItemProdutoService service;
+    private ItemProdutoUseCaseImpl service;
 
     @Test
     @DisplayName("Deve cadastrar ItemProduto e retornar DTO corretamente")
@@ -149,7 +149,7 @@ class ItemProdutoServiceTest {
         item.setPrecoVenda(20.0);
 
         when(repository.findByPrecoVendaLessThan(30.0))
-                .thenReturn(Optional.of(List.of(item)));
+                .thenReturn(List.of(item));
 
         List<ItemProdutoResponseDTO> result = service.buscarPorPrecoMenorQue(30.0);
 

@@ -11,9 +11,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import school.sptech.EncantoPersonalizados.entities.Produto;
-import school.sptech.EncantoPersonalizados.exceptions.ProdutoNaoEncontradoException;
-import school.sptech.EncantoPersonalizados.repository.ProdutoRepository;
+import school.sptech.EncantoPersonalizados.core.application.usecase.produto.ProdutoUseCaseImpl;
+import school.sptech.EncantoPersonalizados.core.domain.Produto;
+import school.sptech.EncantoPersonalizados.core.domain.exception.ProdutoNaoEncontradoException;
+import school.sptech.EncantoPersonalizados.core.application.gateway.ProdutoGateway;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,13 +25,13 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ProdutoServiceTest {
+class ProdutoUseCaseImplTest {
 
     @InjectMocks
-    private ProdutoService service;
+    private ProdutoUseCaseImpl service;
 
     @Mock
-    private ProdutoRepository repository;
+    private ProdutoGateway repository;
 
     @Test
     @DisplayName("Deve listar produtos corretamente com filtros preenchidos")

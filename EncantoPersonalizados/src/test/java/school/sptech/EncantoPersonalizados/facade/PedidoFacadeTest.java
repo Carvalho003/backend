@@ -1,7 +1,7 @@
 package school.sptech.EncantoPersonalizados.facade;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -10,16 +10,21 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import school.sptech.EncantoPersonalizados.dto.pedido.PedidoCreatedResponseDto;
-import school.sptech.EncantoPersonalizados.dto.pedido.PedidoRequestDto;
-import school.sptech.EncantoPersonalizados.dto.pedido.PedidoResponseDto;
-import school.sptech.EncantoPersonalizados.dto.pedidoStatusPedido.PedidoStatusPedidoRequestDto;
-import school.sptech.EncantoPersonalizados.dto.produtosEmUmPedido.ProdutosPedidoRequestDto;
-import school.sptech.EncantoPersonalizados.entities.*;
-import school.sptech.EncantoPersonalizados.exceptions.EntidadeNaoEncontradaException;
-import school.sptech.EncantoPersonalizados.repository.PedidoRepository;
-import school.sptech.EncantoPersonalizados.repository.PedidoStatusPedidoRepository;
-import school.sptech.EncantoPersonalizados.service.*;
+import school.sptech.EncantoPersonalizados.core.application.usecase.pedido.PedidoUseCaseImpl;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.pedido.PedidoCreatedResponseDto;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.pedido.PedidoRequestDto;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.pedido.PedidoResponseDto;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.pedidoStatusPedido.PedidoStatusPedidoRequestDto;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.produtosEmUmPedido.ProdutosPedidoRequestDto;
+import school.sptech.EncantoPersonalizados.core.domain.*;
+import school.sptech.EncantoPersonalizados.core.domain.exception.EntidadeNaoEncontradaException;
+import school.sptech.EncantoPersonalizados.core.application.gateway.ClienteGateway;
+import school.sptech.EncantoPersonalizados.core.application.gateway.PedidoGateway;
+import school.sptech.EncantoPersonalizados.core.application.gateway.PedidoStatusPedidoGateway;
+import school.sptech.EncantoPersonalizados.core.application.gateway.ProdutoGateway;
+import school.sptech.EncantoPersonalizados.core.application.gateway.ProdutoPedidoGateway;
+import school.sptech.EncantoPersonalizados.core.application.gateway.StatusPedidoGateway;
+import school.sptech.EncantoPersonalizados.core.application.gateway.UsuarioGateway;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -30,33 +35,30 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class PedidoFacadeTest {
+class PedidoUseCaseImplTest {
     @Mock
-    private ProdutoService produtoService;
+    private ProdutoGateway produtoGateway;
 
     @Mock
-    private ClienteService clienteService;
+    private ClienteGateway clienteGateway;
 
     @Mock
-    private PedidoStatusPedidoService pedidoStatusPedidoService;
+    private PedidoStatusPedidoGateway pedidoStatusPedidoGateway;
 
     @Mock
-    private ProdutoPedidoService produtoPedidoService;
+    private ProdutoPedidoGateway produtoPedidoGateway;
 
     @Mock
-    private PedidoRepository pedidoRepository;
+    private PedidoGateway pedidoRepository;
 
     @Mock
-    private StatusPedidoService statusPedidoService;
+    private StatusPedidoGateway statusPedidoGateway;
 
     @Mock
-    private PedidoStatusPedidoRepository pedidoStatusPedidoRepository;
-
-    @Mock
-    private UsuarioService usuarioService;
+    private UsuarioGateway usuarioGateway;
 
     @InjectMocks
-    private PedidoFacade facade;
+    private PedidoUseCaseImpl facade;
 
 
     //function store
@@ -71,7 +73,7 @@ class PedidoFacadeTest {
                 List.of()
         );
 
-        when(clienteService.findById(dto.clienteId())).thenReturn(null);
+        when(clienteGateway.findById(dto.clienteId())).thenReturn(null);
 
         RuntimeException excecao = assertThrows(RuntimeException.class,
                 () -> facade.store(dto));
@@ -93,8 +95,8 @@ class PedidoFacadeTest {
         Cliente cliente = new Cliente();
         cliente.setId(1);
 
-        when(clienteService.findById(1)).thenReturn(cliente);
-        when(usuarioService.getEntityById(1)).thenReturn(null);
+        when(clienteGateway.findById(1)).thenReturn(cliente);
+        when(usuarioGateway.findById(1)).thenReturn(Optional.empty());
 
         EntidadeNaoEncontradaException excecao = assertThrows(
                 EntidadeNaoEncontradaException.class,
@@ -118,9 +120,9 @@ class PedidoFacadeTest {
         Cliente cliente = new Cliente();
         Usuario usuario = new Usuario();
 
-        when(clienteService.findById(1)).thenReturn(cliente);
-        when(usuarioService.getEntityById(1)).thenReturn(usuario);
-        when(statusPedidoService.findFirstOfKanbanOrder()).thenReturn(null);
+        when(clienteGateway.findById(1)).thenReturn(cliente);
+        when(usuarioGateway.findById(1)).thenReturn(Optional.of(usuario));
+        when(statusPedidoGateway.findFirstByOrderByOrdemKanbanAsc()).thenReturn(Optional.empty());
 
         RuntimeException excecao = assertThrows(RuntimeException.class,
                 () -> facade.store(dto));
@@ -153,11 +155,17 @@ class PedidoFacadeTest {
         StatusPedido statusInicial = new StatusPedido();
         statusInicial.setId(1);
 
-        when(clienteService.findById(1)).thenReturn(cliente);
-        when(usuarioService.getEntityById(1)).thenReturn(usuario);
-        when(statusPedidoService.findFirstOfKanbanOrder()).thenReturn(statusInicial);
+        when(clienteGateway.findById(1)).thenReturn(cliente);
+        when(usuarioGateway.findById(1)).thenReturn(Optional.of(usuario));
+        when(statusPedidoGateway.findFirstByOrderByOrdemKanbanAsc()).thenReturn(Optional.of(statusInicial));
 
-        when(produtoService.findById(1)).thenReturn(null);
+        Pedido pedidoSalvo = new Pedido();
+        pedidoSalvo.setId(1);
+        when(pedidoRepository.save(any(Pedido.class))).thenReturn(pedidoSalvo);
+        when(pedidoStatusPedidoGateway.findStatusAtualByPedidoId(anyInt())).thenReturn(List.of());
+        when(pedidoStatusPedidoGateway.salvar(any(PedidoStatusPedido.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        when(produtoGateway.findById(1)).thenReturn(Optional.empty());
 
         RuntimeException excecao = assertThrows(RuntimeException.class,
                 () -> facade.store(dto));
@@ -190,33 +198,38 @@ class PedidoFacadeTest {
         produto.setId(1);
         ItemProduto item = new ItemProduto();
         item.setPrazoProducao(3);
+        item.setPrecoVenda(50.0);
+        item.setPeso(1.5);
         produto.setItemProduto(item);
 
         Pedido pedidoSalvo = new Pedido();
         pedidoSalvo.setId(1);
 
-        PedidoStatusPedido statusParaSalvar = new PedidoStatusPedido();
-        statusParaSalvar.setStatus(statusInicial);
-        statusParaSalvar.setStatusAtual(true);
+        ProdutoPedido produtoPedidoSalvo = new ProdutoPedido();
+        produtoPedidoSalvo.setPrecoTotal(50.0);
+        produtoPedidoSalvo.setPesoTotal(1.5);
+        produtoPedidoSalvo.setPrecoUnitario(50.0);
+        produtoPedidoSalvo.setPesoUnitario(1.5);
+        produtoPedidoSalvo.setQtdProduto(1);
 
-        when(clienteService.findById(1)).thenReturn(cliente);
-        when(usuarioService.getEntityById(1)).thenReturn(usuario);
-        when(statusPedidoService.findFirstOfKanbanOrder()).thenReturn(statusInicial);
-        when(produtoService.findById(1)).thenReturn(produto);
+        when(clienteGateway.findById(1)).thenReturn(cliente);
+        when(usuarioGateway.findById(1)).thenReturn(Optional.of(usuario));
+        when(statusPedidoGateway.findFirstByOrderByOrdemKanbanAsc()).thenReturn(Optional.of(statusInicial));
         when(pedidoRepository.save(any(Pedido.class))).thenAnswer(invocation -> {
             Pedido p = invocation.getArgument(0);
             p.setId(1);
             return p;
         });
-        when(produtoPedidoService.salvar(any(ProdutoPedido.class), eq(1), eq(1)))
-                .thenAnswer(invocation -> {
-                    ProdutoPedido pp = invocation.getArgument(0);
-                    pp.setPrecoTotal(50.0);
-                    pp.setPesoTotal(1.5);
-                    return pp;
-                });
-        when(pedidoStatusPedidoService.salvar(any(PedidoStatusPedido.class)))
+        when(pedidoStatusPedidoGateway.findStatusAtualByPedidoId(anyInt())).thenReturn(List.of());
+        when(pedidoStatusPedidoGateway.salvar(any(PedidoStatusPedido.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
+        when(produtoGateway.findById(1)).thenReturn(Optional.of(produto));
+        when(produtoPedidoGateway.save(any(ProdutoPedido.class))).thenAnswer(inv -> {
+            ProdutoPedido pp = inv.getArgument(0);
+            pp.setPrecoTotal(50.0);
+            pp.setPesoTotal(1.5);
+            return pp;
+        });
 
         PedidoCreatedResponseDto resultado = facade.store(pedidoDto);
 
@@ -226,13 +239,13 @@ class PedidoFacadeTest {
         assertEquals(pedidoDto.origem(), resultado.origem());
         assertNotNull(resultado.dataLimite());
 
-        verify(clienteService).findById(1);
-        verify(usuarioService).getEntityById(1);
-        verify(statusPedidoService).findFirstOfKanbanOrder();
-        verify(produtoService).findById(1);
+        verify(clienteGateway).findById(1);
+        verify(usuarioGateway).findById(1);
+        verify(statusPedidoGateway).findFirstByOrderByOrdemKanbanAsc();
+        verify(produtoGateway).findById(1);
         verify(pedidoRepository, times(2)).save(any(Pedido.class));
-        verify(produtoPedidoService).salvar(any(ProdutoPedido.class), eq(1), eq(1));
-        verify(pedidoStatusPedidoService).salvar(any(PedidoStatusPedido.class));
+        verify(produtoPedidoGateway).save(any(ProdutoPedido.class));
+        verify(pedidoStatusPedidoGateway).salvar(any(PedidoStatusPedido.class));
     }
 
     //function listar
@@ -281,7 +294,7 @@ class PedidoFacadeTest {
 
         when(pedidoRepository.filtrar(eq(search), eq(ativo), any(Pageable.class)))
                 .thenReturn(pedidosPage);
-        when(pedidoStatusPedidoRepository.findStatusAtualByPedidoId(pedido.getId()))
+        when(pedidoStatusPedidoGateway.findStatusAtualByPedidoId(pedido.getId()))
                 .thenReturn(List.of(statusAtual));
 
         Page<PedidoResponseDto> resultado = facade.listar(search, page, ativo);
@@ -300,7 +313,7 @@ class PedidoFacadeTest {
         assertTrue(dto.statusAtual().statusAtual());
 
         verify(pedidoRepository).filtrar(eq(search), eq(ativo), any(Pageable.class));
-        verify(pedidoStatusPedidoRepository).findStatusAtualByPedidoId(pedido.getId());
+        verify(pedidoStatusPedidoGateway).findStatusAtualByPedidoId(pedido.getId());
     }
 
     @Test
@@ -331,7 +344,7 @@ class PedidoFacadeTest {
 
         when(pedidoRepository.filtrar(eq(search), eq(ativo), any(Pageable.class)))
                 .thenReturn(pedidosPage);
-        when(pedidoStatusPedidoRepository.findStatusAtualByPedidoId(pedido.getId()))
+        when(pedidoStatusPedidoGateway.findStatusAtualByPedidoId(pedido.getId()))
                 .thenReturn(List.of(statusAtual));
 
         Page<PedidoResponseDto> resultado = facade.listar(search, page, ativo);
@@ -345,7 +358,7 @@ class PedidoFacadeTest {
         assertEquals("Concluído", statusAtual.getStatus().getStatus());
 
         verify(pedidoRepository).filtrar(eq(search), eq(ativo), any(Pageable.class));
-        verify(pedidoStatusPedidoRepository).findStatusAtualByPedidoId(pedido.getId());
+        verify(pedidoStatusPedidoGateway).findStatusAtualByPedidoId(pedido.getId());
     }
 
     //function getById
@@ -382,7 +395,7 @@ class PedidoFacadeTest {
         statusAtual.setId(1);
 
         when(pedidoRepository.findByIdWithDetails(1)).thenReturn(Optional.of(pedido));
-        when(pedidoStatusPedidoRepository.findStatusAtualByPedidoId(1))
+        when(pedidoStatusPedidoGateway.findStatusAtualByPedidoId(1))
                 .thenReturn(List.of(statusAtual));
 
         PedidoResponseDto resultado = facade.getById(1);
@@ -399,7 +412,7 @@ class PedidoFacadeTest {
         assertTrue(resultado.statusAtual().statusAtual());
 
         verify(pedidoRepository).findByIdWithDetails(1);
-        verify(pedidoStatusPedidoRepository).findStatusAtualByPedidoId(1);
+        verify(pedidoStatusPedidoGateway).findStatusAtualByPedidoId(1);
     }
 
     //function update
@@ -527,8 +540,8 @@ class PedidoFacadeTest {
         PedidoStatusPedidoRequestDto dto = new PedidoStatusPedidoRequestDto(1, 1);
 
         when(pedidoRepository.findById(1)).thenReturn(Optional.of(pedido));
-        when(statusPedidoService.findById(dto.idStatusPedido()))
-                .thenReturn(null);
+        when(statusPedidoGateway.findById(dto.idStatusPedido()))
+                .thenReturn(Optional.empty());
 
         RuntimeException excecao = assertThrows(RuntimeException.class,
                 () -> facade.mudarStatus(dto));
@@ -551,16 +564,16 @@ class PedidoFacadeTest {
         );
 
         when(pedidoRepository.findById(dto.idPedido())).thenReturn(Optional.of(pedido));
-        when(statusPedidoService.findById(dto.idStatusPedido())).thenReturn(status);
-
-        when(pedidoStatusPedidoService.salvar(any(PedidoStatusPedido.class)))
+        when(statusPedidoGateway.findById(dto.idStatusPedido())).thenReturn(Optional.of(status));
+        when(pedidoStatusPedidoGateway.findStatusAtualByPedidoId(1)).thenReturn(List.of());
+        when(pedidoStatusPedidoGateway.salvar(any(PedidoStatusPedido.class)))
                 .thenAnswer(inv -> inv.getArgument(0));
 
         facade.mudarStatus(dto);
 
         verify(pedidoRepository).findById(1);
-        verify(statusPedidoService).findById(5);
-        verify(pedidoStatusPedidoService, times(1))
+        verify(statusPedidoGateway).findById(5);
+        verify(pedidoStatusPedidoGateway, times(1))
                 .salvar(any(PedidoStatusPedido.class));
     }
 

@@ -6,10 +6,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import school.sptech.EncantoPersonalizados.entities.Pedido;
-import school.sptech.EncantoPersonalizados.entities.PedidoStatusPedido;
-import school.sptech.EncantoPersonalizados.entities.StatusPedido;
-import school.sptech.EncantoPersonalizados.repository.PedidoStatusPedidoRepository;
+import school.sptech.EncantoPersonalizados.core.application.usecase.pedidoStatusPedido.PedidoStatusPedidoUseCaseImpl;
+import school.sptech.EncantoPersonalizados.core.domain.Pedido;
+import school.sptech.EncantoPersonalizados.core.domain.PedidoStatusPedido;
+import school.sptech.EncantoPersonalizados.core.domain.StatusPedido;
+import school.sptech.EncantoPersonalizados.core.application.gateway.PedidoGateway;
+import school.sptech.EncantoPersonalizados.core.application.gateway.PedidoStatusPedidoGateway;
+import school.sptech.EncantoPersonalizados.core.application.gateway.StatusPedidoGateway;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,18 +21,18 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class PedidoStatusPedidoServiceTest {
+class PedidoStatusPedidoUseCaseImplTest {
     @Mock
-    PedidoStatusPedidoRepository repository;
+    PedidoStatusPedidoGateway repository;
 
     @Mock
-    PedidoService pedidoService;
+    PedidoGateway pedidoGateway;
 
     @Mock
-    StatusPedidoService statusPedidoService;
+    StatusPedidoGateway statusPedidoGateway;
 
     @InjectMocks
-    PedidoStatusPedidoService service;
+    PedidoStatusPedidoUseCaseImpl service;
 
     @Test
     @DisplayName("Deve lançar exceção quando o StatusPedido não existe")
@@ -39,7 +42,7 @@ class PedidoStatusPedidoServiceTest {
         status.setId(1);
         pedidoStatusPedido.setStatus(status);
 
-        when(statusPedidoService.findById(1)).thenReturn(null);
+        when(statusPedidoGateway.findById(1)).thenReturn(Optional.empty());
 
         RuntimeException excecao = assertThrows(RuntimeException.class,
                 () -> service.salvar(pedidoStatusPedido)
@@ -61,8 +64,8 @@ class PedidoStatusPedidoServiceTest {
         pedido.setId(1);
         pedidoStatusPedido.setPedido(pedido);
 
-        when(statusPedidoService.findById(1)).thenReturn(status);
-        when(pedidoService.findById(1)).thenReturn(null);
+        when(statusPedidoGateway.findById(1)).thenReturn(Optional.of(status));
+        when(pedidoGateway.findById(1)).thenReturn(Optional.empty());
 
         RuntimeException excecao = assertThrows(RuntimeException.class,
                 () -> service.salvar(pedidoStatusPedido)
@@ -84,28 +87,28 @@ class PedidoStatusPedidoServiceTest {
         pedido.setId(1);
         pedidoStatusPedido.setPedido(pedido);
 
-        when(statusPedidoService.findById(1)).thenReturn(status);
-        when(pedidoService.findById(1)).thenReturn(pedido);
+        when(statusPedidoGateway.findById(1)).thenReturn(Optional.of(status));
+        when(pedidoGateway.findById(1)).thenReturn(Optional.of(pedido));
 
         PedidoStatusPedido statusAntigo = new PedidoStatusPedido();
         statusAntigo.setStatusAtual(true);
         List<PedidoStatusPedido> statusAtuais = List.of(statusAntigo);
         when(repository.findStatusAtualByPedidoId(1)).thenReturn(statusAtuais);
 
-        when(repository.save(statusAntigo)).thenReturn(statusAntigo);
+        when(repository.salvar(statusAntigo)).thenReturn(statusAntigo);
 
         PedidoStatusPedido pedidoStatusPedidoSalvo = new PedidoStatusPedido();
         pedidoStatusPedidoSalvo.setStatus(status);
         pedidoStatusPedidoSalvo.setPedido(pedido);
-        when(repository.save(pedidoStatusPedido)).thenReturn(pedidoStatusPedidoSalvo);
+        when(repository.salvar(pedidoStatusPedido)).thenReturn(pedidoStatusPedidoSalvo);
 
         PedidoStatusPedido resultado = service.salvar(pedidoStatusPedido);
 
         assertNotNull(resultado);
         assertFalse(statusAntigo.isStatusAtual());
-        verify(repository).save(statusAntigo);
+        verify(repository).salvar(statusAntigo);
 
-        verify(repository , times(1)).save(pedidoStatusPedido);
+        verify(repository , times(1)).salvar(pedidoStatusPedido);
     }
 
     @Test

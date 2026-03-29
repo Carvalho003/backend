@@ -15,10 +15,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
-import school.sptech.EncantoPersonalizados.config.GerenciadorTokenJwt;
-import school.sptech.EncantoPersonalizados.dto.usuario.UsuarioResponseDTO;
-import school.sptech.EncantoPersonalizados.entities.Usuario;
-import school.sptech.EncantoPersonalizados.repository.UsuarioRepository;
+import school.sptech.EncantoPersonalizados.core.application.usecase.usuario.UsuarioUseCaseImpl;
+import school.sptech.EncantoPersonalizados.infrastructure.config.GerenciadorTokenJwt;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.usuario.UsuarioResponseDTO;
+import school.sptech.EncantoPersonalizados.core.domain.Usuario;
+import school.sptech.EncantoPersonalizados.core.application.gateway.UsuarioGateway;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -32,16 +33,16 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class UsuarioServiceTest {
+class UsuarioUseCaseImplTest {
 
     @InjectMocks
-    private UsuarioService service;
+    private UsuarioUseCaseImpl service;
 
     @Mock
     private PasswordEncoder passwordEncoder;
 
     @Mock
-    private UsuarioRepository repository;
+    private UsuarioGateway repository;
 
     @Mock
     private GerenciadorTokenJwt gerenciadorTokenJwt;

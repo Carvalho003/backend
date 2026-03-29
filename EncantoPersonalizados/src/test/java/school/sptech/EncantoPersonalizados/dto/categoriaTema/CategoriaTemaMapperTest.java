@@ -1,8 +1,8 @@
-package school.sptech.EncantoPersonalizados.dto.categoriaTema;
+package school.sptech.EncantoPersonalizados.infrastructure.dto.categoriaTema;
 
 import org.junit.jupiter.api.Test;
-import school.sptech.EncantoPersonalizados.entities.CategoriaTema;
-import school.sptech.EncantoPersonalizados.entities.TemaProduto;
+import school.sptech.EncantoPersonalizados.core.domain.CategoriaTema;
+import school.sptech.EncantoPersonalizados.core.domain.TemaProduto;
 
 import java.time.LocalDateTime;
 import java.util.List;

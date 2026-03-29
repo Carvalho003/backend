@@ -6,13 +6,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import school.sptech.EncantoPersonalizados.entities.ItemProduto;
-import school.sptech.EncantoPersonalizados.entities.Pedido;
-import school.sptech.EncantoPersonalizados.entities.Produto;
-import school.sptech.EncantoPersonalizados.entities.ProdutoPedido;
-import school.sptech.EncantoPersonalizados.exceptions.EntidadeNaoEncontradaException;
-import school.sptech.EncantoPersonalizados.repository.ProdutoPedidoRepository;
-import school.sptech.EncantoPersonalizados.repository.ProdutoRepository;
+import school.sptech.EncantoPersonalizados.core.application.usecase.produtoPedido.ProdutoPedidoUseCaseImpl;
+import school.sptech.EncantoPersonalizados.core.domain.ItemProduto;
+import school.sptech.EncantoPersonalizados.core.domain.Pedido;
+import school.sptech.EncantoPersonalizados.core.domain.Produto;
+import school.sptech.EncantoPersonalizados.core.domain.ProdutoPedido;
+import school.sptech.EncantoPersonalizados.core.domain.exception.EntidadeNaoEncontradaException;
+import school.sptech.EncantoPersonalizados.core.application.gateway.PedidoGateway;
+import school.sptech.EncantoPersonalizados.core.application.gateway.ProdutoPedidoGateway;
+import school.sptech.EncantoPersonalizados.core.application.gateway.ProdutoGateway;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,21 +25,18 @@ import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
-class ProdutoPedidoServiceTest {
+class ProdutoPedidoUseCaseImplTest {
     @Mock
-    ProdutoPedidoRepository repository;
+    ProdutoPedidoGateway repository;
 
     @Mock
-    ProdutoRepository produtoRepository;
+    ProdutoGateway produtoRepository;
 
     @Mock
-    ProdutoService produtoService;
-
-    @Mock
-    PedidoService pedidoService;
+    PedidoGateway pedidoGateway;
 
     @InjectMocks
-    ProdutoPedidoService service;
+    ProdutoPedidoUseCaseImpl service;
 
     //function salvar
     @Test
@@ -45,7 +44,7 @@ class ProdutoPedidoServiceTest {
     void QuandoSalvarProdutoPedidoMasProdutoNaoExisteLancarExcecao(){
         ProdutoPedido produtoPedido = new ProdutoPedido();
 
-        when(produtoService.findById(1)).thenThrow(new RuntimeException("Produto não encontrado"));
+        when(produtoRepository.findById(1)).thenReturn(Optional.empty());
 
         RuntimeException excecao = assertThrows(
                 RuntimeException.class,
@@ -62,9 +61,9 @@ class ProdutoPedidoServiceTest {
         Produto produto = new Produto();
         Pedido pedido = new Pedido();
 
-        when(produtoService.findById(1)).thenReturn(produto);
+        when(produtoRepository.findById(1)).thenReturn(Optional.of(produto));
 
-        when(pedidoService.findById(1)).thenThrow(new RuntimeException("Pedido não encontrado"));
+        when(pedidoGateway.findById(1)).thenReturn(Optional.empty());
 
         RuntimeException excecao = assertThrows(
                 RuntimeException.class,
@@ -92,8 +91,8 @@ class ProdutoPedidoServiceTest {
         Pedido pedido = new Pedido();
         pedido.setId(1);
 
-        when(produtoService.findById(1)).thenReturn(produto);
-        when(pedidoService.findById(1)).thenReturn(pedido);
+        when(produtoRepository.findById(1)).thenReturn(Optional.of(produto));
+        when(pedidoGateway.findById(1)).thenReturn(Optional.of(pedido));
         when(repository.save(any(ProdutoPedido.class))).thenReturn(produtoPedido);
 
         ProdutoPedido resultado = service.salvar(produtoPedido, 1, 1);
@@ -128,8 +127,8 @@ class ProdutoPedidoServiceTest {
         Pedido pedido = new Pedido();
         pedido.setId(2);
 
-        when(produtoService.findById(1)).thenReturn(produto);
-        when(pedidoService.findById(2)).thenReturn(pedido);
+        when(produtoRepository.findById(1)).thenReturn(Optional.of(produto));
+        when(pedidoGateway.findById(2)).thenReturn(Optional.of(pedido));
         when(repository.save(any(ProdutoPedido.class))).thenReturn(produtoPedido);
 
         ProdutoPedido resultado = service.salvar(produtoPedido, 1, 2);
@@ -215,12 +214,12 @@ class ProdutoPedidoServiceTest {
 
         when(repository.findById(1)).thenReturn(Optional.of(produtoPedido));
 
-        doNothing().when(repository).delete(produtoPedido);
+        doNothing().when(repository).deleteById(produtoPedido.getId());
 
         service.removerProduto(1);
 
         verify(repository, times(1)).findById(1);
-        verify(repository, times(1)).delete(produtoPedido);
+        verify(repository, times(1)).deleteById(produtoPedido.getId());
 
 
     }

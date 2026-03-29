@@ -1,13 +1,13 @@
-package school.sptech.EncantoPersonalizados.dto.produto;
+package school.sptech.EncantoPersonalizados.infrastructure.dto.produto;
 
 import org.junit.jupiter.api.Test;
-import school.sptech.EncantoPersonalizados.dto.fotoProduto.FotoProdutoResponseDTO;
-import school.sptech.EncantoPersonalizados.dto.itemProduto.ItemProdutoResponseDTO;
-import school.sptech.EncantoPersonalizados.dto.temaProduto.TemaProdutoResponseDTO;
-import school.sptech.EncantoPersonalizados.entities.FotoProduto;
-import school.sptech.EncantoPersonalizados.entities.ItemProduto;
-import school.sptech.EncantoPersonalizados.entities.Produto;
-import school.sptech.EncantoPersonalizados.entities.TemaProduto;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.fotoProduto.FotoProdutoResponseDTO;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.itemProduto.ItemProdutoResponseDTO;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.temaProduto.TemaProdutoResponseDTO;
+import school.sptech.EncantoPersonalizados.core.domain.FotoProduto;
+import school.sptech.EncantoPersonalizados.core.domain.ItemProduto;
+import school.sptech.EncantoPersonalizados.core.domain.Produto;
+import school.sptech.EncantoPersonalizados.core.domain.TemaProduto;
 
 import java.time.LocalDateTime;
 import java.util.List;

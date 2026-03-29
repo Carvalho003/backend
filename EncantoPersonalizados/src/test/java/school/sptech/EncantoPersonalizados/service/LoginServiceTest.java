@@ -10,10 +10,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.server.ResponseStatusException;
-import school.sptech.EncantoPersonalizados.config.GerenciadorTokenJwt;
-import school.sptech.EncantoPersonalizados.dto.usuario.UserTokenDTO;
-import school.sptech.EncantoPersonalizados.entities.Usuario;
-import school.sptech.EncantoPersonalizados.repository.UsuarioRepository;
+import school.sptech.EncantoPersonalizados.core.application.usecase.login.LoginUseCaseImpl;
+import school.sptech.EncantoPersonalizados.infrastructure.config.GerenciadorTokenJwt;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.usuario.UserTokenDTO;
+import school.sptech.EncantoPersonalizados.core.domain.Usuario;
+import school.sptech.EncantoPersonalizados.core.application.gateway.UsuarioGateway;
 import org.springframework.security.core.Authentication;
 
 
@@ -25,16 +26,16 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class LoginServiceTest {
+class LoginUseCaseImplTest {
 
     @InjectMocks
-    private LoginService service;
+    private LoginUseCaseImpl service;
 
     @Mock
     private PasswordEncoder passwordEncoder;
 
     @Mock
-    private UsuarioRepository repository;
+    private UsuarioGateway repository;
 
     @Mock
     private GerenciadorTokenJwt gerenciadorTokenJwt;

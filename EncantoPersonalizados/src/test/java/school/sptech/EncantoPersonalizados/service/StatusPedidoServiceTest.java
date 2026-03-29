@@ -11,9 +11,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import school.sptech.EncantoPersonalizados.dto.statusPedido.StatusPedidoReordenacaoDto;
-import school.sptech.EncantoPersonalizados.entities.StatusPedido;
-import school.sptech.EncantoPersonalizados.repository.StatusPedidoRepository;
+import school.sptech.EncantoPersonalizados.core.application.usecase.statusPedido.StatusPedidoUseCaseImpl;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.statusPedido.StatusPedidoReordenacaoDto;
+import school.sptech.EncantoPersonalizados.core.domain.StatusPedido;
+import school.sptech.EncantoPersonalizados.core.application.gateway.StatusPedidoGateway;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,13 +25,13 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class StatusPedidoServiceTest {
+class StatusPedidoUseCaseImplTest {
 
     @InjectMocks
-    private StatusPedidoService service;
+    private StatusPedidoUseCaseImpl service;
 
     @Mock
-    private StatusPedidoRepository repository;
+    private StatusPedidoGateway repository;
 
     @Test
     @DisplayName("Deve listar status pedidos ativos corretamente")

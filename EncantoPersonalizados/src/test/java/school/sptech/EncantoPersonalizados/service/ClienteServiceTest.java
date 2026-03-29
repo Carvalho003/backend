@@ -10,14 +10,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import school.sptech.EncantoPersonalizados.dto.cliente.CreateClienteDTO;
-import school.sptech.EncantoPersonalizados.dto.cliente.EnderecoClienteRequestDTO;
-import school.sptech.EncantoPersonalizados.entities.Cliente;
-import school.sptech.EncantoPersonalizados.entities.EnderecoCliente;
-import school.sptech.EncantoPersonalizados.entities.Usuario;
-import school.sptech.EncantoPersonalizados.exceptions.EntidadeNaoEncontradaException;
-import school.sptech.EncantoPersonalizados.repository.ClienteRepository;
-import school.sptech.EncantoPersonalizados.repository.EnderecoClienteRepository;
+import school.sptech.EncantoPersonalizados.core.application.usecase.cliente.ClienteUseCaseImpl;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.cliente.CreateClienteDTO;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.cliente.EnderecoClienteRequestDTO;
+import school.sptech.EncantoPersonalizados.core.domain.Cliente;
+import school.sptech.EncantoPersonalizados.core.domain.EnderecoCliente;
+import school.sptech.EncantoPersonalizados.core.domain.Usuario;
+import school.sptech.EncantoPersonalizados.core.domain.exception.EntidadeNaoEncontradaException;
+import school.sptech.EncantoPersonalizados.core.application.gateway.ClienteGateway;
+import school.sptech.EncantoPersonalizados.core.application.gateway.EnderecoClienteGateway;
+import school.sptech.EncantoPersonalizados.infrastructure.persistence.repository.ClienteRepository;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,13 +31,13 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class ClienteServiceTest {
+class ClienteUseCaseImplTest {
 
     @InjectMocks
-    private ClienteService service;
+    private ClienteUseCaseImpl service;
 
     @Mock
-    private ClienteRepository repository;
+    private ClienteGateway repository;
 
     @Test
     @DisplayName("Deve salvar cliente com endereços corretamente")
@@ -67,7 +69,7 @@ class ClienteServiceTest {
         cliente.setNome("teste");
         cliente.setTelefone("121332432432");
 
-        when(repository.findById(1)).thenReturn(Optional.of(cliente));
+        when(repository.findById(1)).thenReturn(cliente);
 
         CreateClienteDTO cliente2 = new CreateClienteDTO("teste2", "1234", List.of());
 
@@ -88,7 +90,7 @@ class ClienteServiceTest {
 
         CreateClienteDTO dto = new CreateClienteDTO("teste", "121332432432", List.of());
 
-        when(repository.findById(999)).thenReturn(Optional.empty());
+        when(repository.findById(999)).thenReturn(null);
 
         EntidadeNaoEncontradaException excecao = assertThrows(
                 EntidadeNaoEncontradaException.class,
@@ -142,7 +144,9 @@ class ClienteServiceTest {
     @DisplayName("Deve remover cliente existente por ID")
     void deveRemoverClienteExistentePorId() {
 
-        when(repository.existsById(1)).thenReturn(true);
+        Cliente clienteParaRemover = new Cliente();
+        clienteParaRemover.setId(1);
+        when(repository.findById(1)).thenReturn(clienteParaRemover);
 
         service.removerPorId(1);
 
@@ -159,7 +163,7 @@ class ClienteServiceTest {
         cliente.setNome("teste");
         cliente.setTelefone("121332432432");
 
-        when(repository.existsById(1)).thenReturn(false);
+        when(repository.findById(1)).thenReturn(null);
 
         EntidadeNaoEncontradaException excecao = assertThrows(
                 EntidadeNaoEncontradaException.class,
@@ -178,7 +182,7 @@ class ClienteServiceTest {
         cliente.setNome("teste");
         cliente.setTelefone("121332432432");
 
-        when(repository.findById(1)).thenReturn(Optional.of(cliente));
+        when(repository.findById(1)).thenReturn(cliente);
 
         Cliente resultado = service.findById(1);
 
@@ -197,7 +201,7 @@ class ClienteServiceTest {
         cliente.setNome("teste");
         cliente.setTelefone("121332432432");
 
-        when(repository.findById(1)).thenReturn(Optional.empty());
+        when(repository.findById(1)).thenReturn(null);
 
         Cliente resultado = service.findById(1);
 

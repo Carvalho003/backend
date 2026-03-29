@@ -79,6 +79,7 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
 		<!-- SPRINGDOC - APENAS UMA VEZ -->
 		<dependency>
 			<groupId>org.springdoc</groupId>

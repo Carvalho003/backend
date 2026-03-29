@@ -5,8 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.PageRequest;
-import school.sptech.EncantoPersonalizados.entities.Produto;
+import school.sptech.EncantoPersonalizados.core.domain.Produto;
 
+import school.sptech.EncantoPersonalizados.infrastructure.persistence.repository.ProdutoRepository;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest(properties = "spring.sql.init.mode=never")

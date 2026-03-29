@@ -11,12 +11,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import school.sptech.EncantoPersonalizados.dto.categoriaTema.CategoriaTemaMapper;
-import school.sptech.EncantoPersonalizados.dto.categoriaTema.CategoriaTemaRequestDTO;
-import school.sptech.EncantoPersonalizados.dto.categoriaTema.CategoriaTemaResponseDTO;
-import school.sptech.EncantoPersonalizados.entities.CategoriaTema;
-import school.sptech.EncantoPersonalizados.exceptions.CategoriaTemaNaoEncontradaException;
-import school.sptech.EncantoPersonalizados.repository.CategoriaTemaRepository;
+import school.sptech.EncantoPersonalizados.core.application.usecase.categoriaTema.CategoriaTemaUseCaseImpl;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.categoriaTema.CategoriaTemaMapper;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.categoriaTema.CategoriaTemaRequestDTO;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.categoriaTema.CategoriaTemaResponseDTO;
+import school.sptech.EncantoPersonalizados.core.domain.CategoriaTema;
+import school.sptech.EncantoPersonalizados.core.domain.exception.CategoriaTemaNaoEncontradaException;
+import school.sptech.EncantoPersonalizados.core.application.gateway.CategoriaTemaGateway;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,13 +28,13 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class CategoriaTemaServiceTest {
+class CategoriaTemaUseCaseImplTest {
 
     @InjectMocks
-    private CategoriaTemaService service;
+    private CategoriaTemaUseCaseImpl service;
 
     @Mock
-    private CategoriaTemaRepository repository;
+    private CategoriaTemaGateway repository;
 
     @Test
     @DisplayName("Deve criar categoria de tema corretamente")

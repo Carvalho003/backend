@@ -6,8 +6,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import school.sptech.EncantoPersonalizados.entities.Pedido;
-import school.sptech.EncantoPersonalizados.repository.PedidoRepository;
+import school.sptech.EncantoPersonalizados.core.application.usecase.pedido.PedidoUseCaseImpl;
+import school.sptech.EncantoPersonalizados.core.domain.Pedido;
+import school.sptech.EncantoPersonalizados.core.application.gateway.PedidoGateway;
 
 import java.util.Optional;
 
@@ -15,12 +16,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class PedidoServiceTest {
+class PedidoUseCaseImplTest {
     @Mock
-    PedidoRepository repository;
+    PedidoGateway repository;
 
     @InjectMocks
-    PedidoService service;
+    PedidoUseCaseImpl service;
 
     @Test
     @DisplayName("Quando buscar por ID que não existe retornar NULL")

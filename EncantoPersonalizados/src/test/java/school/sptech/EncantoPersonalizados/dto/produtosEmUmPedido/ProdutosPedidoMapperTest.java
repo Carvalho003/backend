@@ -1,9 +1,9 @@
-package school.sptech.EncantoPersonalizados.dto.produtosEmUmPedido;
+package school.sptech.EncantoPersonalizados.infrastructure.dto.produtosEmUmPedido;
 
 import org.junit.jupiter.api.Test;
-import school.sptech.EncantoPersonalizados.entities.Pedido;
-import school.sptech.EncantoPersonalizados.entities.Produto;
-import school.sptech.EncantoPersonalizados.entities.ProdutoPedido;
+import school.sptech.EncantoPersonalizados.core.domain.Pedido;
+import school.sptech.EncantoPersonalizados.core.domain.Produto;
+import school.sptech.EncantoPersonalizados.core.domain.ProdutoPedido;
 
 import java.time.LocalDateTime;
 

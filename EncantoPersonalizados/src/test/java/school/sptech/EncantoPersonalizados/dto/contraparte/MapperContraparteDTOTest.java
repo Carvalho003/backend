@@ -1,7 +1,7 @@
-package school.sptech.EncantoPersonalizados.dto.contraparte;
+package school.sptech.EncantoPersonalizados.infrastructure.dto.contraparte;
 
 import org.junit.jupiter.api.Test;
-import school.sptech.EncantoPersonalizados.entities.Contraparte;
+import school.sptech.EncantoPersonalizados.core.domain.Contraparte;
 
 import static org.junit.jupiter.api.Assertions.*;
 

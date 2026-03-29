@@ -4,8 +4,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import school.sptech.EncantoPersonalizados.entities.EnderecoCliente;
+import school.sptech.EncantoPersonalizados.core.domain.EnderecoCliente;
 
+import school.sptech.EncantoPersonalizados.infrastructure.persistence.repository.EnderecoClienteRepository;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest(properties = "spring.sql.init.mode=never")

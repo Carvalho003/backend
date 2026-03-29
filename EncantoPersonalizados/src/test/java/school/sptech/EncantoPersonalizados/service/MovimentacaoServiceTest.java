@@ -4,10 +4,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
-import school.sptech.EncantoPersonalizados.dto.movimentacao.RequestMovimentacaoDTO;
-import school.sptech.EncantoPersonalizados.dto.movimentacao.ResponseMovimentacaoDTO;
-import school.sptech.EncantoPersonalizados.entities.*;
-import school.sptech.EncantoPersonalizados.repository.*;
+import school.sptech.EncantoPersonalizados.core.application.gateway.CategoriaMovimentacaoGateway;
+import school.sptech.EncantoPersonalizados.core.application.gateway.ContraparteGateway;
+import school.sptech.EncantoPersonalizados.core.application.gateway.MovimentacaoGateway;
+import school.sptech.EncantoPersonalizados.core.application.usecase.movimentacao.MovimentacaoUseCaseImpl;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.movimentacao.RequestMovimentacaoDTO;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.movimentacao.ResponseMovimentacaoDTO;
+import school.sptech.EncantoPersonalizados.core.domain.*;
+import school.sptech.EncantoPersonalizados.infrastructure.persistence.repository.*;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -16,19 +20,19 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class MovimentacaoServiceTest {
+class MovimentacaoUseCaseImplTest {
 
     @Mock
-    private MovimentacaoRepository movimentacaoRepository;
+    private MovimentacaoGateway movimentacaoRepository;
 
     @Mock
-    private ContraparteRepository contraparteRepository;
+    private ContraparteGateway contraparteRepository;
 
     @Mock
-    private CategoriaMovimentacaoRepository categoriaRepository;
+    private CategoriaMovimentacaoGateway categoriaRepository;
 
     @InjectMocks
-    private MovimentacaoService service;
+    private MovimentacaoUseCaseImpl service;
 
     @Test
     @DisplayName("Deve validar se o create funciona")

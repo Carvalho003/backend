@@ -1,7 +1,7 @@
-package school.sptech.EncantoPersonalizados.dto.statusPedido;
+package school.sptech.EncantoPersonalizados.infrastructure.dto.statusPedido;
 
 import org.junit.jupiter.api.Test;
-import school.sptech.EncantoPersonalizados.entities.StatusPedido;
+import school.sptech.EncantoPersonalizados.core.domain.StatusPedido;
 
 import static org.junit.jupiter.api.Assertions.*;
 

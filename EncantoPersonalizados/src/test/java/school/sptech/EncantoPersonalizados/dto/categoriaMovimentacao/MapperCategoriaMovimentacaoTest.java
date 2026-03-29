@@ -1,7 +1,7 @@
-package school.sptech.EncantoPersonalizados.dto.categoriaMovimentacao;
+package school.sptech.EncantoPersonalizados.infrastructure.dto.categoriaMovimentacao;
 
 import org.junit.jupiter.api.Test;
-import school.sptech.EncantoPersonalizados.entities.CategoriaMovimentacao;
+import school.sptech.EncantoPersonalizados.core.domain.CategoriaMovimentacao;
 
 import static org.junit.jupiter.api.Assertions.*;
 

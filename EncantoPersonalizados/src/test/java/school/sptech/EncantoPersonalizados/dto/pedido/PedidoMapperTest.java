@@ -1,11 +1,11 @@
-package school.sptech.EncantoPersonalizados.dto.pedido;
+package school.sptech.EncantoPersonalizados.infrastructure.dto.pedido;
 
 import org.junit.jupiter.api.Test;
-import school.sptech.EncantoPersonalizados.dto.pedidoStatusPedido.PedidoStatusPedidoResponseDto;
-import school.sptech.EncantoPersonalizados.entities.Cliente;
-import school.sptech.EncantoPersonalizados.entities.Pedido;
-import school.sptech.EncantoPersonalizados.entities.ProdutoPedido;
-import school.sptech.EncantoPersonalizados.entities.Usuario;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.pedidoStatusPedido.PedidoStatusPedidoResponseDto;
+import school.sptech.EncantoPersonalizados.core.domain.Cliente;
+import school.sptech.EncantoPersonalizados.core.domain.Pedido;
+import school.sptech.EncantoPersonalizados.core.domain.ProdutoPedido;
+import school.sptech.EncantoPersonalizados.core.domain.Usuario;
 
 import java.time.LocalDateTime;
 import java.util.List;

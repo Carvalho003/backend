@@ -1,7 +1,7 @@
-package school.sptech.EncantoPersonalizados.dto.usuario;
+package school.sptech.EncantoPersonalizados.infrastructure.dto.usuario;
 
 import org.junit.jupiter.api.Test;
-import school.sptech.EncantoPersonalizados.entities.Usuario;
+import school.sptech.EncantoPersonalizados.core.domain.Usuario;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

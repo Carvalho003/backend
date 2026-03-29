@@ -7,22 +7,24 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import school.sptech.EncantoPersonalizados.dto.contraparte.RequestContraparteDTO;
-import school.sptech.EncantoPersonalizados.dto.contraparte.ResponseContraparteDTO;
-import school.sptech.EncantoPersonalizados.entities.*;
-import school.sptech.EncantoPersonalizados.repository.*;
+import school.sptech.EncantoPersonalizados.core.application.gateway.ContraparteGateway;
+import school.sptech.EncantoPersonalizados.core.application.usecase.contraparte.ContraparteUseCaseImpl;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.contraparte.RequestContraparteDTO;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.contraparte.ResponseContraparteDTO;
+import school.sptech.EncantoPersonalizados.core.domain.*;
+import school.sptech.EncantoPersonalizados.infrastructure.persistence.repository.*;
 import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class ContraparteServiceTest {
+class ContraparteUseCaseImplTest {
 
     @Mock
-    private ContraparteRepository repository;
+    private ContraparteGateway repository;
 
     @InjectMocks
-    private ContraparteService service;
+    private ContraparteUseCaseImpl service;
 
     @Test
     void deveCriarContraparte() {

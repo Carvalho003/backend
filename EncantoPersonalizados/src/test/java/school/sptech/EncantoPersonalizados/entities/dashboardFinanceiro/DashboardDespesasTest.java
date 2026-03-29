@@ -1,5 +1,6 @@
-package school.sptech.EncantoPersonalizados.entities.dashboardFinanceiro;
+package school.sptech.EncantoPersonalizados.core.domain.dashboardFinanceiro;
 
+import school.sptech.EncantoPersonalizados.core.domain.dashboard.DashboardDespesas;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

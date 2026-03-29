@@ -1,5 +1,6 @@
 package school.sptech.EncantoPersonalizados.exceptions;
 
+import school.sptech.EncantoPersonalizados.core.domain.exception.EntidadeConflitoException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;

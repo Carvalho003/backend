@@ -1,9 +1,9 @@
-package school.sptech.EncantoPersonalizados.dto.movimentacao;
+package school.sptech.EncantoPersonalizados.infrastructure.dto.movimentacao;
 
 import org.junit.jupiter.api.Test;
-import school.sptech.EncantoPersonalizados.entities.CategoriaMovimentacao;
-import school.sptech.EncantoPersonalizados.entities.Contraparte;
-import school.sptech.EncantoPersonalizados.entities.Movimentacao;
+import school.sptech.EncantoPersonalizados.core.domain.CategoriaMovimentacao;
+import school.sptech.EncantoPersonalizados.core.domain.Contraparte;
+import school.sptech.EncantoPersonalizados.core.domain.Movimentacao;
 
 import java.time.LocalDate;
 

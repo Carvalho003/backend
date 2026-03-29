@@ -4,10 +4,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import school.sptech.EncantoPersonalizados.entities.CategoriaMovimentacao;
-import school.sptech.EncantoPersonalizados.entities.Contraparte;
-import school.sptech.EncantoPersonalizados.entities.Movimentacao;
+import school.sptech.EncantoPersonalizados.core.domain.CategoriaMovimentacao;
+import school.sptech.EncantoPersonalizados.core.domain.Contraparte;
+import school.sptech.EncantoPersonalizados.core.domain.Movimentacao;
 
+import school.sptech.EncantoPersonalizados.infrastructure.persistence.repository.CategoriaMovimentacaoRepository;
+import school.sptech.EncantoPersonalizados.infrastructure.persistence.repository.ContraparteRepository;
+import school.sptech.EncantoPersonalizados.infrastructure.persistence.repository.MovimentacaoRepository;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DataJpaTest(properties = "spring.sql.init.mode=never")
