@@ -112,30 +112,30 @@ public class ProdutoController {
         return ResponseEntity.status(200).build();
     }
 
-    @Operation(description = "Criar foto para o produto")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Criou a foto do produto"),
-            @ApiResponse(responseCode = "404", description = "Não encontrou o produto")
-    })
-    @PostMapping("/{produtoId}/fotos")
-    public CompletableFuture<ResponseEntity<FotoProdutoResponseDTO>> uploadFoto(
-            @PathVariable Integer produtoId,
-            @RequestParam("foto") MultipartFile file
-    ) throws IOException {
-        return armazenarFotoProdutoUseCase.store(produtoId, file)
-                .thenApply(foto -> ResponseEntity.status(201).body(FotoProdutoMapper.toDto(foto)));
-    }
-
-    @Operation(description = "Excluir foto do produto")
-    @ApiResponses({
-            @ApiResponse(responseCode = "202", description = "Sucesso ao exluir foto"),
-            @ApiResponse(responseCode = "404", description = "Não encontrou a foto do produto")
-    })
-    @DeleteMapping("/fotos/{fotoId}")
-    public CompletableFuture<ResponseEntity<Void>> deleteFoto(@PathVariable Integer fotoId) {
-        return armazenarFotoProdutoUseCase.deletarFoto(fotoId)
-                .thenApply(v -> ResponseEntity.<Void>noContent().build());
-    }
+//    @Operation(description = "Criar foto para o produto")
+//    @ApiResponses({
+//            @ApiResponse(responseCode = "200", description = "Criou a foto do produto"),
+//            @ApiResponse(responseCode = "404", description = "Não encontrou o produto")
+//    })
+//    @PostMapping("/{produtoId}/fotos")
+//    public CompletableFuture<ResponseEntity<FotoProdutoResponseDTO>> uploadFoto(
+//            @PathVariable Integer produtoId,
+//            @RequestParam("foto") MultipartFile file
+//    ) throws IOException {
+//        return armazenarFotoProdutoUseCase.store(produtoId, file)
+//                .thenApply(foto -> ResponseEntity.status(201).body(FotoProdutoMapper.toDto(foto)));
+//    }
+//
+//    @Operation(description = "Excluir foto do produto")
+//    @ApiResponses({
+//            @ApiResponse(responseCode = "202", description = "Sucesso ao exluir foto"),
+//            @ApiResponse(responseCode = "404", description = "Não encontrou a foto do produto")
+//    })
+//    @DeleteMapping("/fotos/{fotoId}")
+//    public CompletableFuture<ResponseEntity<Void>> deleteFoto(@PathVariable Integer fotoId) {
+//        return armazenarFotoProdutoUseCase.deletarFoto(fotoId)
+//                .thenApply(v -> ResponseEntity.<Void>noContent().build());
+//    }
 
 
 

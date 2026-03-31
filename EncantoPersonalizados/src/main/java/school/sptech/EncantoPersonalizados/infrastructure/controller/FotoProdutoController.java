@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
-@RequestMapping("/api/produtos")
+@RequestMapping("/produtos")
 public class FotoProdutoController {
 
     private final ArmazenarFotoProdutoUseCase armazenarFotoProdutoUseCase;
@@ -28,7 +28,7 @@ public class FotoProdutoController {
     @PostMapping("/{id}/fotos")
     public CompletableFuture<ResponseEntity<FotoProdutoResponseDTO>> adicionarFoto(
             @PathVariable Integer id,
-            @RequestParam MultipartFile file) throws IOException {
+            @RequestParam("file") MultipartFile file) throws IOException {
         return armazenarFotoProdutoUseCase.store(id, file)
                 .thenApply(foto -> ResponseEntity.status(201).body(FotoProdutoMapper.toDto(foto)));
     }

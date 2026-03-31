@@ -26,6 +26,7 @@ public class CategoriaTemaMapper {
                 TemaProdutoResponseDTO tema = new TemaProdutoResponseDTO(
                         t.getId(),
                         t.getDescricao(),
+                        null,
                         t.getCreatedAt(),
                         t.getUpdatedAt()
                 );
@@ -38,28 +39,8 @@ public class CategoriaTemaMapper {
 
     public static List<CategoriaTemaResponseDTO> toDto(List<CategoriaTema> entities){
         if(entities == null) return null;
-
-        return  entities
-                .stream()
-                .map(entity -> {
-
-
-                    List<TemaProdutoResponseDTO> temas = new ArrayList<>();
-                    if(entity.getTemaProdutos() != null) {
-                        for (TemaProduto t : entity.getTemaProdutos()) {
-                            TemaProdutoResponseDTO tema = new TemaProdutoResponseDTO(
-                                    t.getId(),
-                                    t.getDescricao(),
-                                    t.getCreatedAt(),
-                                    t.getUpdatedAt()
-                            );
-                            temas.add(tema);
-                        }
-                    }
-                    return new CategoriaTemaResponseDTO(entity.getId(), entity.getTitulo(), temas);
-                })
+        return entities.stream()
+                .map(CategoriaTemaMapper::toDto)
                 .toList();
-
-
     }
 }

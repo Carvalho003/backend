@@ -1,5 +1,6 @@
 package school.sptech.EncantoPersonalizados.infrastructure.config;
 
+import jakarta.servlet.DispatcherType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -65,6 +66,8 @@ public class SecurityConfiguracao {
                 .cors(Customizer.withDefaults())
                 .csrf(CsrfConfigurer<HttpSecurity>::disable)
                 .authorizeHttpRequests(authorize -> authorize
+                        .dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll() // <-- ISTO É O QUE PERMITE A FOTO SALVAR
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()   // <-- ISTO EVITA O ERRO DE CORS/401
                         .requestMatchers(URLS_PERMITIDAS).permitAll()
                         .anyRequest().authenticated()
                 )

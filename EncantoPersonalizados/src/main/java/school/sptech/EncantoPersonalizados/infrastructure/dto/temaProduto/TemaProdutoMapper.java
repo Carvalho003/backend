@@ -1,6 +1,7 @@
 package school.sptech.EncantoPersonalizados.infrastructure.dto.temaProduto;
 
 import school.sptech.EncantoPersonalizados.core.domain.TemaProduto;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.categoriaTema.CategoriaTemaMapper;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,6 +22,7 @@ public class TemaProdutoMapper {
         TemaProdutoResponseDTO dto = new TemaProdutoResponseDTO(
                 entity.getId(),
                 entity.getDescricao(),
+                CategoriaTemaMapper.toDto(entity.getCategoriaTema()),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt()
         );
@@ -28,19 +30,10 @@ public class TemaProdutoMapper {
     }
 
     public static List<TemaProdutoResponseDTO> toDto(List<TemaProduto> entity){
-        if (entity == null) return null;
+        if (entity == null || entity.isEmpty()) return null;
 
-        if(entity.isEmpty()) return null;
-
-        return entity
-                .stream()
-                .map(e -> new TemaProdutoResponseDTO(
-                        e.getId(),
-                        e.getDescricao(),
-                        e.getCreatedAt(),
-                        e.getUpdatedAt()
-                        )
-                )
+        return entity.stream()
+                .map(TemaProdutoMapper::toDto)
                 .toList();
     }
 }

@@ -33,6 +33,13 @@ public class AutenticacaoFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
+        String uri = request.getRequestURI();
+
+        if (uri.equals("/usuarios") && request.getMethod().equalsIgnoreCase("POST")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         String username = null;
         String jwtToken = null;
 

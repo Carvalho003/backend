@@ -1,6 +1,7 @@
 package school.sptech.EncantoPersonalizados.core.application.usecase.fotoProduto;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional; // <-- IMPORTANTE
 import org.springframework.web.multipart.MultipartFile;
 import school.sptech.EncantoPersonalizados.core.application.gateway.FotoArquivoStorageGateway;
 import school.sptech.EncantoPersonalizados.core.application.gateway.FotoProdutoGateway;
@@ -50,11 +51,18 @@ public class ArmazenarFotoProdutoUseCaseImpl implements ArmazenarFotoProdutoUseC
     }
 
     @Override
+    @Transactional
     public CompletableFuture<Void> deletarFoto(Integer fotoId) {
+
         FotoProduto foto = fotoProdutoGateway.findById(fotoId)
                 .orElseThrow(() -> new RuntimeException("Foto não encontrada"));
 
-        return fotoArquivoStorageGateway.deletar(foto.getFoto())
-                .thenRun(() -> fotoProdutoGateway.delete(foto));
+        String caminhoRelativo = foto.getFoto();
+
+        fotoProdutoGateway.delete(foto);
+
+        fotoArquivoStorageGateway.deletar(caminhoRelativo);
+
+        return CompletableFuture.completedFuture(null);
     }
 }
