@@ -31,3 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### WhatsApp API ###
+infra/whatsapp/.env
+infra/whatsapp/storages/
+infra/whatsapp/statics/

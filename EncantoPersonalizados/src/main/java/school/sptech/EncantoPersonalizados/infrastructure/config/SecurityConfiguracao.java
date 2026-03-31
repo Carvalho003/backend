@@ -57,6 +57,7 @@ public class SecurityConfiguracao {
             new AntPathRequestMatcher("/error/**"),
             new AntPathRequestMatcher("/usuarios/**"),
             new AntPathRequestMatcher("/uploads/**"),
+            new AntPathRequestMatcher("/whatsapp/**"),
     };
 
     @Bean
