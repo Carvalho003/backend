@@ -1,15 +1,15 @@
-package school.sptech.EncantoPersonalizados.repository;
+package school.sptech.EncantoPersonalizados.infrastructure.persistence.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import school.sptech.EncantoPersonalizados.entities.PedidoStatusPedido;
+import school.sptech.EncantoPersonalizados.core.domain.PedidoStatusPedido;
 
 import java.util.List;
 
 public interface WhatsappRepository extends JpaRepository<PedidoStatusPedido, Integer> {
 
         @Query("""
-                        SELECT DISTINCT c.telefone
+                        SELECT DISTINCT CONCAT('55', c.telefone)
                         FROM PedidoStatusPedido psp
                         JOIN psp.pedido p
                         JOIN p.cliente c

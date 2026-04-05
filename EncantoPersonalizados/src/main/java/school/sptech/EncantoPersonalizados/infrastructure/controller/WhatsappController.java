@@ -1,12 +1,13 @@
-package school.sptech.EncantoPersonalizados.controller;
+package school.sptech.EncantoPersonalizados.infrastructure.controller;
 
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import school.sptech.EncantoPersonalizados.service.WhatsappService;
+import school.sptech.EncantoPersonalizados.infrastructure.service.WhatsappService;
 
 import java.util.List;
 
@@ -50,8 +51,8 @@ public class WhatsappController {
     ) {
     }
 
-        public record EnvioPendentesRequest(
-            String mensagem
-        ) {
-        }
+    public record EnvioPendentesRequest(
+            @NotBlank(message = "Mensagem nao pode estar vazia") String mensagem
+    ) {
+    }
 }
