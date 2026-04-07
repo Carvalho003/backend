@@ -3,9 +3,9 @@ services:
     image: 'mysql:latest'
     environment:
       - 'MYSQL_DATABASE=encanto_personalizados'
-      - 'MYSQL_PASSWORD=encanteta'
-      - 'MYSQL_ROOT_PASSWORD=encanteta'
-      - 'MYSQL_USER=cynapseta'
+      - 'MYSQL_PASSWORD=encanto'
+      - 'MYSQL_ROOT_PASSWORD=encanto'
+      - 'MYSQL_USER=cynapse'
     ports:
       - '3307:3306'
 
@@ -20,3 +20,13 @@ services:
     volumes:
       - ./infra/whatsapp/storages:/app/storages
       - ./infra/whatsapp/statics:/app/statics
+  
+  rabbitmq:
+    image: 'rabbitmq:4.2.4-management'
+    environment:
+    - 'RABBITMQ_DEFAULT_PASS=encanto'
+    - 'RABBITMQ_DEFAULT_USER=cynapse'
+    ports:
+    - "5672:5672" # Porta do RabbitMQ
+    - "15672:15672" # Porta da interface de gerenciamento
+
