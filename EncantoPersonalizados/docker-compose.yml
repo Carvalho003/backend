@@ -1,6 +1,8 @@
 services:
   mysql:
     image: 'mysql:latest'
+    mem_limit: 768m
+    mem_reservation: 256m
     environment:
       - 'MYSQL_DATABASE=encanto_personalizados'
       - 'MYSQL_PASSWORD=encanto'
@@ -13,20 +15,32 @@ services:
     image: aldinokemal2104/go-whatsapp-web-multidevice:latest
     command: ["rest"]
     restart: unless-stopped
+    mem_limit: 384m
+    mem_reservation: 128m
     ports:
       - '3001:3000'
     env_file:
-      - ./infra/whatsapp/.env
+    
+      - ./API WHATSAPP/.env
     volumes:
-      - ./infra/whatsapp/storages:/app/storages
-      - ./infra/whatsapp/statics:/app/statics
+      - ./API WHATSAPP/storages:/app/storages
+      - ./API WHATSAPP/statics:/app/statics
   
   rabbitmq:
-    image: 'rabbitmq:4.2.4-management'
+    image: 'rabbitmq:3.13-management'
+    restart: unless-stopped
+    mem_limit: 512m
+    mem_reservation: 256m
     environment:
     - 'RABBITMQ_DEFAULT_PASS=encanto'
     - 'RABBITMQ_DEFAULT_USER=cynapse'
+    - 'RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit vm_memory_high_watermark 0.4'
     ports:
     - "5672:5672" # Porta do RabbitMQ
     - "15672:15672" # Porta da interface de gerenciamento
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
 
