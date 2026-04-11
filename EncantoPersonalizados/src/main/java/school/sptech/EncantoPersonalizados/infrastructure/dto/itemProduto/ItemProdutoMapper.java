@@ -17,6 +17,7 @@ public class ItemProdutoMapper {
         entity.setComprimento(dto.comprimento());
         entity.setMaterial(dto.material());
         entity.setCustoProducao(dto.custoProducao());
+        entity.setDescricaoPadrao(dto.descricaoPadrao());
         entity.setPrecoPromocional(dto.precoPromocional());
         return entity;
 
@@ -35,6 +36,7 @@ public class ItemProdutoMapper {
                 entity.getPeso(),
                 entity.getComprimento(),
                 entity.getMaterial(),
+                entity.getDescricaoPadrao(),
                 entity.getPrecoPromocional(),
                 entity.getCreatedAt(),
                 entity.getUpdatedAt()
@@ -58,6 +60,7 @@ public class ItemProdutoMapper {
                             entity.getPeso(),
                             entity.getComprimento(),
                             entity.getMaterial(),
+                            entity.getDescricaoPadrao(),
                             entity.getPrecoPromocional(),
                             entity.getCreatedAt(),
                             entity.getUpdatedAt()

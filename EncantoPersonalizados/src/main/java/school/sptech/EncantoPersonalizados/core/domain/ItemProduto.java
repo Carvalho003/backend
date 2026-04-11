@@ -19,6 +19,8 @@ public class ItemProduto {
     private Double peso;
     private Double comprimento;
     private String material;
+    @Column(columnDefinition = "TEXT")
+    private String descricaoPadrao;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Double precoPromocional;
@@ -131,6 +133,14 @@ public class ItemProduto {
 
     public void setMaterial(String material) {
         this.material = material;
+    }
+
+    public String getDescricaoPadrao() {
+        return descricaoPadrao;
+    }
+
+    public void setDescricaoPadrao(String descricaoPadrao) {
+        this.descricaoPadrao = descricaoPadrao;
     }
 
     public LocalDateTime getCreatedAt() {

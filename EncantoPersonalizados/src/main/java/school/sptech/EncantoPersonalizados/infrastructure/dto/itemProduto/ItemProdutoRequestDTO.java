@@ -21,6 +21,8 @@ public record ItemProdutoRequestDTO(
          Double comprimento,
         @Schema(description = "Materia prima do produto ")
          String material,
+        @Schema(description = "Descrição detalhada Padrão do produto")
+        String descricaoPadrao,
         @Schema(description = "Preço promocional caso exista", example = "20,99")
         Double precoPromocional
 ) {
