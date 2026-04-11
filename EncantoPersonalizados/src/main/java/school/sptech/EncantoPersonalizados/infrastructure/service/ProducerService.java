@@ -18,7 +18,13 @@ public class ProducerService {
 
     public void send(messageDto message) {
         String exchangeName = properties.exchange().name();
-        String routingKey = "";
+        String routingKey = properties.queue().name();
+        rabbitTemplate.convertAndSend(exchangeName, routingKey, message);
+    }
+
+    public void sendReminderSent(messageDto message) {
+        String exchangeName = properties.exchange().name();
+        String routingKey = properties.reminders().routingKey();
         rabbitTemplate.convertAndSend(exchangeName, routingKey, message);
     }
 }

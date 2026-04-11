@@ -2,11 +2,12 @@ package school.sptech.EncantoPersonalizados.infrastructure.service;
 
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.rabbitMQ.messageDto;
 
 @Service
 public class ConsumerService {
     @RabbitListener(queues = "${broker.queue.name}")
-    public void receive(String message) {
-        System.out.println("Received message: " + message);
+    public void receive(messageDto message) {
+        System.out.println("Received message: " + message.content());
     }
 }

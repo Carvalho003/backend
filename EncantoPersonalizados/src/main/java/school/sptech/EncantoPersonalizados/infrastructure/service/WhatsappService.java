@@ -14,6 +14,7 @@ import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.rabbitMQ.messageDto;
 import school.sptech.EncantoPersonalizados.infrastructure.persistence.repository.WhatsappRepository;
 
 import java.util.Collections;
@@ -27,6 +28,7 @@ public class WhatsappService {
 
     private final RestTemplate restTemplate;
     private final WhatsappRepository whatsappRepository;
+    private final ProducerService producerService;
     private final String whatsappApiBaseUrl;
     private final String schedulerMessage;
     private final boolean schedulerEnabled;
@@ -34,12 +36,14 @@ public class WhatsappService {
     public WhatsappService(
             RestTemplateBuilder restTemplateBuilder,
             WhatsappRepository whatsappRepository,
+            ProducerService producerService,
             @Value("${whatsapp.api.base-url:http://localhost:3001}") String whatsappApiBaseUrl,
             @Value("${whatsapp.scheduler.enabled:true}") boolean schedulerEnabled,
             @Value("${whatsapp.scheduler.message:teste scheduler message}") String schedulerMessage
     ) {
         this.restTemplate = restTemplateBuilder.build();
         this.whatsappRepository = whatsappRepository;
+        this.producerService = producerService;
         this.whatsappApiBaseUrl = whatsappApiBaseUrl;
         this.schedulerEnabled = schedulerEnabled;
         this.schedulerMessage = schedulerMessage;
@@ -50,6 +54,10 @@ public class WhatsappService {
     }
 
     public int enviarMensagemParaTelefonesPendentes(String mensagem) {
+        return enviarMensagemParaTelefonesPendentes(mensagem, false);
+    }
+
+    public int enviarMensagemParaTelefonesPendentes(String mensagem, boolean lembreteAutomatico) {
         List<String> telefonesPendentes = listarTelefonesEntregasPendentes();
 
         int enviados = 0;
@@ -57,7 +65,7 @@ public class WhatsappService {
             if (telefone == null || telefone.isBlank()) {
                 continue;
             }
-            if (enviarMensagem(telefone, mensagem)) {
+            if (enviarMensagem(telefone, mensagem, lembreteAutomatico)) {
                 enviados++;
             }
         }
@@ -77,7 +85,7 @@ public class WhatsappService {
             if (telefone == null || telefone.isBlank()) {
                 continue;
             }
-            if (enviarMensagem(telefone, mensagem)) {
+            if (enviarMensagem(telefone, mensagem, false)) {
                 enviados++;
             }
         }
@@ -105,15 +113,42 @@ public class WhatsappService {
         }
 
         // Envia a mensagem configurada para todos os telefones com pedidos pendentes
-        int enviados = enviarMensagemParaTelefonesPendentes(schedulerMessage);
+        int enviados = enviarMensagemParaTelefonesPendentes(schedulerMessage, true);
         log.info("Scheduler WhatsApp executado. Mensagens enviadas: {}", enviados);
     }
 
-    private boolean enviarMensagem(String phone, String message) {
+    private String obterDeviceId() {
+        // Busca automaticamente o primeiro device disponível na API do WhatsApp
+        // Se nenhum device estiver disponível, retorna null
+        try {
+            String url = whatsappApiBaseUrl + "/devices";
+            ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+            
+            // Parse simples: extrai o primeiro "id" encontrado
+            String body = response.getBody();
+            if (body != null && body.contains("\"id\"")) {
+                // Extrai o valor entre aspas do primeiro "id"
+                int idIndex = body.indexOf("\"id\"");
+                int valorInicio = body.indexOf("\"", idIndex + 5);
+                int valorFim = body.indexOf("\"", valorInicio + 1);
+                if (valorInicio != -1 && valorFim != -1) {
+                    String deviceId = body.substring(valorInicio + 1, valorFim);
+                    log.debug("Device ID obtido automaticamente: {}", deviceId);
+                    return deviceId;
+                }
+            }
+        } catch (Exception ex) {
+            log.error("Erro ao obter lista de devices: {}", ex.getMessage());
+        }
+        return null;
+    }
+
+    private boolean enviarMensagem(String phone, String message, boolean lembreteAutomatico) {
         String url = whatsappApiBaseUrl + "/send/message";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("X-Device-Id", obterDeviceId());
 
         HttpEntity<Map<String, String>> entity = new HttpEntity<>(
                 Map.of(
@@ -129,6 +164,21 @@ public class WhatsappService {
                     phone,
                     response.getStatusCode().value(),
                     response.getBody());
+
+            try {
+                producerService.send(new messageDto("WhatsApp enviado para " + phone + ": " + message));
+            } catch (Exception ex) {
+                log.warn("Falha ao publicar evento no RabbitMQ | phone={} | erro={}", phone, ex.getMessage());
+            }
+
+            if (lembreteAutomatico) {
+                try {
+                    producerService.sendReminderSent(new messageDto("Lembrete automatico enviado para " + phone + ": " + message));
+                } catch (Exception ex) {
+                    log.warn("Falha ao publicar evento de lembrete enviado | phone={} | erro={}", phone, ex.getMessage());
+                }
+            }
+
             return true;
         } catch (RestClientResponseException ex) {
             log.error("Erro ao enviar WhatsApp | phone={} | status={} | body={}",
