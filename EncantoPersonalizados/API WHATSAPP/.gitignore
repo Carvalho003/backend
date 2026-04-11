@@ -1,19 +1,18 @@
+# Runtime/generated
 *.db
-tmp
-.idea
-.DS_Store
-history-*.json
+tmp/
+bin/
 main
 main.exe
-*.jpe
-src/pkged.go
-storages
+history-*.json
+storages/
 .env
-bin
-.playwright-mcp
+
+# Local tooling/IDE
+.idea/
+.DS_Store
+.playwright-mcp/
 .cursor/mcp.json
 .factory
-.vscode/settings.json
-src/whatsapp
 .worktrees/
-src/gowa
+.vscode/settings.json
