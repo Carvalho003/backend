@@ -35,6 +35,7 @@ public class MapperMovimentacao {
         );
 
         return new ResponseMovimentacaoDTO(
+                movimentacao.getId(),
                 movimentacao.getTipo(),
                 movimentacao.getDescricao(),
                 movimentacao.getValor(),

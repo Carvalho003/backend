@@ -18,6 +18,7 @@ public class MapperContraparteDTO {
 
     public static ResponseContraparteDTO toDto(Contraparte contraparte) {
         var dto = new ResponseContraparteDTO(
+                contraparte.getId(),
                 contraparte.getNome(),
                 contraparte.getDescricao(),
                 contraparte.getSegmento(),

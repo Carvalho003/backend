@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record ResponseContraparteDTO(
+        Integer id,
         @NotBlank
         String nome,
         String descricao,

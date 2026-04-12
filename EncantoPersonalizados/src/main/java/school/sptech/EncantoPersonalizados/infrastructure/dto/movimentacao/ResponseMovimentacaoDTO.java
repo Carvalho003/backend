@@ -6,6 +6,7 @@ import school.sptech.EncantoPersonalizados.infrastructure.dto.contraparte.Respon
 import java.time.LocalDate;
 
 public record ResponseMovimentacaoDTO (
+    Integer id,
     String tipo,
     String descricao,
     Double valor,
