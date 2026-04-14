@@ -13,8 +13,9 @@ public record RequestMovimentacaoDTO(
         Double valor,
         @NotBlank
         String statusPagamento,
-        @NotNull
+
         LocalDate dataVencimento,
+        @NotNull
         LocalDate dataPagamento,
         @NotNull
         Integer idContraparte,

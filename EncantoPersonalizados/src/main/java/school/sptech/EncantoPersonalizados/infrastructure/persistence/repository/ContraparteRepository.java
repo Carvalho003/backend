@@ -14,7 +14,7 @@ public interface ContraparteRepository extends JpaRepository<Contraparte, Intege
 
     @Query("""
         SELECT c FROM Contraparte c
-        WHERE (:search IS NULL OR LOWER(c.descricao) LIKE LOWER(CONCAT('%', :search, '%')))
+        WHERE (:search IS NULL OR LOWER(c.nome) LIKE LOWER(CONCAT('%', :search, '%'))  OR LOWER(c.descricao) LIKE LOWER(CONCAT('%', :search, '%')))
         AND (:tipo IS NULL OR LOWER(c.tipoContrato) LIKE LOWER(CONCAT('%', :tipo, '%')))
         AND (:segmento IS NULL OR LOWER(c.segmento) LIKE LOWER(CONCAT('%', :segmento, '%')))
         AND (:nome IS NULL OR LOWER(c.nome) LIKE LOWER(CONCAT('%', :nome, '%')))
