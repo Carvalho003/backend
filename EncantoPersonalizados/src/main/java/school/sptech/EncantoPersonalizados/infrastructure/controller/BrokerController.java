@@ -6,21 +6,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import school.sptech.EncantoPersonalizados.infrastructure.dto.rabbitMQ.messageDto;
-import school.sptech.EncantoPersonalizados.infrastructure.service.ProducerService;
+import school.sptech.EncantoPersonalizados.core.application.usecase.producer.ProducerUseCase;
 
 @RestController
 @RequestMapping("/messages")
 public class BrokerController {
 
-    private final ProducerService producerService;
+    private final ProducerUseCase producerUseCase;
 
-    public BrokerController(ProducerService producerService) {
-        this.producerService = producerService;
+    public BrokerController(ProducerUseCase producerUseCase) {
+        this.producerUseCase = producerUseCase;
     }
 
     @PostMapping
     public ResponseEntity<Void> enviarMensagem(@RequestBody messageDto message) {
-        producerService.send(message);
+        producerUseCase.send(message);
         return ResponseEntity.status(202).build();
     }
 }
