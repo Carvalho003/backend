@@ -1,4 +1,4 @@
-package school.sptech.EncantoPersonalizados.infrastructure.service;
+package school.sptech.EncantoPersonalizados.core.application.usecase.whatsapp;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -14,6 +14,7 @@ import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import school.sptech.EncantoPersonalizados.core.application.usecase.producer.ProducerUseCase;
 import school.sptech.EncantoPersonalizados.infrastructure.dto.rabbitMQ.messageDto;
 import school.sptech.EncantoPersonalizados.infrastructure.persistence.repository.WhatsappRepository;
 
@@ -22,28 +23,28 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class WhatsappService {
+public class WhatsappUseCase {
 
-    private static final Logger log = LoggerFactory.getLogger(WhatsappService.class);
+    private static final Logger log = LoggerFactory.getLogger(WhatsappUseCase.class);
 
     private final RestTemplate restTemplate;
     private final WhatsappRepository whatsappRepository;
-    private final ProducerService producerService;
+    private final ProducerUseCase producerUseCase;
     private final String whatsappApiBaseUrl;
     private final String schedulerMessage;
     private final boolean schedulerEnabled;
 
-    public WhatsappService(
+    public WhatsappUseCase(
             RestTemplateBuilder restTemplateBuilder,
             WhatsappRepository whatsappRepository,
-            ProducerService producerService,
+            ProducerUseCase producerUseCase,
             @Value("${whatsapp.api.base-url:http://localhost:3001}") String whatsappApiBaseUrl,
             @Value("${whatsapp.scheduler.enabled:true}") boolean schedulerEnabled,
             @Value("${whatsapp.scheduler.message:teste scheduler message}") String schedulerMessage
     ) {
         this.restTemplate = restTemplateBuilder.build();
         this.whatsappRepository = whatsappRepository;
-        this.producerService = producerService;
+        this.producerUseCase = producerUseCase;
         this.whatsappApiBaseUrl = whatsappApiBaseUrl;
         this.schedulerEnabled = schedulerEnabled;
         this.schedulerMessage = schedulerMessage;
@@ -166,14 +167,14 @@ public class WhatsappService {
                     response.getBody());
 
             try {
-                producerService.send(new messageDto("WhatsApp enviado para " + phone + ": " + message));
+                producerUseCase.send(new messageDto("WhatsApp enviado para " + phone + ": " + message));
             } catch (Exception ex) {
                 log.warn("Falha ao publicar evento no RabbitMQ | phone={} | erro={}", phone, ex.getMessage());
             }
 
             if (lembreteAutomatico) {
                 try {
-                    producerService.sendReminderSent(new messageDto("Lembrete automatico enviado para " + phone + ": " + message));
+                    producerUseCase.sendReminderSent(new messageDto("Lembrete automatico enviado para " + phone + ": " + message));
                 } catch (Exception ex) {
                     log.warn("Falha ao publicar evento de lembrete enviado | phone={} | erro={}", phone, ex.getMessage());
                 }
