@@ -1,5 +1,6 @@
 package school.sptech.EncantoPersonalizados.core.application.usecase.pedido;
 
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -68,6 +69,7 @@ public class PedidoUseCaseImpl implements PedidoUseCase {
     }
 
     @Override
+    @Transactional
     public PedidoCreatedResponseDto store(PedidoRequestDto pedidoDto) {
         Cliente cliente = clienteGateway.findById(pedidoDto.clienteId());
         if (cliente == null) {
@@ -112,6 +114,21 @@ public class PedidoUseCaseImpl implements PedidoUseCase {
             school.sptech.EncantoPersonalizados.core.domain.ProdutoPedido produtoPedido = ProdutosPedidoMapper.toEntity(pedidoRequestDto);
             produtoPedido.setPedido(pedido);
             produtoPedido.setProduto(produto);
+
+            Integer quantidade = produtoPedido.getQtdProduto() != null ? produtoPedido.getQtdProduto() : 1;
+            produtoPedido.setQtdProduto(quantidade);
+
+            if (produtoPedido.getPrecoUnitario() == null) {
+                produtoPedido.setPrecoUnitario(produto.getItemProduto().getPrecoVenda());
+            }
+
+            if (produtoPedido.getPesoUnitario() == null) {
+                produtoPedido.setPesoUnitario(produto.getItemProduto().getPeso());
+            }
+
+            produtoPedido.setPrecoTotal(produtoPedido.getPrecoUnitario() * quantidade);
+            produtoPedido.setPesoTotal(produtoPedido.getPesoUnitario() * quantidade);
+
 
             school.sptech.EncantoPersonalizados.core.domain.ProdutoPedido produtoPedidoSalvo = produtoPedidoGateway.save(produtoPedido);
             ProdutosPedidoResponseDto dtoProdutoPedido = ProdutosPedidoMapper.toDto(produtoPedidoSalvo);

@@ -67,9 +67,15 @@ public class SecurityConfiguracao {
                 .cors(Customizer.withDefaults())
                 .csrf(CsrfConfigurer<HttpSecurity>::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll() // <-- ISTO É O QUE PERMITE A FOTO SALVAR
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()   // <-- ISTO EVITA O ERRO DE CORS/401
+                        .dispatcherTypeMatchers(DispatcherType.ASYNC).permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(URLS_PERMITIDAS).permitAll()
+
+                        .requestMatchers(HttpMethod.GET, "/produtos").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/produtos/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/temas").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/temas/**").permitAll()
+
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(handling -> handling.authenticationEntryPoint(autenticacaoEntryPoint))
