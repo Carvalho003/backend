@@ -37,8 +37,7 @@ public class ProdutoUseCaseImpl implements ProdutoUseCase {
     }
 
     @Override
-    public Page<Produto> get(String search, String categoria, String tema, String item, boolean ativo, int page) {
-        int size = 10;
+    public Page<Produto> get(String search, String categoria, String tema, String item, boolean ativo, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         search = vazioParaNull(search);
         categoria = vazioParaNull(categoria);

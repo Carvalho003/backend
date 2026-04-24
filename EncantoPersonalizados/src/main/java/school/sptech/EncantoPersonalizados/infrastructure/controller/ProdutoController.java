@@ -78,9 +78,10 @@ public class ProdutoController {
             @RequestParam(required = false) String tema,
             @RequestParam(required = false) String item,
             @RequestParam(defaultValue = "true") boolean ativo,
-            @RequestParam(defaultValue = "0") int page
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ){
-        Page<Produto> resposta = produtoUseCase.get(search, categoria, tema, item, ativo, page);
+        Page<Produto> resposta = produtoUseCase.get(search, categoria, tema, item, ativo, page, size);
         return ResponseEntity.status(200).body(resposta.map(ProdutoMapper::toDto));
     }
 
