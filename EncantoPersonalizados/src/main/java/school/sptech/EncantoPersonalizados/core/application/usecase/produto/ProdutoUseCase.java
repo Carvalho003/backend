@@ -6,7 +6,8 @@ import school.sptech.EncantoPersonalizados.infrastructure.dto.produto.ProdutoReq
 import school.sptech.EncantoPersonalizados.infrastructure.dto.produto.ProdutoResponseDTO;
 
 public interface ProdutoUseCase {
-    Page<Produto> get(String search, String categoria, String tema, String item, boolean ativo, int page);
+    Page<Produto> get(String search, String categoria, String tema, String item, boolean ativo, int page, int size);
+
     Produto findById(Integer id);
     void mudarEstado(Integer id);
     Produto store(Produto entity);

@@ -6,9 +6,11 @@ import org.springframework.web.multipart.MultipartFile;
 import school.sptech.EncantoPersonalizados.core.application.gateway.FotoArquivoStorageGateway;
 import school.sptech.EncantoPersonalizados.core.application.gateway.FotoProdutoGateway;
 import school.sptech.EncantoPersonalizados.core.application.gateway.ProdutoGateway;
+import school.sptech.EncantoPersonalizados.core.application.usecase.producer.ProducerUseCase;
 import school.sptech.EncantoPersonalizados.core.domain.FotoProduto;
 import school.sptech.EncantoPersonalizados.core.domain.Produto;
 import school.sptech.EncantoPersonalizados.core.domain.exception.ProdutoNaoEncontradoException;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.rabbitMQ.FotoProdutoEventMessageDto;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -21,15 +23,18 @@ public class ArmazenarFotoProdutoUseCaseImpl implements ArmazenarFotoProdutoUseC
     private final FotoProdutoGateway fotoProdutoGateway;
     private final ProdutoGateway produtoGateway;
     private final FotoArquivoStorageGateway fotoArquivoStorageGateway;
+    private final ProducerUseCase producerUseCase;
 
     public ArmazenarFotoProdutoUseCaseImpl(
             FotoProdutoGateway fotoProdutoGateway,
             ProdutoGateway produtoGateway,
-            FotoArquivoStorageGateway fotoArquivoStorageGateway
+            FotoArquivoStorageGateway fotoArquivoStorageGateway,
+            ProducerUseCase producerUseCase
     ) {
         this.fotoProdutoGateway = fotoProdutoGateway;
         this.produtoGateway = produtoGateway;
         this.fotoArquivoStorageGateway = fotoArquivoStorageGateway;
+        this.producerUseCase = producerUseCase;
     }
 
     @Override
@@ -46,7 +51,17 @@ public class ArmazenarFotoProdutoUseCaseImpl implements ArmazenarFotoProdutoUseC
                     fotoProduto.setFoto(fotoArquivo.getCaminhoRelativo());
                     fotoProduto.setProduto(produto);
                     fotoProduto.setCreatedAt(LocalDateTime.now());
-                    return fotoProdutoGateway.save(fotoProduto);
+                FotoProduto fotoSalva = fotoProdutoGateway.save(fotoProduto);
+
+                producerUseCase.sendFotoProdutoEvent(
+                    FotoProdutoEventMessageDto.fotoCriada(
+                        produtoId,
+                        fotoSalva.getId(),
+                        fotoSalva.getFoto()
+                    )
+                );
+
+                return fotoSalva;
                 });
     }
 
@@ -58,10 +73,15 @@ public class ArmazenarFotoProdutoUseCaseImpl implements ArmazenarFotoProdutoUseC
                 .orElseThrow(() -> new RuntimeException("Foto não encontrada"));
 
         String caminhoRelativo = foto.getFoto();
+        Integer produtoId = foto.getProduto() != null ? foto.getProduto().getId() : null;
 
         fotoProdutoGateway.delete(foto);
 
         fotoArquivoStorageGateway.deletar(caminhoRelativo);
+
+        producerUseCase.sendFotoProdutoEvent(
+            FotoProdutoEventMessageDto.fotoRemovida(produtoId, fotoId, caminhoRelativo)
+        );
 
         return CompletableFuture.completedFuture(null);
     }

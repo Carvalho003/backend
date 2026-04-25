@@ -3,6 +3,7 @@ package school.sptech.EncantoPersonalizados.core.application.usecase.producer;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import school.sptech.EncantoPersonalizados.infrastructure.config.RabbitPropertiesConfiguration;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.rabbitMQ.FotoProdutoEventMessageDto;
 import school.sptech.EncantoPersonalizados.infrastructure.dto.rabbitMQ.messageDto;
 
 @Service
@@ -26,5 +27,10 @@ public class ProducerUseCase {
         String exchangeName = properties.exchange().name();
         String routingKey = properties.reminders().routingKey();
         rabbitTemplate.convertAndSend(exchangeName, routingKey, message);
+    }
+
+    public void sendFotoProdutoEvent(FotoProdutoEventMessageDto message) {
+        String exchangeName = properties.fotoProdutoEvents().exchangeName();
+        rabbitTemplate.convertAndSend(exchangeName, "", message);
     }
 }

@@ -40,6 +40,23 @@ public class LocalFotoArquivoStorageAdapter implements FotoArquivoStorageGateway
 
     @Async
     @Override
+    public CompletableFuture<String> salvarFotoUsuario(Integer usuarioId, String nomeArquivo, byte[] conteudo) {
+        try {
+            Path usuarioFolder = Paths.get(uploadDir, "usuarios", usuarioId.toString());
+            Files.createDirectories(usuarioFolder);
+
+            Path caminhoCompleto = usuarioFolder.resolve(nomeArquivo);
+            Files.copy(new ByteArrayInputStream(conteudo), caminhoCompleto, StandardCopyOption.REPLACE_EXISTING);
+
+            String caminhoRelativo = "/uploads/usuarios/" + usuarioId + "/" + nomeArquivo;
+            return CompletableFuture.completedFuture(caminhoRelativo);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    @Async
+    @Override
     public CompletableFuture<Void> deletar(String caminhoRelativo) {
         try {
             Path caminhoArquivo = Paths.get(caminhoRelativo.replace("/uploads", "uploads"));

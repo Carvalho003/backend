@@ -1,6 +1,5 @@
 package school.sptech.EncantoPersonalizados.core.application.usecase.usuario;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -8,32 +7,29 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import school.sptech.EncantoPersonalizados.core.application.gateway.UsuarioGateway;
+import school.sptech.EncantoPersonalizados.core.application.gateway.FotoArquivoStorageGateway;
 import school.sptech.EncantoPersonalizados.core.domain.Usuario;
 import school.sptech.EncantoPersonalizados.infrastructure.dto.usuario.UsuarioMapper;
 import school.sptech.EncantoPersonalizados.infrastructure.dto.usuario.UsuarioResponseDTO;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 
 @Component
 public class UsuarioUseCaseImpl implements UsuarioUseCase {
 
     private final PasswordEncoder passwordEncoder;
     private final UsuarioGateway gateway;
+    private final FotoArquivoStorageGateway fotoStorageGateway;
 
-    @Value("uploads")
-    private String uploadDir;
-
-    public UsuarioUseCaseImpl(PasswordEncoder passwordEncoder, UsuarioGateway gateway) {
+    public UsuarioUseCaseImpl(PasswordEncoder passwordEncoder, UsuarioGateway gateway, FotoArquivoStorageGateway fotoStorageGateway) {
         this.passwordEncoder = passwordEncoder;
         this.gateway = gateway;
+        this.fotoStorageGateway = fotoStorageGateway;
     }
 
     @Override
@@ -87,24 +83,21 @@ public class UsuarioUseCaseImpl implements UsuarioUseCase {
             throw new RuntimeException("Foto não informada");
         }
 
-        Path usuarioFolder = Paths.get(uploadDir, "funcionarios", id.toString());
-        Files.createDirectories(usuarioFolder);
-        String nomeArquivo = UUID.randomUUID() + "-" + file.getOriginalFilename();
-
-        Path caminhoCompleto = usuarioFolder.resolve(nomeArquivo);
-        Files.copy(file.getInputStream(), caminhoCompleto, StandardCopyOption.REPLACE_EXISTING);
-
-        String caminhoRelativo = "/uploads/funcionarios" + id + "/" + nomeArquivo;
-
         var find = gateway.findById(id);
         if (find.isEmpty()) {
             throw new RuntimeException("Funcionário não encontrado");
         }
 
-        Usuario funcionario = find.get();
-        funcionario.setFoto(caminhoRelativo);
+        String nomeArquivo = UUID.randomUUID() + "-" + file.getOriginalFilename();
 
-        return gateway.save(funcionario);
+        try {
+            String caminhoRelativo = fotoStorageGateway.salvarFotoUsuario(id, nomeArquivo, file.getBytes()).get();
+            Usuario funcionario = find.get();
+            funcionario.setFoto(caminhoRelativo);
+            return gateway.save(funcionario);
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -117,8 +110,9 @@ public class UsuarioUseCaseImpl implements UsuarioUseCase {
         Usuario funcionario = find.get();
         String caminho = funcionario.getFoto();
 
-        Path caminhoArquivo = Paths.get(caminho.replace("/uploads", "uploads"));
-        Files.deleteIfExists(caminhoArquivo);
+        if (caminho != null && !caminho.isBlank()) {
+            fotoStorageGateway.deletar(caminho);
+        }
 
         funcionario.setFoto("");
         gateway.save(funcionario);
