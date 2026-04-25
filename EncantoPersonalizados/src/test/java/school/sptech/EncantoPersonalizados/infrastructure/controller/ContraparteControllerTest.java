@@ -40,7 +40,7 @@ class ContraparteControllerTest {
     @Test
     void create_returns201_whenValid() throws Exception {
         RequestContraparteDTO req = new RequestContraparteDTO("Nome", "Desc", "Seg", "Tipo");
-        ResponseContraparteDTO resp = new ResponseContraparteDTO("Nome", "Desc", "Seg", "Tipo");
+        ResponseContraparteDTO resp = new ResponseContraparteDTO(1, "Nome", "Desc", "Seg", "Tipo");
         Mockito.when(contraparteUseCase.create(any())).thenReturn(resp);
 
         mockMvc.perform(post("/contrapartes")
@@ -63,7 +63,7 @@ class ContraparteControllerTest {
     }
 
     private ResponseContraparteDTO resp() {
-        return new ResponseContraparteDTO("N", "D", "S", "T");
+        return new ResponseContraparteDTO(1, "N", "D", "S", "T");
     }
 
     @org.springframework.boot.test.context.TestConfiguration

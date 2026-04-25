@@ -46,7 +46,7 @@ class ItemProdutoUseCaseImplTest {
                 300.0,
                 8.0,
                 "Cerâmica",
-                25.90
+                "25.90", 25.90
         );
 
         ItemProduto entityMock = new ItemProduto();
