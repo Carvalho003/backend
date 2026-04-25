@@ -6,7 +6,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record RabbitPropertiesConfiguration(
         Exchange exchange,
         Queue queue,
-        Reminders reminders) {
+    Reminders reminders,
+    FotoProdutoEvents fotoProdutoEvents) {
     public record Exchange(String name) {
     }
 
@@ -14,5 +15,8 @@ public record RabbitPropertiesConfiguration(
     }
 
     public record Reminders(String queueName, String routingKey) {
+    }
+
+    public record FotoProdutoEvents(String exchangeName, String queueName) {
     }
 }

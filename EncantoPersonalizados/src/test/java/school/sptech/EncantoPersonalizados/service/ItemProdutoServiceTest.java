@@ -46,6 +46,7 @@ class ItemProdutoUseCaseImplTest {
                 300.0,
                 8.0,
                 "Cerâmica",
+            "Caneca personalizada",
                 25.90
         );
 

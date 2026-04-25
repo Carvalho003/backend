@@ -10,6 +10,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.categoriaMovimentacao.ResponseCategoriaMovimentacaoDTO;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.contraparte.ResponseContraparteDTO;
 import school.sptech.EncantoPersonalizados.infrastructure.dto.movimentacao.RequestMovimentacaoDTO;
 import school.sptech.EncantoPersonalizados.infrastructure.dto.movimentacao.ResponseMovimentacaoDTO;
 import school.sptech.EncantoPersonalizados.core.application.usecase.movimentacao.MovimentacaoUseCase;
@@ -38,7 +40,17 @@ class MovimentacaoControllerTest {
     @Test
     void create_returns201() throws Exception {
         RequestMovimentacaoDTO req = new RequestMovimentacaoDTO("ENTRADA", "Desc", 100.0, "PAGO", LocalDate.now(), null, 1, 2);
-        ResponseMovimentacaoDTO resp = new ResponseMovimentacaoDTO("ENTRADA", "Desc", 100.0, "PAGO", LocalDate.now(), null, null, null);
+        ResponseMovimentacaoDTO resp = new ResponseMovimentacaoDTO(
+            1,
+            "ENTRADA",
+            "Desc",
+            100.0,
+            "PAGO",
+            LocalDate.now(),
+            null,
+            new ResponseCategoriaMovimentacaoDTO(2, "Categoria"),
+            new ResponseContraparteDTO(3, "Contraparte", "Desc", "Seg", "Tipo")
+        );
         Mockito.when(movimentacaoUseCase.create(any())).thenReturn(resp);
 
         mockMvc.perform(post("/movimentacoes")

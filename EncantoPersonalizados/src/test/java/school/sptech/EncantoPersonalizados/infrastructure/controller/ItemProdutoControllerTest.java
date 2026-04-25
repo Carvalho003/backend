@@ -36,7 +36,7 @@ class ItemProdutoControllerTest {
 
     @Test
     void cadastrar_returns201() throws Exception {
-        ItemProdutoRequestDTO req = new ItemProdutoRequestDTO("desc", 10.0, 5.0, 2, 10.0, 5.0, 200.0, 15.0, "mat", 8.0);
+        ItemProdutoRequestDTO req = new ItemProdutoRequestDTO("desc", 10.0, 5.0, 2, 10.0, 5.0, 200.0, 15.0, "mat", "padrao", 8.0);
         Mockito.when(itemProdutoUseCase.cadastrar(any())).thenReturn(null);
         mockMvc.perform(post("/itens")
                         .contentType(MediaType.APPLICATION_JSON)
