@@ -60,7 +60,7 @@ class ProdutoControllerTest {
 
     @Test
     void get_returns200() throws Exception {
-        Mockito.when(produtoUseCase.get(any(), any(), any(), any(), anyBoolean(), anyInt()))
+        Mockito.when(produtoUseCase.get(any(), any(), any(), any(), any(), anyInt(), anyInt()))
                 .thenReturn(new PageImpl<>(List.of(new Produto())));
         mockMvc.perform(get("/produtos")).andExpect(status().isOk());
     }
