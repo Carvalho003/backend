@@ -38,7 +38,7 @@ class MovimentacaoControllerTest {
     @Test
     void create_returns201() throws Exception {
         RequestMovimentacaoDTO req = new RequestMovimentacaoDTO("ENTRADA", "Desc", 100.0, "PAGO", LocalDate.now(), null, 1, 2);
-        ResponseMovimentacaoDTO resp = new ResponseMovimentacaoDTO(1, "ENTRADA", "Desc", 100.0, "PAGO", LocalDate.now(), null, null, null);
+        ResponseMovimentacaoDTO resp = new ResponseMovimentacaoDTO(1,"ENTRADA", "Desc", 100.0, "PAGO", LocalDate.now(), null, null, null);
         Mockito.when(movimentacaoUseCase.create(any())).thenReturn(resp);
 
         mockMvc.perform(post("/movimentacoes")

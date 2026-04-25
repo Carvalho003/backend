@@ -30,6 +30,7 @@ import school.sptech.EncantoPersonalizados.infrastructure.dto.produtosEmUmPedido
 import school.sptech.EncantoPersonalizados.infrastructure.dto.produtosEmUmPedido.ProdutosPedidoRequestDto;
 import school.sptech.EncantoPersonalizados.infrastructure.dto.produtosEmUmPedido.ProdutosPedidoResponseDto;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -157,9 +158,9 @@ public class PedidoUseCaseImpl implements PedidoUseCase {
     }
 
     @Override
-    public Page<PedidoResponseDto> listar(String search, Integer page, Boolean ativo) {
-        Pageable pageable = PageRequest.of(page, 10);
-        Page<Pedido> pedidos = pedidoGateway.filtrar(search, ativo, pageable);
+    public Page<PedidoResponseDto> listar(String search, Integer page, Boolean ativo, LocalDate inicio, LocalDate fim, Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Pedido> pedidos = pedidoGateway.filtrar(search, ativo, inicio, fim, pageable, size);
 
         return pedidos.map(pedido -> {
             PedidoStatusPedido statusAtual = pedidoStatusPedidoGateway.findStatusAtualByPedidoId(pedido.getId()).get(0);

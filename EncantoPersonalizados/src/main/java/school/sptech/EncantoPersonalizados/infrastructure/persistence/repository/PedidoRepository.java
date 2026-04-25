@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import school.sptech.EncantoPersonalizados.core.domain.Pedido;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 public interface PedidoRepository extends JpaRepository<Pedido, Integer> {
@@ -15,13 +17,17 @@ public interface PedidoRepository extends JpaRepository<Pedido, Integer> {
             SELECT p FROM Pedido p
             LEFT JOIN p.cliente c
             WHERE p.ativo = :ativo
+            AND p.createdAt BETWEEN :inicio AND :fim
             AND (:search IS NULL OR LOWER(c.nome) LIKE LOWER(CONCAT('%', :search, '%'))
             OR LOWER(p.origem) LIKE LOWER(CONCAT('%', :search, '%')))
             """)
     Page<Pedido> filtrar(
             @Param("search") String search,
             @Param("ativo") Boolean ativo,
+            @Param("inicio") LocalDateTime inicio,
+            @Param("fim") LocalDateTime fim,
             Pageable pageable
+
     );
 
     @Query("""

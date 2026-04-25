@@ -21,6 +21,8 @@ import school.sptech.EncantoPersonalizados.core.domain.ProdutoPedido;
 import school.sptech.EncantoPersonalizados.core.application.usecase.pedido.PedidoUseCase;
 import school.sptech.EncantoPersonalizados.core.application.usecase.produtoPedido.ProdutoPedidoUseCase;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -51,10 +53,14 @@ public class PedidoController {
         })
         @GetMapping
         public ResponseEntity<Page<PedidoResponseDto>> listar(
-                        @RequestParam(defaultValue = "true") Boolean ativa,
-                        @RequestParam(required = false) String search,
-                        @RequestParam(defaultValue = "0") Integer page) {
-                Page<PedidoResponseDto> response = pedidoUseCase.listar(search, page, ativa);
+                @RequestParam(defaultValue = "true") Boolean ativa,
+                @RequestParam(required = false) String search,
+                @RequestParam(defaultValue = "0") Integer page,
+                @RequestParam(defaultValue = "10") Integer size,
+                @RequestParam(required = false) LocalDate inicio,
+                @RequestParam(required = false) LocalDate fim) {
+
+                Page<PedidoResponseDto> response = pedidoUseCase.listar(search, page, ativa,inicio, fim, size);
                 return ResponseEntity.status(200).body(response);
         }
 

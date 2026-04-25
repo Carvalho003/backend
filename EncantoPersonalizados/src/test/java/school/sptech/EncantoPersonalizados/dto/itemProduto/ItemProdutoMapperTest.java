@@ -17,8 +17,7 @@ class ItemProdutoMapperTest {
     @Test
     void toEntity_mapsFields() {
         ItemProdutoRequestDTO dto = new ItemProdutoRequestDTO(
-                "desc", 10.0, 5.0, 2, 10.0, 5.0, 200.0, 15.0, "mat", "8.0", 8.0
-        );
+                "desc", 10.0, 5.0, 2, 10.0, 5.0, 200.0, 15.0, "mat", "descpadrao", 8.0);
         ItemProduto entity = ItemProdutoMapper.toEntity(dto);
 
         assertNotNull(entity);

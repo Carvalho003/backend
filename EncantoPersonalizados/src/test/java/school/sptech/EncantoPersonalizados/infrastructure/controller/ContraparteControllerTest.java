@@ -63,7 +63,7 @@ class ContraparteControllerTest {
     }
 
     private ResponseContraparteDTO resp() {
-        return new ResponseContraparteDTO(1, "N", "D", "S", "T");
+        return new ResponseContraparteDTO(1,"N", "D", "S", "T");
     }
 
     @org.springframework.boot.test.context.TestConfiguration

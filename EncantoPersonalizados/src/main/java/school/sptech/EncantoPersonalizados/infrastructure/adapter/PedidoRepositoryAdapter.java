@@ -7,6 +7,8 @@ import school.sptech.EncantoPersonalizados.core.application.gateway.PedidoGatewa
 import school.sptech.EncantoPersonalizados.core.domain.Pedido;
 import school.sptech.EncantoPersonalizados.infrastructure.persistence.repository.PedidoRepository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Repository
@@ -34,7 +36,9 @@ public class PedidoRepositoryAdapter implements PedidoGateway {
     }
 
     @Override
-    public Page<Pedido> filtrar(String search, Boolean ativo, Pageable pageable) {
-        return repository.filtrar(search, ativo, pageable);
+    public Page<Pedido> filtrar(String search, Boolean ativo, LocalDate inicio, LocalDate fim, Pageable pageable, Integer size) {
+        LocalDateTime inicioDateTime = inicio.atStartOfDay();
+        LocalDateTime fimDateTime = fim.atTime(23, 59, 59);
+        return repository.filtrar(search, ativo, inicioDateTime, fimDateTime, pageable);
     }
 }

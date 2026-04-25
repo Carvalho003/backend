@@ -7,10 +7,13 @@ import school.sptech.EncantoPersonalizados.infrastructure.dto.pedido.PedidoReque
 import school.sptech.EncantoPersonalizados.infrastructure.dto.pedido.PedidoResponseDto;
 import school.sptech.EncantoPersonalizados.infrastructure.dto.pedidoStatusPedido.PedidoStatusPedidoRequestDto;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 public interface PedidoUseCase {
     Pedido findById(Integer id);
     PedidoCreatedResponseDto store(PedidoRequestDto pedidoDto);
-    Page<PedidoResponseDto> listar(String search, Integer page, Boolean ativo);
+    Page<PedidoResponseDto> listar(String search, Integer page, Boolean ativo, LocalDate inicio, LocalDate fim, Integer size);
     PedidoResponseDto getById(Integer id);
     PedidoCreatedResponseDto update(Integer id, PedidoRequestDto pedidoDto);
     void mudarEstado(Integer id);
