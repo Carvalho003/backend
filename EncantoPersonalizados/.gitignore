@@ -38,4 +38,7 @@ nbdist/
 !.vscode/tasks.json
 !.vscode/launch.json
 
+# Local Claude Code instructions (not shared)
+CLAUDE.md
+
 

@@ -4,5 +4,5 @@ import java.time.LocalDate;
 import java.util.Map;
 
 public interface DashboardGestaoPedidosGateway {
-    Map<String, Object> getDashboardData(LocalDate inicio, LocalDate fim);
+    Map<String, Object> getDashboardData(LocalDate inicio, LocalDate fim, String tipoPedido, Long produtoId, Long temaId);
 }

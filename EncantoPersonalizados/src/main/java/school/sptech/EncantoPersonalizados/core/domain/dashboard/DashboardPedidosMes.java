@@ -9,20 +9,20 @@ import org.hibernate.annotations.Synchronize;
 
 @Entity
 @Immutable
-@Subselect("SELECT mes, lead_time FROM vw_leadtime_mensal")
+@Subselect("SELECT mes, total_criados, total_entregues FROM vw_pedidos_mes")
 @Synchronize({"pedido", "pedido_status_pedido", "status_pedido"})
-public class DashboardLeadtimeMensal {
+public class DashboardPedidosMes {
+
     @Id
     private String mes;
 
-    @Column(name = "lead_time")
-    private Double leadTime;
+    @Column(name = "total_criados")
+    private Long totalCriados;
 
-    public String getMes() {
-        return mes;
-    }
+    @Column(name = "total_entregues")
+    private Long totalEntregues;
 
-    public Double getLeadTime() {
-        return leadTime;
-    }
+    public String getMes() { return mes; }
+    public Long getTotalCriados() { return totalCriados; }
+    public Long getTotalEntregues() { return totalEntregues; }
 }

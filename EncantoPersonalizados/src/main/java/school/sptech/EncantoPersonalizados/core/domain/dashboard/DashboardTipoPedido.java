@@ -3,10 +3,14 @@ package school.sptech.EncantoPersonalizados.core.domain.dashboard;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.Subselect;
+import org.hibernate.annotations.Synchronize;
 
 @Entity
-@Table(name = "vw_tipo_pedido")
+@Immutable
+@Subselect("SELECT id, origem, observacoes, status, tipo_pedido FROM vw_tipo_pedido")
+@Synchronize({"pedido", "pedido_status_pedido", "status_pedido"})
 public class DashboardTipoPedido {
     @Id
     private Long id;

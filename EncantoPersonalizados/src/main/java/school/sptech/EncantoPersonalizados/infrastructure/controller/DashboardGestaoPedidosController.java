@@ -27,8 +27,11 @@ public class DashboardGestaoPedidosController {
     @GetMapping
     public ResponseEntity<Map<String, Object>> getDashboardGestaoPedidos(
             @RequestParam("inicio") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate inicio,
-            @RequestParam("fim") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fim
+            @RequestParam("fim") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fim,
+            @RequestParam(value = "tipoPedido", required = false) String tipoPedido,
+            @RequestParam(value = "produtoId", required = false) Long produtoId,
+            @RequestParam(value = "temaId", required = false) Long temaId
     ) {
-        return ResponseEntity.status(200).body(buscarDashboardGestaoPedidosUseCase.getDashboard(inicio, fim));
-    }
+        return ResponseEntity.status(200).body(buscarDashboardGestaoPedidosUseCase.getDashboard(inicio, fim, tipoPedido, produtoId, temaId));
+        }
 }

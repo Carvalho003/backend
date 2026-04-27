@@ -17,7 +17,7 @@ public class BuscarDashboardGestaoPedidosUseCaseImpl implements BuscarDashboardG
     }
 
     @Override
-    public Map<String, Object> getDashboard(LocalDate inicio, LocalDate fim) {
-        return gateway.getDashboardData(inicio, fim);
+    public Map<String, Object> getDashboard(LocalDate inicio, LocalDate fim, String tipoPedido, Long produtoId, Long temaId) {
+        return gateway.getDashboardData(inicio, fim, tipoPedido, produtoId, temaId);
     }
 }

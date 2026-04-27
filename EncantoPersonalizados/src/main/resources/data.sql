@@ -837,3 +837,145 @@ FROM movimentacao M
 WHERE M.tipo = 'Despesa'
   AND M.status_pagamento = 'Pendente'
   AND M.status = true;
+
+-- ============================================================
+--  Dashboard de Gestão de Pedidos — todas as views
+-- ============================================================
+
+CREATE OR REPLACE VIEW vw_tipo_pedido AS
+SELECT
+    p.id,
+    p.origem,
+    p.observacoes,
+    sp.status,
+    CASE
+        WHEN (p.data_limite IS NOT NULL AND p.data_limite <= NOW()
+              AND sp.status NOT IN ('Cancelado', 'Entregue'))
+            THEN 'Atrasado'
+        WHEN (
+            EXISTS (
+                SELECT 1
+                FROM pedido AS p1
+                JOIN pedido_status_pedido psp1 ON psp1.pedido_id = p1.id
+                JOIN status_pedido sp1 ON sp1.id = psp1.status_id
+                WHERE p1.id = p.id
+                  AND psp1.status_atual = 1
+                  AND sp1.status NOT IN ('Entregue', 'Cancelado')
+                  AND p1.id IN (
+                      SELECT psp2.pedido_id
+                      FROM pedido_status_pedido AS psp2
+                      JOIN status_pedido sp2 ON sp2.id = psp2.status_id
+                      WHERE sp2.status = 'Entregue'
+                  )
+            )
+        ) THEN 'Retrabalho'
+        ELSE 'Normal'
+    END AS tipo_pedido
+FROM pedido AS p
+JOIN pedido_status_pedido psp ON psp.pedido_id = p.id
+JOIN status_pedido sp ON sp.id = psp.status_id
+WHERE p.ativo = 1
+  AND psp.status_atual = 1
+GROUP BY p.id, p.origem, p.observacoes, sp.status;
+
+CREATE OR REPLACE VIEW vw_leadtime_funcionario AS
+SELECT
+    u.name                                       AS funcionario,
+    AVG(DATEDIFF(psp.created_at, p.created_at))  AS lead_time,
+    COUNT(p.id)                                  AS total_pedidos
+FROM pedido AS p
+JOIN usuario u ON u.id = p.usuario_id
+JOIN pedido_status_pedido psp ON psp.pedido_id = p.id
+JOIN status_pedido sp ON sp.id = psp.status_id
+JOIN vw_tipo_pedido tp ON tp.id = p.id
+WHERE psp.status_atual = 1
+  AND p.ativo = 1
+  AND sp.status = 'Finalizado'
+GROUP BY u.name;
+
+CREATE OR REPLACE VIEW vw_retrabalho_quantidade_mes AS
+SELECT
+    DATE_FORMAT(p.created_at, '%Y-%m') AS mes,
+    COUNT(*)                           AS quantidade_pedidos
+FROM pedido AS p
+JOIN vw_tipo_pedido tp ON tp.id = p.id
+WHERE tp.tipo_pedido = 'Retrabalho'
+  AND p.ativo = 1
+GROUP BY mes
+ORDER BY mes ASC;
+
+CREATE OR REPLACE VIEW vw_leadtime_etapa AS
+SELECT
+    sp.status                                        AS etapa,
+    AVG(DATEDIFF(psp.updated_at, psp.created_at))   AS lead_time
+FROM pedido AS p
+JOIN pedido_status_pedido psp ON psp.pedido_id = p.id
+JOIN status_pedido sp ON sp.id = psp.status_id
+JOIN vw_tipo_pedido tp ON tp.id = p.id
+WHERE p.ativo = 1
+GROUP BY sp.status;
+
+CREATE OR REPLACE VIEW vw_leadtime_mensal AS
+SELECT
+    DATE_FORMAT(p.created_at, '%Y-%m')           AS mes,
+    AVG(DATEDIFF(psp.created_at, p.created_at))  AS lead_time
+FROM pedido AS p
+JOIN pedido_status_pedido psp ON psp.pedido_id = p.id
+JOIN status_pedido sp ON sp.id = psp.status_id
+JOIN vw_tipo_pedido tp ON tp.id = p.id
+WHERE psp.status_atual = 1
+  AND p.ativo = 1
+  AND sp.status = 'Finalizado'
+GROUP BY mes
+ORDER BY mes ASC;
+
+CREATE OR REPLACE VIEW vw_filtro_produto_item AS
+SELECT
+    p.id                               AS id,
+    pp.produto_id                      AS produto_id,
+    COALESCE(prod.item_produto_id, 0)  AS qtd_prod
+FROM pedido AS p
+LEFT JOIN produto_pedido pp ON pp.pedido_id = p.id
+LEFT JOIN produto prod ON pp.produto_id = prod.id
+WHERE p.ativo = 1;
+
+CREATE OR REPLACE VIEW vw_pedidos_mes AS
+SELECT
+    DATE_FORMAT(p.created_at, '%Y-%m')                                                 AS mes,
+    COUNT(p.id)                                                                        AS total_criados,
+    SUM(CASE WHEN sp.status = 'Entregue' AND psp.status_atual = 1 THEN 1 ELSE 0 END)  AS total_entregues
+FROM pedido p
+LEFT JOIN pedido_status_pedido psp ON psp.pedido_id = p.id AND psp.status_atual = 1
+LEFT JOIN status_pedido sp ON sp.id = psp.status_id
+WHERE p.ativo = 1
+GROUP BY DATE_FORMAT(p.created_at, '%Y-%m')
+ORDER BY mes ASC;
+
+CREATE OR REPLACE VIEW vw_carga_trabalho AS
+SELECT
+    u.name       AS funcionario,
+    COUNT(p.id)  AS em_andamento
+FROM pedido p
+JOIN usuario u ON u.id = p.usuario_id
+JOIN pedido_status_pedido psp ON psp.pedido_id = p.id AND psp.status_atual = 1
+JOIN status_pedido sp ON sp.id = psp.status_id
+WHERE p.ativo = 1
+  AND sp.status NOT IN ('Entregue', 'Cancelado', 'Finalizado')
+GROUP BY u.name;
+
+CREATE OR REPLACE VIEW vw_pedidos_sem_atualizacao AS
+SELECT
+    p.id,
+    c.nome                          AS cliente,
+    sp.status,
+    DATEDIFF(NOW(), psp.created_at) AS dias_parado,
+    u.name                          AS responsavel
+FROM pedido p
+JOIN pedido_status_pedido psp ON psp.pedido_id = p.id AND psp.status_atual = 1
+JOIN status_pedido sp ON sp.id = psp.status_id
+JOIN cliente c ON c.id = p.cliente_id
+JOIN usuario u ON u.id = p.usuario_id
+WHERE p.ativo = 1
+  AND sp.status NOT IN ('Entregue', 'Cancelado', 'Finalizado')
+  AND DATEDIFF(NOW(), psp.created_at) >= 3
+ORDER BY dias_parado DESC;

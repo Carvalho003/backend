@@ -2,11 +2,15 @@ package school.sptech.EncantoPersonalizados.core.domain.dashboard;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import jakarta.persistence.Column;
+import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.Subselect;
+import org.hibernate.annotations.Synchronize;
 
 @Entity
-@Table(name = "vw_retrabalho_quantidade_mes")
+@Immutable
+@Subselect("SELECT mes, quantidade_pedidos FROM vw_retrabalho_quantidade_mes")
+@Synchronize({"pedido", "pedido_status_pedido", "status_pedido"})
 public class DashboardRetrabalhoQuantidadeMes {
     @Id
     private String mes;

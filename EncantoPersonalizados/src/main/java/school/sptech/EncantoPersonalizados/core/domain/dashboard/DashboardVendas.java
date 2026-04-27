@@ -3,12 +3,16 @@ package school.sptech.EncantoPersonalizados.core.domain.dashboard;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.Subselect;
+import org.hibernate.annotations.Synchronize;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "v_dash_vendas_categoria")
+@Immutable
+@Subselect("SELECT id, nome_categoria, valor_total_vendido, quantidade_pedidos, data_referencia FROM v_dash_vendas_categoria")
+@Synchronize({"pedido", "produto_pedido", "produto", "tema_produto", "categoria_tema"})
 public class DashboardVendas {
     @Id
     private Long id;
