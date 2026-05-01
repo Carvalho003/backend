@@ -54,8 +54,8 @@ public class ClienteUseCaseImpl implements ClienteUseCase {
     }
 
     @Override
-    public Page<Cliente> getAll(String search, int page) {
-        Pageable pageable = PageRequest.of(page, 10);
+    public Page<Cliente> getAll(String search, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
         return clienteGateway.filtrar(search, pageable);
     }
 

@@ -21,6 +21,10 @@ public interface StatusPedidoRepository extends JpaRepository<StatusPedido, Inte
             Pageable pageable
     );
 
-
     Optional<StatusPedido> findFirstByOrderByOrdemKanbanAsc();
+
+    boolean existsByStatusIgnoreCaseAndAtivoTrue(String status);
+
+    @Query("SELECT CASE WHEN COUNT(psp) > 0 THEN true ELSE false END FROM PedidoStatusPedido psp WHERE psp.status.id = :idStatus")
+    boolean existePedidoVinculado(@Param("idStatus") Integer idStatus);
 }

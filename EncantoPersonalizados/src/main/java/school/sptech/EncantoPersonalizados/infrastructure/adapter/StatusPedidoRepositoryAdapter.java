@@ -43,4 +43,14 @@ public class StatusPedidoRepositoryAdapter implements StatusPedidoGateway {
     public List<StatusPedido> findAll() {
         return repository.findAll();
     }
+
+    @Override
+    public boolean existsByStatusIgnoreCaseAndAtivoTrue(String status) {
+        return repository.existsByStatusIgnoreCaseAndAtivoTrue(status);
+    }
+
+    @Override
+    public boolean existePedidoVinculado(Integer idStatus) {
+        return repository.existePedidoVinculado(idStatus);
+    }
 }

@@ -13,4 +13,6 @@ public interface StatusPedidoGateway {
     Page<StatusPedido> filtrar(Boolean ativo, Pageable pageable);
     Optional<StatusPedido> findFirstByOrderByOrdemKanbanAsc();
     List<StatusPedido> findAll();
+    boolean existsByStatusIgnoreCaseAndAtivoTrue(String status);
+    boolean existePedidoVinculado(Integer idStatus);
 }

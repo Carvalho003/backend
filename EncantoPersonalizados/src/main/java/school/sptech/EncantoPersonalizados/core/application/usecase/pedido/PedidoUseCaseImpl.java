@@ -208,8 +208,8 @@ public class PedidoUseCaseImpl implements PedidoUseCase {
     public void mudarStatus(PedidoStatusPedidoRequestDto dto) {
         Pedido pedido = pedidoGateway.findById(dto.idPedido())
                 .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
-        StatusPedido statusPedido = statusPedidoGateway.findById(dto.idStatusPedido()).orElse(null);
 
+        StatusPedido statusPedido = statusPedidoGateway.findById(dto.idStatusPedido()).orElse(null);
         if (statusPedido == null) {
             throw new RuntimeException("Status do pedido não encontrado");
         }
@@ -224,7 +224,9 @@ public class PedidoUseCaseImpl implements PedidoUseCase {
             statusAtual.setStatusAtual(false);
             pedidoStatusPedidoGateway.salvar(statusAtual);
         }
+
         pedidoStatusPedidoGateway.salvar(pedidoStatusPedido);
+        pedidoGateway.save(pedido);
     }
 
     @Override

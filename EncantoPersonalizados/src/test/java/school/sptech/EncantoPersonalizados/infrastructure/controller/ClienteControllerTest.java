@@ -73,7 +73,7 @@ class ClienteControllerTest {
 
     @Test
     void listar_returns200() throws Exception {
-        Mockito.when(clienteUseCase.getAll(any(), anyInt())).thenReturn(new PageImpl<>(List.of(clienteWithEnderecos())));
+        Mockito.when(clienteUseCase.getAll(any(), anyInt(), anyInt())).thenReturn(new PageImpl<>(List.of(clienteWithEnderecos())));
         mockMvc.perform(get("/clientes"))
                 .andExpect(status().isOk());
     }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import school.sptech.EncantoPersonalizados.core.application.gateway.StatusPedidoGateway;
 import school.sptech.EncantoPersonalizados.core.domain.StatusPedido;
 import school.sptech.EncantoPersonalizados.infrastructure.dto.statusPedido.StatusPedidoReordenacaoDto;
+import school.sptech.EncantoPersonalizados.core.domain.exception.EntidadeConflitoException; // Importe a sua exception
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,14 +29,30 @@ public class StatusPedidoUseCaseImpl implements StatusPedidoUseCase {
 
     @Override
     public StatusPedido store(StatusPedido statusPedido) {
+        String nomeTratado = statusPedido.getStatus().trim();
+        statusPedido.setStatus(nomeTratado);
+
+        if (gateway.existsByStatusIgnoreCaseAndAtivoTrue(nomeTratado)) {
+            throw new EntidadeConflitoException("Já existe um status ativo com o nome: " + nomeTratado);
+        }
+
         statusPedido.setCreatedAt(LocalDateTime.now());
+        statusPedido.setAtivo(true);
         return gateway.save(statusPedido);
     }
 
     @Override
     public StatusPedido update(StatusPedido statusPedido, Integer id) {
         StatusPedido existente = gateway.findById(id).orElseThrow();
-        existente.setStatus(statusPedido.getStatus());
+
+        String nomeTratado = statusPedido.getStatus().trim();
+
+        if (!existente.getStatus().equalsIgnoreCase(nomeTratado) &&
+                gateway.existsByStatusIgnoreCaseAndAtivoTrue(nomeTratado)) {
+            throw new EntidadeConflitoException("Já existe um status ativo com o nome: " + nomeTratado);
+        }
+
+        existente.setStatus(nomeTratado);
         existente.setCor(statusPedido.getCor());
         existente.setOrdemKanban(statusPedido.getOrdemKanban());
         existente.setUpdatedAt(LocalDateTime.now());
@@ -45,6 +62,13 @@ public class StatusPedidoUseCaseImpl implements StatusPedidoUseCase {
     @Override
     public void mudarEstado(Integer id) {
         StatusPedido existente = gateway.findById(id).orElseThrow();
+
+        if (existente.isAtivo()) {
+            if (gateway.existePedidoVinculado(id)) {
+                throw new EntidadeConflitoException("Não é possível remover este status pois existem pedidos vinculados a ele.");
+            }
+        }
+
         existente.setAtivo(!existente.isAtivo());
         gateway.save(existente);
     }

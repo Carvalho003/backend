@@ -7,7 +7,7 @@ import school.sptech.EncantoPersonalizados.infrastructure.dto.cliente.CreateClie
 public interface ClienteUseCase {
     Cliente store(CreateClienteDTO dto);
     Cliente update(CreateClienteDTO dto, Integer id);
-    Page<Cliente> getAll(String search, int page);
+    Page<Cliente> getAll(String search, int page, int size);
     void removerPorId(Integer id);
     Cliente findById(Integer id);
 }

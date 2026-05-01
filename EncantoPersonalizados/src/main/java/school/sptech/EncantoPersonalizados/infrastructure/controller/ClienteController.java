@@ -68,15 +68,12 @@ public class ClienteController {
     @GetMapping()
     public final ResponseEntity<Page<ResponseClienteDTO>> listar(
             @RequestParam(required = false) String search,
-            @RequestParam(defaultValue = "0") int page
-
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ){
-
-        Page<Cliente> lista = clienteUseCase.getAll(search,  page);
+        Page<Cliente> lista = clienteUseCase.getAll(search, page, size);
         Page<ResponseClienteDTO> dtos = lista.map(ClienteMapper::toDto);
-
         return ResponseEntity.status(200).body(dtos);
-
     }
 
 
