@@ -114,7 +114,7 @@ class ClienteUseCaseImplTest {
         when(repository.filtrar(eq("teste"), any(Pageable.class)))
                 .thenReturn(paginaSimulada);
 
-        Page<Cliente> resultado = service.getAll("teste", 0);
+        Page<Cliente> resultado = service.getAll("teste", 0, 10);
 
         assertNotNull(resultado);
         assertEquals(1, resultado.getTotalElements());
@@ -131,7 +131,7 @@ class ClienteUseCaseImplTest {
         when(repository.filtrar(eq("naoexiste"), any(Pageable.class)))
                 .thenReturn(paginaVazia);
 
-        Page<Cliente> resultado = service.getAll("naoexiste", 0);
+        Page<Cliente> resultado = service.getAll("naoexiste", 0, 10);
 
         assertNotNull(resultado);
         assertEquals(0, resultado.getTotalElements());

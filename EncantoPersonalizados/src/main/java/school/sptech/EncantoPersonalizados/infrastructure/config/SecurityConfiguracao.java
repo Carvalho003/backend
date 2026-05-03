@@ -52,6 +52,7 @@ public class SecurityConfiguracao {
             new AntPathRequestMatcher("/v3/api-docs/**"),
             new AntPathRequestMatcher("/actuator/*"),
             new AntPathRequestMatcher("/login/**"),
+            new AntPathRequestMatcher("/produtos/**"),
             new AntPathRequestMatcher("/h2-console/**"),
             new AntPathRequestMatcher("/h2-console/**/**"),
             new AntPathRequestMatcher("/error/**"),
@@ -76,6 +77,30 @@ public class SecurityConfiguracao {
                         .requestMatchers(HttpMethod.GET, "/temas").permitAll()
                         .requestMatchers(HttpMethod.GET, "/temas/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/fretes/calcular").permitAll()
+
+                        .requestMatchers("/dashgestaopedidos/**")
+                        .hasRole("Administrador")
+
+                        .requestMatchers("/dashfinanceiros/**")
+                        .hasRole("Administrador")
+
+                        .requestMatchers("/usuarios/**")
+                        .hasRole("Administrador")
+
+                        .requestMatchers("/movimentacoes/**")
+                        .hasRole("Administrador")
+
+                        .requestMatchers("/pedidos/**")
+                        .hasAnyRole("Administrador", "Manufatura", "Social Media")
+
+                        .requestMatchers("/produtos/**")
+                        .hasAnyRole("Administrador", "Manufatura", "Social Media")
+
+                        .requestMatchers("/pedidos/cadastro/**")
+                        .hasAnyRole("Administrador", "Manufatura")
+
+                        .requestMatchers("/pedidos/detalhes/**")
+                        .hasAnyRole("Administrador", "Manufatura", "Social Media")
 
                         .anyRequest().authenticated()
                 )
