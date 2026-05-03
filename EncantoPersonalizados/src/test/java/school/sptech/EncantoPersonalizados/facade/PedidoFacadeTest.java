@@ -258,10 +258,10 @@ class PedidoUseCaseImplTest {
 
         Pageable pageable = PageRequest.of(page, 10);
 
-        when(pedidoRepository.filtrar(search, ativo, pageable))
+        when(pedidoRepository.filtrar(search, ativo, null, null, pageable, 0))
                 .thenReturn(Page.empty());
 
-        Page<PedidoResponseDto> resultado = facade.listar(search, page, ativo);
+        Page<PedidoResponseDto> resultado = facade.listar(search, page, ativo, null, null, 0);
 
         assertTrue(resultado.isEmpty());
     }
@@ -292,12 +292,12 @@ class PedidoUseCaseImplTest {
 
         Page<Pedido> pedidosPage = new PageImpl<>(List.of(pedido));
 
-        when(pedidoRepository.filtrar(eq(search), eq(ativo), any(Pageable.class)))
+        when(pedidoRepository.filtrar(eq(search), eq(ativo), any(), any(), any(Pageable.class), any(Integer.class)))
                 .thenReturn(pedidosPage);
         when(pedidoStatusPedidoGateway.findStatusAtualByPedidoId(pedido.getId()))
                 .thenReturn(List.of(statusAtual));
 
-        Page<PedidoResponseDto> resultado = facade.listar(search, page, ativo);
+        Page<PedidoResponseDto> resultado = facade.listar(search, page, ativo, null, null, 0);
 
         assertNotNull(resultado);
         assertEquals(1, resultado.getTotalElements());
@@ -312,7 +312,7 @@ class PedidoUseCaseImplTest {
         assertEquals(statusAtual.getStatus().getId(), dto.statusAtual().idStatusPedido());
         assertTrue(dto.statusAtual().statusAtual());
 
-        verify(pedidoRepository).filtrar(eq(search), eq(ativo), any(Pageable.class));
+        verify(pedidoRepository).filtrar(eq(search), eq(ativo), any(), any(), any(Pageable.class), any(Integer.class));
         verify(pedidoStatusPedidoGateway).findStatusAtualByPedidoId(pedido.getId());
     }
 
@@ -342,12 +342,12 @@ class PedidoUseCaseImplTest {
 
         Page<Pedido> pedidosPage = new PageImpl<>(List.of(pedido));
 
-        when(pedidoRepository.filtrar(eq(search), eq(ativo), any(Pageable.class)))
+        when(pedidoRepository.filtrar(eq(search), eq(ativo), any(), any(), any(Pageable.class), any(Integer.class)))
                 .thenReturn(pedidosPage);
         when(pedidoStatusPedidoGateway.findStatusAtualByPedidoId(pedido.getId()))
                 .thenReturn(List.of(statusAtual));
 
-        Page<PedidoResponseDto> resultado = facade.listar(search, page, ativo);
+        Page<PedidoResponseDto> resultado = facade.listar(search, page, ativo, null, null, 0);
         PedidoResponseDto dto = resultado.getContent().get(0);
 
         assertEquals(pedido.getId(), dto.id());
@@ -357,7 +357,7 @@ class PedidoUseCaseImplTest {
         assertEquals(statusAtual.getId(), dto.statusAtual().id());
         assertEquals("Concluído", statusAtual.getStatus().getStatus());
 
-        verify(pedidoRepository).filtrar(eq(search), eq(ativo), any(Pageable.class));
+        verify(pedidoRepository).filtrar(eq(search), eq(ativo), any(), any(), any(Pageable.class), any(Integer.class));
         verify(pedidoStatusPedidoGateway).findStatusAtualByPedidoId(pedido.getId());
     }
 

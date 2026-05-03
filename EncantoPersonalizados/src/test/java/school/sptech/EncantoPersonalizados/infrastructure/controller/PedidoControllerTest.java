@@ -64,7 +64,7 @@ class PedidoControllerTest {
 
     @Test
     void listar_returns200() throws Exception {
-        Mockito.when(pedidoUseCase.listar(any(), any(), any())).thenReturn(new PageImpl<>(List.of()));
+        Mockito.when(pedidoUseCase.listar(any(), any(), any(), any(), any(), any())).thenReturn(new PageImpl<>(List.of()));
         mockMvc.perform(get("/pedidos")).andExpect(status().isOk());
     }
 

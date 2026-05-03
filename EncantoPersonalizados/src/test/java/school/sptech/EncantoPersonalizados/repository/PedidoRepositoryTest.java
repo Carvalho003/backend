@@ -27,7 +27,7 @@ class PedidoRepositoryTest {
         assertNotNull(p.getId());
         assertTrue(repo.findByIdWithDetails(p.getId()).isPresent());
 
-        var page = repo.filtrar("obs", true, PageRequest.of(0, 10));
+        var page = repo.filtrar("obs", true, null, null, PageRequest.of(0, 10));
         assertFalse(page.isEmpty());
     }
 }

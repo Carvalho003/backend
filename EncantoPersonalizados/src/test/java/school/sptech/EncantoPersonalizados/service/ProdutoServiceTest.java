@@ -45,7 +45,7 @@ class ProdutoUseCaseImplTest {
         when(repository.filtrar(eq("busca"), eq("categoria"), eq("tema"), eq("item"), eq(true), any(Pageable.class)))
                 .thenReturn(paginaSimulada);
 
-        Page<Produto> resultado = service.get("busca", "categoria", "tema", "item", true, 0);
+        Page<Produto> resultado = service.get("busca", "categoria", "tema", "item", true, 0, 10);
 
         assertNotNull(resultado);
         assertEquals(1, resultado.getTotalElements());
@@ -64,7 +64,7 @@ class ProdutoUseCaseImplTest {
         when(repository.filtrar(eq(null), eq(null), eq(null), eq(null), eq(true), any(Pageable.class)))
                 .thenReturn(paginaSimulada);
 
-        Page<Produto> resultado = service.get("", "   ", null, "", true, 0);
+        Page<Produto> resultado = service.get("", "   ", null, "", true, 0, 10);
 
         assertNotNull(resultado);
         assertEquals(1, resultado.getTotalElements());
