@@ -75,6 +75,7 @@ public class SecurityConfiguracao {
                         .requestMatchers(HttpMethod.GET, "/produtos/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/temas").permitAll()
                         .requestMatchers(HttpMethod.GET, "/temas/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/fretes/calcular").permitAll()
 
                         .anyRequest().authenticated()
                 )
