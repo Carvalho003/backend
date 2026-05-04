@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import school.sptech.EncantoPersonalizados.core.domain.dashboard.DashboardFiltroProdutoItem;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface DashboardFiltroProdutoItemRepository extends JpaRepository<DashboardFiltroProdutoItem, Long> {
@@ -22,9 +23,12 @@ public interface DashboardFiltroProdutoItemRepository extends JpaRepository<Dash
               AND (:tipoPedido IS NULL OR tp.tipo_pedido = :tipoPedido)
               AND (:produtoId IS NULL OR pp.produto_id = :produtoId)
               AND (:temaId IS NULL OR t.id = :temaId)
+              AND DATE(p.created_at) BETWEEN :inicio AND :fim
             ORDER BY qtd_prod DESC
             """, nativeQuery = true)
     List<DashboardFiltroProdutoItem> findAllFiltered(
+            @Param("inicio") LocalDate inicio,
+            @Param("fim") LocalDate fim,
             @Param("tipoPedido") String tipoPedido,
             @Param("produtoId") Long produtoId,
             @Param("temaId") Long temaId
