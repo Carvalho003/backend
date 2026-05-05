@@ -58,30 +58,37 @@ INSERT IGNORE INTO contraparte (id, nome, descricao, segmento, tipo_contrato, st
 (6, 'Papel & Arte Cadernos', 'Fornecedor de cadernos, capas e encadernação', 'Insumos', 'Recorrente', 1, NOW(), NOW());
 
 INSERT IGNORE INTO item_produto (id, descricao, material, altura, comprimento, largura, peso, custo_producao, preco_promocional, preco_venda, prazo_producao, ativo, created_at, updated_at) VALUES
-(1, 'Caneca Branca 325ml', 'Cerâmica', 9.5, 8.0, 8.0, 0.32, 8.5, 24.9, 29.9, 2, 1, NOW(), NOW()),
-(2, 'Caneca Mágica 325ml', 'Cerâmica Termossensível', 9.5, 8.0, 8.0, 0.34, 14.0, 34.9, 44.9, 3, 1, NOW(), NOW()),
-(3, 'Camiseta Básica Personalizada', 'Algodão', 70.0, 50.0, 1.0, 0.2, 22.0, 44.9, 59.9, 3, 1, NOW(), NOW()),
-(4, 'Camiseta Premium Personalizada', 'Algodão Penteado', 72.0, 52.0, 1.0, 0.24, 28.0, 54.9, 69.9, 4, 1, NOW(), NOW()),
-(5, 'Caderno A5 Personalizado', 'Papel/Cartão', 21.0, 15.0, 2.0, 0.45, 11.5, 29.9, 39.9, 2, 1, NOW(), NOW()),
-(6, 'Caderno Universitário Personalizado', 'Papel/Cartão', 27.5, 20.0, 3.0, 0.75, 18.0, 39.9, 54.9, 3, 1, NOW(), NOW()),
-(7, 'Squeeze Personalizada 500ml', 'Alumínio', 22.0, 7.0, 7.0, 0.18, 13.0, 29.9, 39.9, 2, 1, NOW(), NOW()),
-(8, 'Mousepad Personalizado', 'Neoprene', 0.3, 24.0, 20.0, 0.15, 7.0, 19.9, 27.9, 2, 1, NOW(), NOW()),
-(9, 'Almofada Personalizada', 'Poliéster', 10.0, 40.0, 40.0, 0.5, 16.0, 34.9, 49.9, 3, 1, NOW(), NOW()),
-(10, 'Ecobag Personalizada', 'Algodão Cru', 35.0, 30.0, 5.0, 0.12, 9.5, 24.9, 34.9, 2, 1, NOW(), NOW());
+(1, 'Caneca Branca 325ml', 'Cerâmica', 9.5, 8.0, 8.0, 320, 8.5, 24.9, 29.9, 2, 1, NOW(), NOW()),
+(2, 'Caneca Mágica 325ml', 'Cerâmica Termossensível', 9.5, 8.0, 8.0, 340, 14.0, 34.9, 44.9, 3, 1, NOW(), NOW()),
+(3, 'Camiseta Básica Personalizada', 'Algodão', 70.0, 50.0, 1.0, 200, 22.0, 44.9, 59.9, 3, 1, NOW(), NOW()),
+(4, 'Camiseta Premium Personalizada', 'Algodão Penteado', 72.0, 52.0, 1.0, 240, 28.0, 54.9, 69.9, 4, 1, NOW(), NOW()),
+(5, 'Caderno A5 Personalizado', 'Papel/Cartão', 21.0, 15.0, 2.0, 450, 11.5, 29.9, 39.9, 2, 1, NOW(), NOW()),
+(6, 'Caderno Universitário Personalizado', 'Papel/Cartão', 27.5, 20.0, 3.0, 750, 18.0, 39.9, 54.9, 3, 1, NOW(), NOW()),
+(7, 'Squeeze Personalizada 500ml', 'Alumínio', 22.0, 7.0, 7.0, 180, 13.0, 29.9, 39.9, 2, 1, NOW(), NOW()),
+(8, 'Mousepad Personalizado', 'Neoprene', 0.3, 24.0, 20.0, 150, 7.0, 19.9, 27.9, 2, 1, NOW(), NOW()),
+(9, 'Almofada Personalizada', 'Poliéster', 10.0, 40.0, 40.0, 500, 16.0, 34.9, 49.9, 3, 1, NOW(), NOW()),
+(10, 'Ecobag Personalizada', 'Algodão Cru', 35.0, 30.0, 5.0, 120, 9.5, 24.9, 34.9, 2, 1, NOW(), NOW());
 
 INSERT IGNORE INTO status_pedido (id, status, cor, ordem_kanban, ativo, created_at, updated_at) VALUES
 (1, 'A Fazer', '#FFE5D9', 1, 1, NOW(), NOW()),
 (2, 'Em Produção', '#F4ACB7', 2, 1, NOW(), NOW()),
-(3, 'A Caminho', '#EAD2AC', 3, 1, NOW(), NOW()),
-(4, 'Finalizado', '#D8E2DC', 4, 1, NOW(), NOW());
+(3, 'Finalizado', '#EAD2AC', 3, 1, NOW(), NOW()),
+(4, 'Entregue', '#D8E2DC', 4, 1, NOW(), NOW());
 
 INSERT IGNORE INTO usuario (id, name, email, password, cpf, cargo, status, created_at, updated_at) VALUES
-(1, 'Helena Prado', 'helena@encantopersonalizados.com.br', '123456', '11111111111', 'administrador', 1, NOW(), NOW()),
-(2, 'Marina Sales', 'marina@encantopersonalizados.com.br', '123456', '22222222222', 'social media', 1, NOW(), NOW()),
-(3, 'Bianca Freire', 'bianca@encantopersonalizados.com.br', '123456', '33333333333', 'social media', 1, NOW(), NOW()),
-(4, 'Caio Mendes', 'caio@encantopersonalizados.com.br', '123456', '44444444444', 'manufatura', 1, NOW(), NOW()),
-(5, 'Lucas Ribeiro', 'lucas@encantopersonalizados.com.br', '123456', '55555555555', 'manufatura', 1, NOW(), NOW()),
-(6, 'Fernanda Costa', 'fernanda@encantopersonalizados.com.br', '123456', '66666666666', 'manufatura', 1, NOW(), NOW());
+(1, 'Diogo Yudi', 'diogo@encantopersonalizados.com.br', '$2a$10$VaiOzlGn2y7rvrEURrDoteehExkYbTE7/7OV5XInOkR1TD4yXOWTy', '11111111111', 'Administrador', 1, NOW(), NOW()),
+(2, 'Hugo Carvalho', 'hugo@encantopersonalizados.com.br', '$2a$10$lETSHiEmLnQ4UmzHK.16ouVSgY8jJpzBBJC0oovns2kAzVe0wfIQW', '22222222222', 'Administrador', 1, NOW(), NOW()),
+(3, 'Israel Coaquira', 'israel@encantopersonalizados.com.br', '$2a$10$9qP.j9Kfcp8eRSvs4gu8UOwAfYCrHDyLtp2OpZAeW2evriQ3Ww9mG', '33333333333', 'Administrador', 1, NOW(), NOW()),
+(4, 'Matteo Garcia', 'matteo@encantopersonalizados.com.br', '$2a$10$vSanEk7dcQ3XO4QODI2X8.3gmvp7mH5861QxypdBQKLORaUWPLXqS', '44444444444', 'Administrador', 1, NOW(), NOW()),
+(5, 'Nicoly Teixeira', 'nicoly@encantopersonalizados.com.br', '$2a$10$JTP3ehbG28PhzBDI66f2VeZ4ixiT.yUqfvQEdAEKo34s6RfPDWPO.', '55555555555', 'Administrador', 1, NOW(), NOW()),
+(6, 'Zaqueu', 'zaqueu@encantopersonalizados.com.br', '$2a$10$KUagJdySjLwepVZ7p.Uzr.OO6sbsQ/j2n.fWzCrz47.G2Twm/SCrO', '66666666666', 'Administrador', 1, NOW(), NOW());
+
+UPDATE usuario SET foto = '/uploads/usuarios/1/diogo.png' WHERE id = 1;
+UPDATE usuario SET foto = '/uploads/usuarios/2/hugo.png' WHERE id = 2;
+UPDATE usuario SET foto = '/uploads/usuarios/3/israel.jpg' WHERE id = 3;
+UPDATE usuario SET foto = '/uploads/usuarios/4/matteo.png' WHERE id = 4;
+UPDATE usuario SET foto = '/uploads/usuarios/5/nicoly.png' WHERE id = 5;
+UPDATE usuario SET foto = '/uploads/usuarios/6/zeca.png' WHERE id = 6;
 
 INSERT IGNORE INTO endereco_cliente (id, cep, logradouro, num_logradouro, complemento, bairro, cidade, municipio, estado, uf, ativo, created_at, updated_at, cliente_id) VALUES
 (1, '01310-100', 'Avenida Paulista', '103', NULL, 'Bela Vista', 'São Paulo', 'São Paulo', 'São Paulo', 'SP', 1, NOW(), NOW(), 1),
@@ -148,6 +155,28 @@ INSERT IGNORE INTO produto (id, titulo, descricao, ativo, created_at, updated_at
 (18, 'Mousepad Mundo Nerd', 'Mousepad com arte geek', 1, NOW(), NOW(), 8, 3),
 (19, 'Almofada Pet Lovers', 'Almofada com tema pet', 1, NOW(), NOW(), 9, 10),
 (20, 'Ecobag Evento Criativo', 'Ecobag para brindes e eventos', 1, NOW(), NOW(), 10, 5);
+
+INSERT IGNORE INTO foto_produto (id, foto, produto_id, created_at, updated_at) VALUES
+(1, '/uploads/produtos/1/canecaFestaColorida.jpeg', 1, NOW(), NOW()),
+(2, '/uploads/produtos/2/CanecaCasamento.jpeg', 2, NOW(), NOW()),
+(3, '/uploads/produtos/3/canecaGalaxiaGamer.jpeg', 3, NOW(), NOW()),
+(4, '/uploads/produtos/4/canecaFraseDoDia.jpeg', 4, NOW(), NOW()),
+(5, '/uploads/produtos/5/canecaIdentidadeVisual.jpeg', 5, NOW(), NOW()),
+(6, '/uploads/produtos/6/canecaMelhorMae.jpeg', 6, NOW(), NOW()),
+(7, '/uploads/produtos/7/canecaMelhorPai.jpeg', 7, NOW(), NOW()),
+(8, '/uploads/produtos/8/canecaNatal.jpeg', 8, NOW(), NOW()),
+(9, '/uploads/produtos/9/canecaProfessoraNota10.jpeg', 9, NOW(), NOW()),
+(10, '/uploads/produtos/10/canecaPetFavorito.jpeg', 10, NOW(), NOW()),
+(11, '/uploads/produtos/11/canecaMagicaGeek.jpeg', 11, NOW(), NOW()),
+(12, '/uploads/produtos/12/camisetaGamerEdition.jpeg', 12, NOW(), NOW()),
+(13, '/uploads/produtos/13/camiseta_frase_positiva.jpeg', 13, NOW(), NOW()),
+(14, '/uploads/produtos/14/CamisetaPremiumCorporativa.png', 14, NOW(), NOW()),
+(15, '/uploads/produtos/15/CadernoA5.webp', 15, NOW(), NOW()),
+(16, '/uploads/produtos/16/CadernoUniversitario.webp', 16, NOW(), NOW()),
+(17, '/uploads/produtos/17/SqueezeEmpresa.webp', 17, NOW(), NOW()),
+(18, '/uploads/produtos/18/MousepadNerd.jfif', 18, NOW(), NOW()),
+(19, '/uploads/produtos/19/AlmofadaPetLovers.webp', 19, NOW(), NOW()),
+(20, '/uploads/produtos/20/ecobag.png', 20, NOW(), NOW());
 
 INSERT IGNORE INTO pedido (id, origem, observacoes, preco_total, peso_total, data_limite, ativo, created_at, updated_at, cliente_id, usuario_id) VALUES
 (1, 'Site', 'Cliente pediu ajuste de nome na arte', 29.9, 0.32, DATE_ADD(DATE_SUB(NOW(), INTERVAL 119 DAY), INTERVAL 3 DAY), 1, DATE_SUB(NOW(), INTERVAL 119 DAY), DATE_SUB(NOW(), INTERVAL 119 DAY), 1, 2),
