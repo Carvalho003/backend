@@ -7,7 +7,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientResponseException;
@@ -26,27 +25,25 @@ import java.util.Map;
 public class WhatsappUseCase {
 
     private static final Logger log = LoggerFactory.getLogger(WhatsappUseCase.class);
+    private static final String FIXED_RECIPIENT_PHONE = "5511989734403";
 
     private final RestTemplate restTemplate;
     private final WhatsappRepository whatsappRepository;
     private final ProducerUseCase producerUseCase;
     private final String whatsappApiBaseUrl;
     private final String schedulerMessage;
-    private final boolean schedulerEnabled;
 
     public WhatsappUseCase(
             RestTemplateBuilder restTemplateBuilder,
             WhatsappRepository whatsappRepository,
             ProducerUseCase producerUseCase,
             @Value("${whatsapp.api.base-url:http://localhost:3001}") String whatsappApiBaseUrl,
-            @Value("${whatsapp.scheduler.enabled:true}") boolean schedulerEnabled,
             @Value("${whatsapp.scheduler.message:teste scheduler message}") String schedulerMessage
     ) {
         this.restTemplate = restTemplateBuilder.build();
         this.whatsappRepository = whatsappRepository;
         this.producerUseCase = producerUseCase;
         this.whatsappApiBaseUrl = whatsappApiBaseUrl;
-        this.schedulerEnabled = schedulerEnabled;
         this.schedulerMessage = schedulerMessage;
     }
 
@@ -94,6 +91,25 @@ public class WhatsappUseCase {
         return enviados;
     }
 
+    // Fluxo antigo de envio automatico por agendamento. Mantido apenas como referencia futura.
+    // private final boolean schedulerEnabled;
+    //
+    // public WhatsappUseCase(
+    //         RestTemplateBuilder restTemplateBuilder,
+    //         WhatsappRepository whatsappRepository,
+    //         ProducerUseCase producerUseCase,
+    //         @Value("${whatsapp.api.base-url:http://localhost:3001}") String whatsappApiBaseUrl,
+    //         @Value("${whatsapp.scheduler.enabled:true}") boolean schedulerEnabled,
+    //         @Value("${whatsapp.scheduler.message:teste scheduler message}") String schedulerMessage
+    // ) {
+    //     this.restTemplate = restTemplateBuilder.build();
+    //     this.whatsappRepository = whatsappRepository;
+    //     this.producerUseCase = producerUseCase;
+    //     this.whatsappApiBaseUrl = whatsappApiBaseUrl;
+    //     this.schedulerEnabled = schedulerEnabled;
+    //     this.schedulerMessage = schedulerMessage;
+    // }
+    //
     // Envia mensagem agendada automaticamente para pedidos pendentes
     // Configure o horario em application.properties:
     // whatsapp.scheduler.fixed-rate-ms=TEMPO_EM_MILISSEGUNDOS
@@ -101,21 +117,38 @@ public class WhatsappUseCase {
     //   - 3600000 = 1 hora
     //   - 86400000 = 1 dia
     //   - 300000 = 5 minutos (para testes)
-    @Scheduled(fixedRateString = "${whatsapp.scheduler.fixed-rate-ms:300000}")
-    public void enviarMensagemAutomaticaParaPendentes() {
-        if (!schedulerEnabled) {
-            log.info("Scheduler do WhatsApp desabilitado (whatsapp.scheduler.enabled=false)");
-            return;
-        }
+    // @Scheduled(fixedRateString = "${whatsapp.scheduler.fixed-rate-ms:300000}")
+    // public void enviarMensagemAutomaticaParaPendentes() {
+    //     if (!schedulerEnabled) {
+    //         log.info("Scheduler do WhatsApp desabilitado (whatsapp.scheduler.enabled=false)");
+    //         return;
+    //     }
+    //
+    //     if (schedulerMessage == null || schedulerMessage.isBlank()) {
+    //         log.warn("Mensagem do scheduler vazia. Defina whatsapp.scheduler.message para habilitar envio automatico.");
+    //         return;
+    //     }
+    //
+    //     int enviados = enviarMensagemParaTelefonesPendentes(schedulerMessage, true);
+    //     log.info("Scheduler WhatsApp executado. Mensagens enviadas: {}", enviados);
+    // }
 
+    public boolean enviarMensagemQuandoPedidoConcluido() {
         if (schedulerMessage == null || schedulerMessage.isBlank()) {
-            log.warn("Mensagem do scheduler vazia. Defina whatsapp.scheduler.message para habilitar envio automatico.");
-            return;
+            log.warn("Mensagem de conclusao vazia. Defina whatsapp.scheduler.message para habilitar o envio automatico.");
+            return false;
         }
 
-        // Envia a mensagem configurada para todos os telefones com pedidos pendentes
-        int enviados = enviarMensagemParaTelefonesPendentes(schedulerMessage, true);
-        log.info("Scheduler WhatsApp executado. Mensagens enviadas: {}", enviados);
+        return enviarMensagemParaNumeroFixo(schedulerMessage);
+    }
+
+    public boolean enviarMensagemParaNumeroFixo(String mensagem) {
+        if (mensagem == null || mensagem.isBlank()) {
+            log.warn("Mensagem vazia. O envio para o numero fixo nao foi executado.");
+            return false;
+        }
+
+        return enviarMensagem(FIXED_RECIPIENT_PHONE, mensagem, false);
     }
 
     private String obterDeviceId() {

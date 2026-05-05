@@ -19,6 +19,7 @@ import school.sptech.EncantoPersonalizados.core.domain.Produto;
 import school.sptech.EncantoPersonalizados.core.domain.StatusPedido;
 import school.sptech.EncantoPersonalizados.core.domain.Usuario;
 import school.sptech.EncantoPersonalizados.core.domain.exception.EntidadeNaoEncontradaException;
+import school.sptech.EncantoPersonalizados.core.application.usecase.whatsapp.WhatsappUseCase;
 import school.sptech.EncantoPersonalizados.infrastructure.dto.pedido.PedidoCreatedResponseDto;
 import school.sptech.EncantoPersonalizados.infrastructure.dto.pedido.PedidoMapper;
 import school.sptech.EncantoPersonalizados.infrastructure.dto.pedido.PedidoRequestDto;
@@ -45,6 +46,7 @@ public class PedidoUseCaseImpl implements PedidoUseCase {
     private final PedidoGateway pedidoGateway;
     private final StatusPedidoGateway statusPedidoGateway;
     private final UsuarioGateway usuarioGateway;
+    private final WhatsappUseCase whatsappUseCase;
 
     public PedidoUseCaseImpl(
             ProdutoGateway produtoGateway,
@@ -53,7 +55,8 @@ public class PedidoUseCaseImpl implements PedidoUseCase {
             ProdutoPedidoGateway produtoPedidoGateway,
             PedidoGateway pedidoGateway,
             StatusPedidoGateway statusPedidoGateway,
-            UsuarioGateway usuarioGateway
+            UsuarioGateway usuarioGateway,
+            WhatsappUseCase whatsappUseCase
     ) {
         this.produtoGateway = produtoGateway;
         this.clienteGateway = clienteGateway;
@@ -62,6 +65,7 @@ public class PedidoUseCaseImpl implements PedidoUseCase {
         this.pedidoGateway = pedidoGateway;
         this.statusPedidoGateway = statusPedidoGateway;
         this.usuarioGateway = usuarioGateway;
+        this.whatsappUseCase = whatsappUseCase;
     }
 
     @Override
@@ -205,6 +209,7 @@ public class PedidoUseCaseImpl implements PedidoUseCase {
     }
 
     @Override
+    @Transactional
     public void mudarStatus(PedidoStatusPedidoRequestDto dto) {
         Pedido pedido = pedidoGateway.findById(dto.idPedido())
                 .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
@@ -227,6 +232,21 @@ public class PedidoUseCaseImpl implements PedidoUseCase {
 
         pedidoStatusPedidoGateway.salvar(pedidoStatusPedido);
         pedidoGateway.save(pedido);
+
+        if (isStatusConcluido(statusPedido)) {
+            whatsappUseCase.enviarMensagemQuandoPedidoConcluido();
+        }
+    }
+
+    private boolean isStatusConcluido(StatusPedido statusPedido) {
+        if (statusPedido == null || statusPedido.getStatus() == null) {
+            return false;
+        }
+
+        String nomeStatus = statusPedido.getStatus().trim();
+        return nomeStatus.equalsIgnoreCase("Entregue")
+                || nomeStatus.equalsIgnoreCase("Concluido")
+                || nomeStatus.equalsIgnoreCase("Concluído");
     }
 
     @Override
