@@ -23,6 +23,9 @@ public class GerenciadorTokenJwt {
     @Value("${jwt.validity}")
     private long jwtTokenValidity;
 
+    @Value("${jwt.validity.remember:604800}")
+    private long jwtRememberMeValidity;
+
     public String getUsernameFromToken(String token){
         return getClaimForToken(token, Claims::getSubject);
     }
@@ -31,11 +34,19 @@ public class GerenciadorTokenJwt {
         return getClaimForToken(token, Claims::getExpiration);
     }
 
-    public String generateToken(final Authentication authentication){
-        final String authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
+    public String generateToken(final Authentication authentication, boolean rememberMe){
+        final String authorities = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
 
-        return Jwts.builder().setSubject(authentication.getName()).signWith(parseSecret()).
-                setIssuedAt(new Date(System.currentTimeMillis())).setExpiration(new Date(System.currentTimeMillis() + jwtTokenValidity * 1_000)).compact();
+        long validity = rememberMe ? jwtRememberMeValidity : jwtTokenValidity;
+
+        return Jwts.builder()
+                .setSubject(authentication.getName())
+                .signWith(parseSecret())
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + validity * 1_000)) // Multiplicado por 1000 se as properties estiverem em segundos
+                .compact();
     }
 
     private <T> T getClaimForToken(String token, Function<Claims, T> claimsResolver) {

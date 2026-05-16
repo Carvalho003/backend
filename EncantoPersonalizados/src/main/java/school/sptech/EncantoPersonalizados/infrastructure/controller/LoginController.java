@@ -30,7 +30,10 @@ public class LoginController {
     public ResponseEntity<UserTokenDTO> login(@RequestBody LoginRequestDTO loginRequestDTO){
 
         final Usuario usuario = UsuarioMapper.of(loginRequestDTO);
-        UserTokenDTO userTokenDTO = loginUseCase.validateLogin(usuario.getEmail(), usuario.getPassword());
+
+        boolean rememberMe = loginRequestDTO.getRememberMe();
+
+        UserTokenDTO userTokenDTO = loginUseCase.validateLogin(usuario.getEmail(), usuario.getPassword(), rememberMe);
 
         if(userTokenDTO == null){
             return ResponseEntity.status(404).build();
