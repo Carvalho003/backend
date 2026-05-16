@@ -8,6 +8,8 @@ public class LoginRequestDTO {
     private String email;
     @Schema(description = "Senha do usuário", example = "111111@A")
     private String password;
+    @Schema(description = "Manter conectado", example = "true")
+    private Boolean rememberMe;
 
     public String getEmail() {
         return email;
@@ -23,6 +25,14 @@ public class LoginRequestDTO {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Boolean getRememberMe() {
+        return rememberMe != null && rememberMe;
+    }
+
+    public void setRememberMe(Boolean rememberMe) {
+        this.rememberMe = rememberMe;
     }
 
 }
