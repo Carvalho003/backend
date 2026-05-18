@@ -12,6 +12,7 @@ public interface ClienteRepository extends JpaRepository<Cliente, Integer> {
     @Query("""
             SELECT c FROM Cliente c
             WHERE (:search IS NULL OR LOWER(c.nome) LIKE LOWER(CONCAT('%', :search, '%')) )
+            AND c.ativo = true
             """)
     Page<Cliente> filtrar(
             @Param("search") String search,

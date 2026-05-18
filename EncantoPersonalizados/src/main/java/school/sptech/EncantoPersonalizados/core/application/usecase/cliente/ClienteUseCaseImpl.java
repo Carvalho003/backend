@@ -8,6 +8,7 @@ import school.sptech.EncantoPersonalizados.core.application.gateway.ClienteGatew
 import school.sptech.EncantoPersonalizados.core.application.gateway.EnderecoClienteGateway;
 import school.sptech.EncantoPersonalizados.core.domain.Cliente;
 import school.sptech.EncantoPersonalizados.core.domain.EnderecoCliente;
+import school.sptech.EncantoPersonalizados.core.domain.exception.EntidadeConflitoException;
 import school.sptech.EncantoPersonalizados.core.domain.exception.EntidadeNaoEncontradaException;
 import school.sptech.EncantoPersonalizados.infrastructure.dto.cliente.ClienteMapper;
 import school.sptech.EncantoPersonalizados.infrastructure.dto.cliente.CreateClienteDTO;
@@ -29,8 +30,9 @@ public class ClienteUseCaseImpl implements ClienteUseCase {
 
     @Override
     public Cliente store(CreateClienteDTO dto) {
-        Cliente entity = clienteGateway.save(ClienteMapper.toEntity(dto));
-
+        Cliente cliente = ClienteMapper.toEntity(dto);
+        cliente.setAtivo(true);
+        Cliente entity = clienteGateway.save(cliente);
         List<EnderecoCliente> enderecoClientes = ClienteMapper.toEntity(dto.enderecos(), entity);
         for (EnderecoCliente e : enderecoClientes) {
             enderecoClienteGateway.save(e);
@@ -42,15 +44,18 @@ public class ClienteUseCaseImpl implements ClienteUseCase {
 
     @Override
     public Cliente update(CreateClienteDTO dto, Integer id) {
-        Optional<Cliente> entityAntigaOpt = Optional.ofNullable(clienteGateway.findById(id));
-        if (entityAntigaOpt.isEmpty()) throw new EntidadeNaoEncontradaException("Cliente não encontrado");
-        Cliente entityAntiga = entityAntigaOpt.get();
+        Cliente clienteExistente = clienteGateway.findById(id);
+        if (clienteExistente == null) {
+            throw new EntidadeNaoEncontradaException("Cliente de id %d não encontrado".formatted(id));
+        }
+        if (clienteExistente.getAtivo() != null && !clienteExistente.getAtivo()) {
+            throw new EntidadeConflitoException("Não é possível alterar um cliente inativo.");
+        }
+        clienteExistente.setNome(dto.nome());
+        clienteExistente.setTelefone(dto.telefone());
+        clienteExistente.setUpdatedAt(LocalDateTime.now());
 
-        entityAntiga.setUpdatedAt(LocalDateTime.now());
-        entityAntiga.setNome(dto.nome());
-        entityAntiga.setTelefone(dto.telefone());
-
-        return clienteGateway.save(entityAntiga);
+        return clienteGateway.save(clienteExistente);
     }
 
     @Override
@@ -63,7 +68,9 @@ public class ClienteUseCaseImpl implements ClienteUseCase {
     public void removerPorId(Integer id) {
         Cliente cliente = clienteGateway.findById(id);
         if (cliente != null) {
-            clienteGateway.deleteById(id);
+            cliente.setAtivo(false);
+            cliente.setUpdatedAt(LocalDateTime.now());
+            clienteGateway.save(cliente);
         } else {
             throw new EntidadeNaoEncontradaException("Cliente de id %d não encontrado".formatted(id));
         }

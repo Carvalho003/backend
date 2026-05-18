@@ -107,7 +107,7 @@ public class PedidoUseCaseImpl implements PedidoUseCase {
 
         Double precoTotalPedido = 0.0;
         Double pesoTotalPedido = 0.0;
-        Integer diasDeProducaoMaisLongoDosProdutos = 0;
+        Integer totalDiasProducao = 0;
         List<ProdutosPedidoResponseDto> produtosPedidoResponseDtos = new ArrayList<>();
 
         for (ProdutosPedidoRequestDto pedidoRequestDto : pedidoDto.produtos()) {
@@ -122,6 +122,7 @@ public class PedidoUseCaseImpl implements PedidoUseCase {
 
             Integer quantidade = produtoPedido.getQtdProduto() != null ? produtoPedido.getQtdProduto() : 1;
             produtoPedido.setQtdProduto(quantidade);
+
 
             if (produtoPedido.getPrecoUnitario() == null) {
                 produtoPedido.setPrecoUnitario(produto.getItemProduto().getPrecoVenda());
@@ -139,16 +140,20 @@ public class PedidoUseCaseImpl implements PedidoUseCase {
             ProdutosPedidoResponseDto dtoProdutoPedido = ProdutosPedidoMapper.toDto(produtoPedidoSalvo);
             produtosPedidoResponseDtos.add(dtoProdutoPedido);
 
-            if (produtoPedido.getProduto().getItemProduto().getPrazoProducao() > diasDeProducaoMaisLongoDosProdutos) {
-                diasDeProducaoMaisLongoDosProdutos = produtoPedido.getProduto().getItemProduto().getPrazoProducao();
-            }
+            Integer prazoProduto = produtoPedido.getProduto().getItemProduto().getPrazoProducao();
+            totalDiasProducao += (prazoProduto * quantidade);
 
             precoTotalPedido += produtoPedidoSalvo.getPrecoTotal();
             pesoTotalPedido += produtoPedidoSalvo.getPesoTotal();
         }
-
-        LocalDateTime dataLimite = LocalDateTime.now().plusDays(diasDeProducaoMaisLongoDosProdutos);
-        pedido.setDataLimite(dataLimite);
+        LocalDateTime dataLimiteFinal;
+        if (pedidoDto.dataLimite() != null) {
+            dataLimiteFinal = pedidoDto.dataLimite().atTime(23, 59, 59);
+        } else {
+            dataLimiteFinal = LocalDateTime.now().plusDays(totalDiasProducao);
+        }
+        pedido.setDataLimite(dataLimiteFinal);
+        pedido.setDataLimite(dataLimiteFinal);
         pedido.setPrecoTotal(precoTotalPedido);
         pedido.setPesoTotal(pesoTotalPedido);
         Pedido pedidoSalvo = pedidoGateway.save(pedido);
@@ -188,6 +193,9 @@ public class PedidoUseCaseImpl implements PedidoUseCase {
 
         pedidoExistente.setObservacoes(pedidoDto.observacoes());
         pedidoExistente.setOrigem(pedidoDto.origem());
+        if (pedidoDto.dataLimite() != null) {
+            pedidoExistente.setDataLimite(pedidoDto.dataLimite().atTime(23, 59, 59));
+        }
         pedidoExistente.setUpdatedAt(LocalDateTime.now());
 
         Pedido pedidoAtualizado = pedidoGateway.save(pedidoExistente);
