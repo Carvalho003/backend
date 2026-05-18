@@ -13,6 +13,7 @@ import school.sptech.EncantoPersonalizados.core.application.gateway.ProdutoGatew
 import school.sptech.EncantoPersonalizados.core.application.usecase.fotoProduto.ArmazenarFotoProdutoUseCaseImpl;
 import school.sptech.EncantoPersonalizados.core.application.usecase.fotoProduto.DeletarFotoUseCase;
 import school.sptech.EncantoPersonalizados.core.application.usecase.fotoProduto.SalvarFotoUseCase;
+import school.sptech.EncantoPersonalizados.core.application.usecase.producer.ProducerUseCase;
 import school.sptech.EncantoPersonalizados.core.domain.FotoArquivo;
 import school.sptech.EncantoPersonalizados.core.domain.FotoProduto;
 import school.sptech.EncantoPersonalizados.core.domain.Produto;
@@ -43,6 +44,9 @@ class ArmazenarFotoProdutoUseCaseImplTest {
 
     @Mock
     DeletarFotoUseCase deletarFotoUseCase;
+
+    @Mock
+    ProducerUseCase producerUseCase;
 
     @InjectMocks
     ArmazenarFotoProdutoUseCaseImpl service;
@@ -101,7 +105,7 @@ class ArmazenarFotoProdutoUseCaseImplTest {
     @Test
     @DisplayName("Quando excluir foto e foto não existir, lançar exceção")
     void QuandoExcluirFotoMasFotoNaoExistirLancarExcecao() {
-        when(repository.findById(1)).thenReturn(Optional.empty());
+        when(repository.findByIdUncached(1)).thenReturn(Optional.empty());
 
         RuntimeException excecao = assertThrows(
                 RuntimeException.class,
@@ -112,18 +116,20 @@ class ArmazenarFotoProdutoUseCaseImplTest {
     }
 
     @Test
-    @DisplayName("Deve deletar a foto quando ela existe")
+    @DisplayName("Deve deletar a foto quando ela existe (passa pelo caminho não-cacheado)")
     void DeletarFotoQuandoExiste() {
         Integer fotoId = 1;
         FotoProduto foto = new FotoProduto();
         foto.setFoto("/uploads/produtos/1/uuid-imagem.jpg");
 
-        when(repository.findById(fotoId)).thenReturn(Optional.of(foto));
+        when(repository.findByIdUncached(fotoId)).thenReturn(Optional.of(foto));
         when(fotoArquivoStorageGateway.deletar(foto.getFoto()))
                 .thenReturn(CompletableFuture.completedFuture(null));
 
         service.deletarFoto(fotoId).join();
 
         verify(repository, times(1)).delete(foto);
+        verify(repository, never()).findById(anyInt());
+        verify(producerUseCase, times(1)).sendFotoProdutoEvent(any());
     }
 }

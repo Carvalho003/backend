@@ -69,7 +69,7 @@ public class ArmazenarFotoProdutoUseCaseImpl implements ArmazenarFotoProdutoUseC
     @Transactional
     public CompletableFuture<Void> deletarFoto(Integer fotoId) {
 
-        FotoProduto foto = fotoProdutoGateway.findById(fotoId)
+        FotoProduto foto = fotoProdutoGateway.findByIdUncached(fotoId)
                 .orElseThrow(() -> new RuntimeException("Foto não encontrada"));
 
         String caminhoRelativo = foto.getFoto();
