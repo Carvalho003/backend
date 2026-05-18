@@ -76,6 +76,20 @@ public class ClienteController {
         return ResponseEntity.status(200).body(dtos);
     }
 
+    @Operation(description = "Muda o estado de um cliente para ativo/inativo")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Sucesso ao mudar estado do cliente"),
+            @ApiResponse(responseCode = "404", description = "Cliente não encontrado")
+    })
+    @PatchMapping("/{id}/mudar-estado")
+    public ResponseEntity<Void> mudarEstadoCliente(
+            @PathVariable Integer id
+    ){
+        clienteUseCase.removerPorId(id);
+
+        return ResponseEntity.status(200).build();
+    }
+
 
     @Operation(description = "Cria um endereço de cliente")
     @ApiResponses({

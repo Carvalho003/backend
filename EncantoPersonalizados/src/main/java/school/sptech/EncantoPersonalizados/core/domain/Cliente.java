@@ -16,6 +16,7 @@ public class Cliente {
     private List<EnderecoCliente> enderecoClientes;
     @OneToMany(mappedBy = "cliente")
     private List<Pedido> pedidos;
+    private Boolean ativo;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -75,5 +76,11 @@ public class Cliente {
         this.telefone = telefone;
     }
 
+    public Boolean getAtivo() {
+        return ativo;
+    }
 
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
+    }
 }

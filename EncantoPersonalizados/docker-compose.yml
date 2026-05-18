@@ -68,4 +68,3 @@ services:
 networks:
   encanto-network:
     driver: bridge
-
