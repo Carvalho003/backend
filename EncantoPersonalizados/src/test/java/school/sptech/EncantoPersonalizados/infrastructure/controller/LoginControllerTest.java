@@ -13,6 +13,7 @@ import school.sptech.EncantoPersonalizados.infrastructure.dto.usuario.LoginReque
 import school.sptech.EncantoPersonalizados.infrastructure.dto.usuario.UserTokenDTO;
 import school.sptech.EncantoPersonalizados.core.application.usecase.login.LoginUseCase;
 
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -41,7 +42,7 @@ class LoginControllerTest {
         token.setEmail("a@b.c");
         token.setNome("A");
         token.setToken("t");
-        Mockito.when(loginUseCase.validateLogin(anyString(), anyString())).thenReturn(token);
+        Mockito.when(loginUseCase.validateLogin(anyString(), anyString(), anyBoolean())).thenReturn(token);
 
         mockMvc.perform(post("/login")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -54,7 +55,7 @@ class LoginControllerTest {
         LoginRequestDTO req = new LoginRequestDTO();
         req.setEmail("x@x");
         req.setPassword("p");
-        Mockito.when(loginUseCase.validateLogin(anyString(), anyString())).thenReturn(null);
+        Mockito.when(loginUseCase.validateLogin(anyString(), anyString(), anyBoolean())).thenReturn(null);
         mockMvc.perform(post("/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(req)))

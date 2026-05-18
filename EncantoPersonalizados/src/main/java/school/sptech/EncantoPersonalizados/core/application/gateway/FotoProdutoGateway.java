@@ -7,5 +7,6 @@ import java.util.Optional;
 public interface FotoProdutoGateway {
     FotoProduto save(FotoProduto foto);
     Optional<FotoProduto> findById(Integer id);
+    Optional<FotoProduto> findByIdUncached(Integer id);
     void delete(FotoProduto foto);
 }

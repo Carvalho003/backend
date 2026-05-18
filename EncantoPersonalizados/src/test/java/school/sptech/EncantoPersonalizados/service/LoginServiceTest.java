@@ -22,6 +22,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -58,9 +59,9 @@ class LoginUseCaseImplTest {
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenAnswer(invocation -> authenticationMock);
 
-        when(gerenciadorTokenJwt.generateToken(authenticationMock)).thenReturn("token123");
+        when(gerenciadorTokenJwt.generateToken(authenticationMock, anyBoolean())).thenReturn("token123");
 
-        UserTokenDTO resultado = service.validateLogin("teste@email.com", "senha");
+        UserTokenDTO resultado = service.validateLogin("teste@email.com", "senha", anyBoolean());
 
         assertNotNull(resultado);
         assertEquals("token123", resultado.getToken());
@@ -75,7 +76,7 @@ class LoginUseCaseImplTest {
 
         ResponseStatusException excecao = assertThrows(
                 ResponseStatusException.class,
-                () -> service.validateLogin("naoexiste@email.com", "senha")
+                () -> service.validateLogin("naoexiste@email.com", "senha", anyBoolean())
         );
 
         assertEquals(404, excecao.getStatusCode().value());

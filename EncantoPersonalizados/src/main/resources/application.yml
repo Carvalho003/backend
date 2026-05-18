@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: exemplo-cache-4ads
+  jpa:
+    defer-datasource-initialization: true
+  cache:
+    type: redis
+    redis:
+      time-to-live: PT5M          # TTL padrão (5 minutos)
+      cache-null-values: false    # não armazena valores nulos
+      key-prefix: "app::"         # adiciona um prefixo antes de cada chave
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      # password: minha_senha_segura (caso tenha definido no Docker)
+
+logging:
+  level:
+    org.springframework.cache.interceptor.CacheInterceptor: TRACE  # mostra hits/misses no log

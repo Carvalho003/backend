@@ -1,5 +1,6 @@
 package school.sptech.EncantoPersonalizados.core.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -11,6 +12,7 @@ public class StatusPedido {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String status;
+    @JsonIgnore
     @OneToMany(mappedBy = "status")
     private List<PedidoStatusPedido> pedidoStatusPedidos;
     private String cor;

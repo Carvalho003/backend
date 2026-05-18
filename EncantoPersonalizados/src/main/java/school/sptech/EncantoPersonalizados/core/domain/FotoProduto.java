@@ -1,5 +1,6 @@
 package school.sptech.EncantoPersonalizados.core.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -10,6 +11,7 @@ public class FotoProduto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String foto;
+    @JsonIgnore
     @ManyToOne
     private Produto produto;
     private LocalDateTime createdAt;

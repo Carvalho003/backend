@@ -1,5 +1,7 @@
 package school.sptech.EncantoPersonalizados.infrastructure.adapter;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import school.sptech.EncantoPersonalizados.core.application.gateway.FotoProdutoGateway;
 import school.sptech.EncantoPersonalizados.core.domain.FotoProduto;
@@ -17,17 +19,27 @@ public class FotoProdutoRepositoryAdapter implements FotoProdutoGateway {
     }
 
     @Override
+    @CacheEvict(cacheNames = "fotoProdutoById", key = "#foto.id", condition = "#foto.id != null")
     public FotoProduto save(FotoProduto foto) {
         return repository.save(foto);
     }
 
     @Override
+    @Cacheable(cacheNames = "fotoProdutoById", key = "#id", unless = "#result == null")
     public Optional<FotoProduto> findById(Integer id) {
         return repository.findById(id);
     }
 
     @Override
+    public Optional<FotoProduto> findByIdUncached(Integer id) {
+        return repository.findById(id);
+    }
+
+    @Override
+    @CacheEvict(cacheNames = "fotoProdutoById", key = "#foto.id", condition = "#foto.id != null")
     public void delete(FotoProduto foto) {
-        repository.delete(foto);
+        if (foto.getId() != null) {
+            repository.deleteById(foto.getId());
+        }
     }
 }

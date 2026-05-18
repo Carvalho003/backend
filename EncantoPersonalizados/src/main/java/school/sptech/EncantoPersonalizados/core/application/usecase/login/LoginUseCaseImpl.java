@@ -34,14 +34,15 @@ public class LoginUseCaseImpl implements LoginUseCase {
     }
 
     @Override
-    public UserTokenDTO validateLogin(String email, String password) {
+    public UserTokenDTO validateLogin(String email, String password, boolean rememberMe) {
         Usuario usuario = gateway.findUsuarioByEmail(email)
                 .orElseThrow(() -> new ResponseStatusException(404, "Email do usuário não cadastrado", null));
 
         final UsernamePasswordAuthenticationToken credentials = new UsernamePasswordAuthenticationToken(email, password);
         final Authentication authentication = this.authenticationManager.authenticate(credentials);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        final String token = gerenciadorTokenJwt.generateToken(authentication);
+
+        final String token = gerenciadorTokenJwt.generateToken(authentication, rememberMe);
 
         return UsuarioMapper.of(usuario, token);
     }
