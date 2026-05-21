@@ -26,6 +26,7 @@ import school.sptech.EncantoPersonalizados.core.application.gateway.ProdutoPedid
 import school.sptech.EncantoPersonalizados.core.application.gateway.StatusPedidoGateway;
 import school.sptech.EncantoPersonalizados.core.application.gateway.UsuarioGateway;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -70,7 +71,7 @@ class PedidoUseCaseImplTest {
                 "a",
                 1,
                 1,
-                List.of()
+                LocalDate.of(2026, 5, 21), List.of()
         );
 
         when(clienteGateway.findById(dto.clienteId())).thenReturn(null);
@@ -89,7 +90,7 @@ class PedidoUseCaseImplTest {
                 "a",
                 1,
                 1,
-                List.of()
+                LocalDate.of(2026, 5, 21),List.of()
         );
 
         Cliente cliente = new Cliente();
@@ -114,7 +115,7 @@ class PedidoUseCaseImplTest {
                 "a",
                 1,
                 1,
-                List.of()
+                LocalDate.of(2026, 5, 21),List.of()
         );
 
         Cliente cliente = new Cliente();
@@ -143,7 +144,7 @@ class PedidoUseCaseImplTest {
                 "a",
                 1,
                 1,
-                List.of(produtosPedidoRequestDto)
+                LocalDate.of(2026, 5, 21), List.of(produtosPedidoRequestDto)
         );
 
         Cliente cliente = new Cliente();
@@ -182,7 +183,7 @@ class PedidoUseCaseImplTest {
                 "Online",
                 1,
                 1,
-                List.of(produtoReq)
+                LocalDate.of(2026, 5, 21), List.of(produtoReq)
         );
 
         Cliente cliente = new Cliente();
@@ -424,7 +425,7 @@ class PedidoUseCaseImplTest {
                 "Online",
                 1,
                 1,
-                List.of()
+                LocalDate.of(2026, 5, 21), List.of()
         );
 
         when(pedidoRepository.findById(1)).thenReturn(Optional.empty());
@@ -443,7 +444,7 @@ class PedidoUseCaseImplTest {
                 "a",
                 1,
                 1,
-                List.of()
+                LocalDate.of(2026, 5, 21), List.of()
         );
 
         Pedido pedidoExistente = new Pedido();
@@ -481,7 +482,7 @@ class PedidoUseCaseImplTest {
                 "Online",
                 1,
                 1,
-                List.of()
+                LocalDate.of(2026, 5, 21), List.of()
         );
 
         when(pedidoRepository.findById(1)).thenReturn(Optional.empty());
