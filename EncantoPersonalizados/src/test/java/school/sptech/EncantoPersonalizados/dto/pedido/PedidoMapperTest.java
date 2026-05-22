@@ -7,6 +7,7 @@ import school.sptech.EncantoPersonalizados.core.domain.Pedido;
 import school.sptech.EncantoPersonalizados.core.domain.ProdutoPedido;
 import school.sptech.EncantoPersonalizados.core.domain.Usuario;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -16,7 +17,7 @@ class PedidoMapperTest {
 
     @Test
     void toEntity_mapsFields() {
-        PedidoRequestDto req = new PedidoRequestDto("Obs","Web", 1, 2, List.of());
+        PedidoRequestDto req = new PedidoRequestDto("Obs","Web", 1, 2, LocalDate.of(2026, 5, 21), List.of());
         var entity = PedidoMapper.toEntity(req);
         assertNotNull(entity);
         assertEquals("Obs", entity.getObservacoes());

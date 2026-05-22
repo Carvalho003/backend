@@ -16,6 +16,7 @@ import school.sptech.EncantoPersonalizados.infrastructure.dto.pedido.PedidoRespo
 import school.sptech.EncantoPersonalizados.core.application.usecase.pedido.PedidoUseCase;
 import school.sptech.EncantoPersonalizados.core.application.usecase.produtoPedido.ProdutoPedidoUseCase;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -51,7 +52,9 @@ class PedidoControllerTest {
 
     @Test
     void criar_returns201() throws Exception {
-        PedidoRequestDto req = new PedidoRequestDto("Obs", "Web", 1, 2, List.of());
+        PedidoRequestDto req = new PedidoRequestDto("Obs", "Web", 1, 2, LocalDate.of(2026, 5, 21),
+
+                List.of());
         PedidoCreatedResponseDto resp = new PedidoCreatedResponseDto(1, "Obs", "Web", null);
         Mockito.when(pedidoUseCase.store(any())).thenReturn(resp);
 
