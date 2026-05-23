@@ -3,6 +3,7 @@ package school.sptech.EncantoPersonalizados.infrastructure.persistence.repositor
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import school.sptech.EncantoPersonalizados.core.domain.Pedido;
@@ -11,13 +12,14 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-public interface PedidoRepository extends JpaRepository<Pedido, Integer> {
+public interface PedidoRepository extends JpaRepository<Pedido, Integer>, JpaSpecificationExecutor<Pedido> {
 
     @Query("""
             SELECT p FROM Pedido p
             LEFT JOIN p.cliente c
             WHERE p.ativo = :ativo
-            AND p.createdAt BETWEEN :inicio AND :fim
+            AND (:inicio IS NULL OR p.createdAt >= :inicio)
+            AND (:fim IS NULL OR p.createdAt <= :fim)
             AND (:search IS NULL OR LOWER(c.nome) LIKE LOWER(CONCAT('%', :search, '%'))
             OR LOWER(p.origem) LIKE LOWER(CONCAT('%', :search, '%')))
             """)

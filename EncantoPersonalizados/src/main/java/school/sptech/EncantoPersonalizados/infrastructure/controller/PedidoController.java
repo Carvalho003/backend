@@ -58,9 +58,36 @@ public class PedidoController {
                 @RequestParam(defaultValue = "0") Integer page,
                 @RequestParam(defaultValue = "10") Integer size,
                 @RequestParam(required = false) LocalDate inicio,
-                @RequestParam(required = false) LocalDate fim) {
+                @RequestParam(required = false) LocalDate fim,
+                @RequestParam(required = false) String origem,
+                @RequestParam(required = false) Integer statusId,
+                @RequestParam(required = false) LocalDate createdAtInicio,
+                @RequestParam(required = false) LocalDate createdAtFim,
+                @RequestParam(required = false) LocalDate dataLimiteInicio,
+                @RequestParam(required = false) LocalDate dataLimiteFim,
+                @RequestParam(required = false) Double valorMin,
+                @RequestParam(required = false) Double valorMax,
+                @RequestParam(required = false) String sortBy,
+                @RequestParam(required = false) String sortDirection) {
 
-                Page<PedidoResponseDto> response = pedidoUseCase.listar(search, page, ativa,inicio, fim, size);
+                Page<PedidoResponseDto> response = pedidoUseCase.listarAvancado(
+                        search,
+                        page,
+                        ativa,
+                        inicio,
+                        fim,
+                        size,
+                        origem,
+                        statusId,
+                        createdAtInicio,
+                        createdAtFim,
+                        dataLimiteInicio,
+                        dataLimiteFim,
+                        valorMin,
+                        valorMax,
+                        sortBy,
+                        sortDirection
+                );
                 return ResponseEntity.status(200).body(response);
         }
 

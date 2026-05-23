@@ -14,6 +14,24 @@ public interface PedidoUseCase {
     Pedido findById(Integer id);
     PedidoCreatedResponseDto store(PedidoRequestDto pedidoDto);
     Page<PedidoResponseDto> listar(String search, Integer page, Boolean ativo, LocalDate inicio, LocalDate fim, Integer size);
+    Page<PedidoResponseDto> listarAvancado(
+            String search,
+            Integer page,
+            Boolean ativo,
+            LocalDate inicio,
+            LocalDate fim,
+            Integer size,
+            String origem,
+            Integer statusId,
+            LocalDate createdAtInicio,
+            LocalDate createdAtFim,
+            LocalDate dataLimiteInicio,
+            LocalDate dataLimiteFim,
+            Double valorMin,
+            Double valorMax,
+            String sortBy,
+            String sortDirection
+    );
     PedidoResponseDto getById(Integer id);
     PedidoCreatedResponseDto update(Integer id, PedidoRequestDto pedidoDto);
     void mudarEstado(Integer id);

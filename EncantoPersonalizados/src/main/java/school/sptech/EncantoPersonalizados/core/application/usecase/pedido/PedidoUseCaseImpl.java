@@ -171,6 +171,51 @@ public class PedidoUseCaseImpl implements PedidoUseCase {
         Pageable pageable = PageRequest.of(page, size);
         Page<Pedido> pedidos = pedidoGateway.filtrar(search, ativo, inicio, fim, pageable, size);
 
+        return mapearPedidos(pedidos);
+    }
+
+    @Override
+    public Page<PedidoResponseDto> listarAvancado(
+            String search,
+            Integer page,
+            Boolean ativo,
+            LocalDate inicio,
+            LocalDate fim,
+            Integer size,
+            String origem,
+            Integer statusId,
+            LocalDate createdAtInicio,
+            LocalDate createdAtFim,
+            LocalDate dataLimiteInicio,
+            LocalDate dataLimiteFim,
+            Double valorMin,
+            Double valorMax,
+            String sortBy,
+            String sortDirection
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        LocalDate filtroCriacaoInicio = createdAtInicio != null ? createdAtInicio : inicio;
+        LocalDate filtroCriacaoFim = createdAtFim != null ? createdAtFim : fim;
+        Page<Pedido> pedidos = pedidoGateway.filtrarAvancado(
+                search,
+                ativo,
+                origem,
+                statusId,
+                filtroCriacaoInicio,
+                filtroCriacaoFim,
+                dataLimiteInicio,
+                dataLimiteFim,
+                valorMin,
+                valorMax,
+                sortBy,
+                sortDirection,
+                pageable
+        );
+
+        return mapearPedidos(pedidos);
+    }
+
+    private Page<PedidoResponseDto> mapearPedidos(Page<Pedido> pedidos) {
         return pedidos.map(pedido -> {
             PedidoStatusPedido statusAtual = pedidoStatusPedidoGateway.findStatusAtualByPedidoId(pedido.getId()).get(0);
             PedidoStatusPedidoResponseDto statusPedidoResponseDto = PedidoStatusPedidoMapper.toResponseDto(statusAtual);
