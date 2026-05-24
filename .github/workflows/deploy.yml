@@ -24,20 +24,15 @@ jobs:
         run: |
           cd EncantoPersonalizados
           docker push israelcoaquira/encanto-backend:latest
-      - name: Deploy via bastion (public EC2)
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.EC2_BASTION }}
-          username: ubuntu
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            echo "Deploy iniciado"
-      - name: Deploy backend (private EC2)
+      - name: Deploy backend
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.PRIVATE_HOST }}
           username: ubuntu
           key: ${{ secrets.SSH_KEY }}
+          proxy_host: ${{ secrets.EC2_BASTION }}
+          proxy_username: ubuntu
+          proxy_key: ${{ secrets.SSH_KEY }}
           script: |
             cd /opt/encanto
       
