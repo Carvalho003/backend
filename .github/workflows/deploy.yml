@@ -29,15 +29,12 @@ jobs:
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_BASTION }}
-          username: ${{ secrets.EC2_USER }}
+          username: ubuntu
           key: ${{ secrets.SSH_KEY }}
           script: |
-            ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.PRIVATE_HOST }} << 'EOF'
-              cd /opt/encanto-backend
-
+            ssh -A ubuntu@${{ secrets.PRIVATE_HOST }} << 'EOF'
+              cd /opt/encanto
               sudo docker compose pull
-
               sudo docker compose down
-
               sudo docker compose up -d
             EOF
