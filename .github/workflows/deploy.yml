@@ -24,17 +24,23 @@ jobs:
         run: |
           cd EncantoPersonalizados
           docker push israelcoaquira/encanto-backend:latest
-
-      - name: Deploy backend
+      - name: Deploy via bastion (public EC2)
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_BASTION }}
           username: ubuntu
           key: ${{ secrets.SSH_KEY }}
           script: |
-            ssh -A ubuntu@${{ secrets.PRIVATE_HOST }} << 'EOF'
-              cd /opt/encanto
-              sudo docker compose pull
-              sudo docker compose down
-              sudo docker compose up -d
-            EOF
+            echo "Deploy iniciado"
+      - name: Deploy backend (private EC2)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PRIVATE_HOST }}
+          username: ubuntu
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd /opt/encanto
+      
+            sudo docker compose pull
+            sudo docker compose down
+            sudo docker compose up -d
