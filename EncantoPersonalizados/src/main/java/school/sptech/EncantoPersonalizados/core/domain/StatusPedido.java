@@ -12,6 +12,9 @@ public class StatusPedido {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String status;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status_role", length = 30)
+    private StatusPedidoRole role;
     @JsonIgnore
     @OneToMany(mappedBy = "status")
     private List<PedidoStatusPedido> pedidoStatusPedidos;
@@ -45,6 +48,14 @@ public class StatusPedido {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public StatusPedidoRole getRole() {
+        return role;
+    }
+
+    public void setRole(StatusPedidoRole role) {
+        this.role = role;
     }
 
     public List<PedidoStatusPedido> getPedidoStatusPedidos() {

@@ -27,16 +27,16 @@ SET FOREIGN_KEY_CHECKS = 1;
 
 -- ─────────────────────────────────────────────────────────────
 --  STATUS DE PEDIDO
---  'Finalizado', 'Entregue' e 'Cancelado' são verificados
---  explicitamente pelas views de dashboard.
+--  'Finalizado', 'Entregue' e 'Cancelado' são classificados
+--  por status_role para as views de dashboard.
 -- ─────────────────────────────────────────────────────────────
-INSERT INTO status_pedido (id, status, cor, ordem_kanban, ativo, created_at, updated_at) VALUES
-(1, 'Análise',    '#F59E0B', 1, 1, NOW(), NOW()),
-(2, 'Produção',   '#3B82F6', 2, 1, NOW(), NOW()),
-(3, 'Qualidade',  '#8B5CF6', 3, 1, NOW(), NOW()),
-(4, 'Finalizado', '#10B981', 4, 1, NOW(), NOW()),
-(5, 'Entregue',   '#059669', 5, 1, NOW(), NOW()),
-(6, 'Cancelado',  '#EF4444', 6, 1, NOW(), NOW());
+INSERT INTO status_pedido (id, status, cor, ordem_kanban, status_role, ativo, created_at, updated_at) VALUES
+(1, 'Análise',    '#F59E0B', 1, NULL, 1, NOW(), NOW()),
+(2, 'Produção',   '#3B82F6', 2, NULL, 1, NOW(), NOW()),
+(3, 'Qualidade',  '#8B5CF6', 3, NULL, 1, NOW(), NOW()),
+(4, 'Finalizado', '#10B981', 4, 'FINALIZADO', 1, NOW(), NOW()),
+(5, 'Entregue',   '#059669', 5, 'ENTREGUE', 1, NOW(), NOW()),
+(6, 'Cancelado',  '#EF4444', 6, 'CANCELADO', 1, NOW(), NOW());
 
 -- ─────────────────────────────────────────────────────────────
 --  USUÁRIOS

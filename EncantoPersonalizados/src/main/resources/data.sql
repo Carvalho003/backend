@@ -69,11 +69,15 @@ INSERT IGNORE INTO item_produto (id, descricao, material, altura, comprimento, l
 (9, 'Almofada Personalizada', 'Poliéster', 10.0, 40.0, 40.0, 500, 16.0, 34.9, 49.9, 3, 1, NOW(), NOW()),
 (10, 'Ecobag Personalizada', 'Algodão Cru', 35.0, 30.0, 5.0, 120, 9.5, 24.9, 34.9, 2, 1, NOW(), NOW());
 
-INSERT IGNORE INTO status_pedido (id, status, cor, ordem_kanban, ativo, created_at, updated_at) VALUES
-(1, 'A Fazer', '#FFE5D9', 1, 1, NOW(), NOW()),
-(2, 'Em Produção', '#F4ACB7', 2, 1, NOW(), NOW()),
-(3, 'Finalizado', '#EAD2AC', 3, 1, NOW(), NOW()),
-(4, 'Entregue', '#D8E2DC', 4, 1, NOW(), NOW());
+INSERT IGNORE INTO status_pedido (id, status, cor, ordem_kanban, status_role, ativo, created_at, updated_at) VALUES
+(1, 'A Fazer', '#FFE5D9', 1, NULL, 1, NOW(), NOW()),
+(2, 'Em Produção', '#F4ACB7', 2, NULL, 1, NOW(), NOW()),
+(3, 'Finalizado', '#EAD2AC', 3, 'FINALIZADO', 1, NOW(), NOW()),
+(4, 'Entregue', '#D8E2DC', 4, 'ENTREGUE', 1, NOW(), NOW());
+
+UPDATE status_pedido SET status_role = 'FINALIZADO' WHERE id = 3 AND status_role IS NULL;
+UPDATE status_pedido SET status_role = 'ENTREGUE' WHERE id = 4 AND status_role IS NULL;
+UPDATE status_pedido SET status_role = 'CANCELADO' WHERE LOWER(status) = 'cancelado' AND status_role IS NULL;
 
 INSERT IGNORE INTO usuario (id, name, email, password, cpf, cargo, status, created_at, updated_at) VALUES
 (1, 'Diogo Yudi', 'diogo@encantopersonalizados.com.br', '$2a$10$VaiOzlGn2y7rvrEURrDoteehExkYbTE7/7OV5XInOkR1TD4yXOWTy', '11111111111', 'Administrador', 1, NOW(), NOW()),
@@ -904,9 +908,10 @@ SELECT
     p.origem,
     p.observacoes,
     sp.status,
+    sp.status_role,
     CASE
         WHEN (p.data_limite IS NOT NULL AND p.data_limite <= NOW()
-              AND sp.status NOT IN ('Cancelado', 'Entregue'))
+              AND (sp.status_role IS NULL OR sp.status_role NOT IN ('CANCELADO', 'ENTREGUE')))
             THEN 'Atrasado'
         WHEN (
             EXISTS (
@@ -916,12 +921,12 @@ SELECT
                 JOIN status_pedido sp1 ON sp1.id = psp1.status_id
                 WHERE p1.id = p.id
                   AND psp1.status_atual = 1
-                  AND sp1.status NOT IN ('Entregue', 'Cancelado')
+                  AND (sp1.status_role IS NULL OR sp1.status_role NOT IN ('ENTREGUE', 'CANCELADO'))
                   AND p1.id IN (
                       SELECT psp2.pedido_id
                       FROM pedido_status_pedido AS psp2
                       JOIN status_pedido sp2 ON sp2.id = psp2.status_id
-                      WHERE sp2.status = 'Entregue'
+                      WHERE sp2.status_role = 'ENTREGUE'
                   )
             )
         ) THEN 'Retrabalho'
@@ -932,7 +937,7 @@ JOIN pedido_status_pedido psp ON psp.pedido_id = p.id
 JOIN status_pedido sp ON sp.id = psp.status_id
 WHERE p.ativo = 1
   AND psp.status_atual = 1;
---GROUP BY p.id, p.origem, p.observacoes, sp.status, p.data_limite;
+--GROUP BY p.id, p.origem, p.observacoes, sp.status, sp.status_role, p.data_limite;
 
 CREATE OR REPLACE VIEW vw_leadtime_funcionario AS
 SELECT
@@ -946,7 +951,7 @@ JOIN status_pedido sp ON sp.id = psp.status_id
 JOIN vw_tipo_pedido tp ON tp.id = p.id
 WHERE psp.status_atual = 1
   AND p.ativo = 1
-  AND sp.status = 'Finalizado'
+  AND sp.status_role = 'FINALIZADO'
 GROUP BY u.name;
 
 CREATE OR REPLACE VIEW vw_retrabalho_quantidade_mes AS
@@ -981,7 +986,7 @@ JOIN status_pedido sp ON sp.id = psp.status_id
 JOIN vw_tipo_pedido tp ON tp.id = p.id
 WHERE psp.status_atual = 1
   AND p.ativo = 1
-  AND sp.status = 'Finalizado'
+  AND sp.status_role = 'FINALIZADO'
 GROUP BY mes
 ORDER BY mes ASC;
 
@@ -999,7 +1004,7 @@ CREATE OR REPLACE VIEW vw_pedidos_mes AS
 SELECT
     DATE_FORMAT(p.created_at, '%Y-%m')                                                 AS mes,
     COUNT(p.id)                                                                        AS total_criados,
-    SUM(CASE WHEN sp.status = 'Entregue' AND psp.status_atual = 1 THEN 1 ELSE 0 END)  AS total_entregues
+    SUM(CASE WHEN sp.status_role = 'ENTREGUE' AND psp.status_atual = 1 THEN 1 ELSE 0 END)  AS total_entregues
 FROM pedido p
 LEFT JOIN pedido_status_pedido psp ON psp.pedido_id = p.id AND psp.status_atual = 1
 LEFT JOIN status_pedido sp ON sp.id = psp.status_id
@@ -1016,7 +1021,7 @@ JOIN usuario u ON u.id = p.usuario_id
 JOIN pedido_status_pedido psp ON psp.pedido_id = p.id AND psp.status_atual = 1
 JOIN status_pedido sp ON sp.id = psp.status_id
 WHERE p.ativo = 1
-  AND sp.status NOT IN ('Entregue', 'Cancelado', 'Finalizado')
+  AND (sp.status_role IS NULL OR sp.status_role NOT IN ('ENTREGUE', 'CANCELADO', 'FINALIZADO'))
 GROUP BY u.name;
 
 CREATE OR REPLACE VIEW vw_pedidos_sem_atualizacao AS
@@ -1032,6 +1037,6 @@ JOIN status_pedido sp ON sp.id = psp.status_id
 JOIN cliente c ON c.id = p.cliente_id
 JOIN usuario u ON u.id = p.usuario_id
 WHERE p.ativo = 1
-  AND sp.status NOT IN ('Entregue', 'Cancelado', 'Finalizado')
+  AND (sp.status_role IS NULL OR sp.status_role NOT IN ('ENTREGUE', 'CANCELADO', 'FINALIZADO'))
   AND DATEDIFF(NOW(), psp.created_at) >= 3
 ORDER BY dias_parado DESC;

@@ -17,6 +17,7 @@ import school.sptech.EncantoPersonalizados.core.domain.Pedido;
 import school.sptech.EncantoPersonalizados.core.domain.PedidoStatusPedido;
 import school.sptech.EncantoPersonalizados.core.domain.Produto;
 import school.sptech.EncantoPersonalizados.core.domain.StatusPedido;
+import school.sptech.EncantoPersonalizados.core.domain.StatusPedidoRole;
 import school.sptech.EncantoPersonalizados.core.domain.Usuario;
 import school.sptech.EncantoPersonalizados.core.domain.exception.EntidadeNaoEncontradaException;
 import school.sptech.EncantoPersonalizados.core.application.usecase.whatsapp.WhatsappUseCase;
@@ -292,14 +293,11 @@ public class PedidoUseCaseImpl implements PedidoUseCase {
     }
 
     private boolean isStatusConcluido(StatusPedido statusPedido) {
-        if (statusPedido == null || statusPedido.getStatus() == null) {
+        if (statusPedido == null) {
             return false;
         }
 
-        String nomeStatus = statusPedido.getStatus().trim();
-        return nomeStatus.equalsIgnoreCase("Entregue")
-                || nomeStatus.equalsIgnoreCase("Concluido")
-                || nomeStatus.equalsIgnoreCase("Concluído");
+        return StatusPedidoRole.ENTREGUE.equals(statusPedido.getRole());
     }
 
     @Override

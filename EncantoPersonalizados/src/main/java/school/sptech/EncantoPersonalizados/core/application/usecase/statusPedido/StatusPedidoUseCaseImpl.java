@@ -54,7 +54,10 @@ public class StatusPedidoUseCaseImpl implements StatusPedidoUseCase {
 
         existente.setStatus(nomeTratado);
         existente.setCor(statusPedido.getCor());
-        existente.setOrdemKanban(statusPedido.getOrdemKanban());
+        if (statusPedido.getOrdemKanban() != null) {
+            existente.setOrdemKanban(statusPedido.getOrdemKanban());
+        }
+        existente.setRole(statusPedido.getRole());
         existente.setUpdatedAt(LocalDateTime.now());
         return gateway.save(existente);
     }

@@ -12,6 +12,7 @@ public record StatusPedidoMapper() {
                 statusPedido.getStatus(),
                 statusPedido.getCor(),
                 statusPedido.getOrdemKanban(),
+                statusPedido.getRole(),
                 statusPedido.getCreatedAt(),
                 statusPedido.getUpdatedAt()
         );
@@ -28,6 +29,7 @@ public record StatusPedidoMapper() {
         statusPedido.setStatus(dto.status());
         statusPedido.setCor(dto.cor());
         statusPedido.setOrdemKanban(dto.ordemKanban());
+        statusPedido.setRole(dto.role());
         return statusPedido;
     }
 }

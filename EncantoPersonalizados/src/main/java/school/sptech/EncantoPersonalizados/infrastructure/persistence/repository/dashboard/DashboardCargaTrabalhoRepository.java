@@ -19,7 +19,7 @@ public interface DashboardCargaTrabalhoRepository extends JpaRepository<Dashboar
             JOIN status_pedido sp ON sp.id = psp.status_id
             LEFT JOIN vw_tipo_pedido tp ON tp.id = p.id
             WHERE p.ativo = 1
-              AND sp.status NOT IN ('Entregue', 'Cancelado', 'Finalizado')
+              AND (sp.status_role IS NULL OR sp.status_role NOT IN ('ENTREGUE', 'CANCELADO', 'FINALIZADO'))
               AND (:tipoPedido IS NULL OR tp.tipo_pedido = :tipoPedido)
               AND (:produtoId IS NULL OR EXISTS (
                   SELECT 1 FROM produto_pedido pp WHERE pp.pedido_id = p.id AND pp.produto_id = :produtoId

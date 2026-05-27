@@ -44,9 +44,10 @@ SELECT
     p.origem,
     p.observacoes,
     sp.status,
+    sp.status_role,
     CASE
         WHEN (p.data_limite IS NOT NULL AND p.data_limite <= NOW()
-              AND sp.status NOT IN ('Cancelado', 'Entregue'))
+              AND (sp.status_role IS NULL OR sp.status_role NOT IN ('CANCELADO', 'ENTREGUE')))
             THEN 'Atrasado'
         WHEN (
             EXISTS (
@@ -56,12 +57,12 @@ SELECT
                 JOIN status_pedido sp1 ON sp1.id = psp1.status_id
                 WHERE p1.id = p.id
                   AND psp1.status_atual = 1
-                  AND sp1.status NOT IN ('Entregue', 'Cancelado')
+                  AND (sp1.status_role IS NULL OR sp1.status_role NOT IN ('ENTREGUE', 'CANCELADO'))
                   AND p1.id IN (
                       SELECT psp2.pedido_id
                       FROM pedido_status_pedido AS psp2
                       JOIN status_pedido sp2 ON sp2.id = psp2.status_id
-                      WHERE sp2.status = 'Entregue'
+                      WHERE sp2.status_role = 'ENTREGUE'
                   )
             )
         ) THEN 'Retrabalho'
@@ -72,7 +73,7 @@ JOIN pedido_status_pedido psp ON psp.pedido_id = p.id
 JOIN status_pedido sp ON sp.id = psp.status_id
 WHERE p.ativo = 1
   AND psp.status_atual = 1
-GROUP BY p.id, p.origem, p.observacoes, sp.status;
+GROUP BY p.id, p.origem, p.observacoes, sp.status, sp.status_role;
 
 -- ─────────────────────────────────────────────────────────────
 --  2. Lead time médio por funcionário (pedidos Finalizados)
@@ -90,7 +91,7 @@ JOIN status_pedido sp ON sp.id = psp.status_id
 JOIN vw_tipo_pedido tp ON tp.id = p.id
 WHERE psp.status_atual = 1
   AND p.ativo = 1
-  AND sp.status = 'Finalizado'
+  AND sp.status_role = 'FINALIZADO'
 GROUP BY u.name;
 
 -- ─────────────────────────────────────────────────────────────
@@ -134,7 +135,7 @@ JOIN status_pedido sp ON sp.id = psp.status_id
 JOIN vw_tipo_pedido tp ON tp.id = p.id
 WHERE psp.status_atual = 1
   AND p.ativo = 1
-  AND sp.status = 'Finalizado'
+  AND sp.status_role = 'FINALIZADO'
 GROUP BY mes
 ORDER BY mes DESC;
 
@@ -158,7 +159,7 @@ CREATE OR REPLACE VIEW vw_pedidos_mes AS
 SELECT
     DATE_FORMAT(p.created_at, '%Y-%m')                                                 AS mes,
     COUNT(p.id)                                                                        AS total_criados,
-    SUM(CASE WHEN sp.status = 'Entregue' AND psp.status_atual = 1 THEN 1 ELSE 0 END)  AS total_entregues
+    SUM(CASE WHEN sp.status_role = 'ENTREGUE' AND psp.status_atual = 1 THEN 1 ELSE 0 END)  AS total_entregues
 FROM pedido p
 LEFT JOIN pedido_status_pedido psp ON psp.pedido_id = p.id AND psp.status_atual = 1
 LEFT JOIN status_pedido sp ON sp.id = psp.status_id
@@ -179,7 +180,7 @@ JOIN usuario u ON u.id = p.usuario_id
 JOIN pedido_status_pedido psp ON psp.pedido_id = p.id AND psp.status_atual = 1
 JOIN status_pedido sp ON sp.id = psp.status_id
 WHERE p.ativo = 1
-  AND sp.status NOT IN ('Entregue', 'Cancelado', 'Finalizado')
+  AND (sp.status_role IS NULL OR sp.status_role NOT IN ('ENTREGUE', 'CANCELADO', 'FINALIZADO'))
 GROUP BY u.name;
 
 -- ─────────────────────────────────────────────────────────────
@@ -199,7 +200,7 @@ JOIN status_pedido sp ON sp.id = psp.status_id
 JOIN cliente c ON c.id = p.cliente_id
 JOIN usuario u ON u.id = p.usuario_id
 WHERE p.ativo = 1
-  AND sp.status NOT IN ('Entregue', 'Cancelado', 'Finalizado')
+  AND (sp.status_role IS NULL OR sp.status_role NOT IN ('ENTREGUE', 'CANCELADO', 'FINALIZADO'))
   AND DATEDIFF(NOW(), psp.created_at) >= 3
 ORDER BY dias_parado DESC;
 
