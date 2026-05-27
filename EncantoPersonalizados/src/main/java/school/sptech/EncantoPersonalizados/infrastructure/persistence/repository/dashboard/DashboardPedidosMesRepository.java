@@ -13,7 +13,7 @@ public interface DashboardPedidosMesRepository extends JpaRepository<DashboardPe
     @Query(value = """
             SELECT DATE_FORMAT(p.created_at, '%Y-%m') AS mes,
                    COUNT(p.id) AS total_criados,
-                   SUM(CASE WHEN sp.status = 'Entregue' AND psp.status_atual = 1 THEN 1 ELSE 0 END) AS total_entregues
+                   SUM(CASE WHEN sp.status_role = 'ENTREGUE' AND psp.status_atual = 1 THEN 1 ELSE 0 END) AS total_entregues
             FROM pedido p
             LEFT JOIN pedido_status_pedido psp ON psp.pedido_id = p.id AND psp.status_atual = 1
             LEFT JOIN status_pedido sp ON sp.id = psp.status_id

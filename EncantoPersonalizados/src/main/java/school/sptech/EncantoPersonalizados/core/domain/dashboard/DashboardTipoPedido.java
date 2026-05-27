@@ -9,7 +9,7 @@ import org.hibernate.annotations.Synchronize;
 
 @Entity
 @Immutable
-@Subselect("SELECT id, origem, observacoes, status, tipo_pedido FROM vw_tipo_pedido")
+@Subselect("SELECT id, origem, observacoes, status, status_role, tipo_pedido FROM vw_tipo_pedido")
 @Synchronize({"pedido", "pedido_status_pedido", "status_pedido"})
 public class DashboardTipoPedido {
     @Id
@@ -21,6 +21,9 @@ public class DashboardTipoPedido {
 
     @Column(name = "status")
     private String status;
+
+    @Column(name = "status_role")
+    private String statusRole;
 
     @Column(name = "tipo_pedido")
     private String tipoPedido;
@@ -39,6 +42,10 @@ public class DashboardTipoPedido {
 
     public String getStatus() {
         return status;
+    }
+
+    public String getStatusRole() {
+        return statusRole;
     }
 
     public String getTipoPedido() {

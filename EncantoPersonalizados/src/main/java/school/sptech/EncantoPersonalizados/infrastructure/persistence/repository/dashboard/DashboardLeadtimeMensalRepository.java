@@ -17,7 +17,7 @@ public interface DashboardLeadtimeMensalRepository extends JpaRepository<Dashboa
             JOIN pedido_status_pedido psp ON psp.pedido_id = p.id
             JOIN status_pedido sp ON sp.id = psp.status_id
             JOIN vw_tipo_pedido tp ON tp.id = p.id
-            WHERE psp.status_atual = 1 AND p.ativo = 1 AND sp.status = 'Finalizado'
+            WHERE psp.status_atual = 1 AND p.ativo = 1 AND sp.status_role = 'FINALIZADO'
               AND (:tipoPedido IS NULL OR tp.tipo_pedido = :tipoPedido)
               AND (:produtoId IS NULL OR EXISTS (
                   SELECT 1 FROM produto_pedido pp WHERE pp.pedido_id = p.id AND pp.produto_id = :produtoId
