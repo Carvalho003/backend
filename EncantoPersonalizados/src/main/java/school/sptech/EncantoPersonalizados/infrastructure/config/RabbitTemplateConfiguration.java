@@ -82,6 +82,25 @@ public class RabbitTemplateConfiguration {
                 .bind(fotoProdutoEventsQueue)
                 .to(fotoProdutoEventsExchange);
     }
+    // 1. Cria a fila no RabbitMQ automaticamente ao iniciar a aplicação
+    @Bean
+    @Qualifier("whatsappQueue")
+    public Queue whatsappQueue() {
+        // O "true" indica que a fila é durável (sobrevive a reinicializações do RabbitMQ)
+        return new Queue("whatsapp.queue", true);
+    }
+
+    // 2. Conecta (Binding) a nova fila ao Exchange (roteador de mensagens) principal do projeto
+    @Bean
+    public Binding whatsappBinding(
+            @Qualifier("whatsappQueue") Queue whatsappQueue,
+            @Qualifier("encantoTopicExchange") TopicExchange exchange
+    ) {
+        return BindingBuilder
+                .bind(whatsappQueue)
+                .to(exchange)
+                .with("whatsapp.queue");
+    }
 
     @Bean
     public MessageConverter messageConverter() {
