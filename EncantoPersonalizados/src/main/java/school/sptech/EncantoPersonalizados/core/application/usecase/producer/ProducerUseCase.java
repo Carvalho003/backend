@@ -4,6 +4,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import school.sptech.EncantoPersonalizados.infrastructure.config.RabbitPropertiesConfiguration;
 import school.sptech.EncantoPersonalizados.infrastructure.dto.rabbitMQ.FotoProdutoEventMessageDto;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.rabbitMQ.NotificacaoWhatsappEventMessageDto;
 import school.sptech.EncantoPersonalizados.infrastructure.dto.rabbitMQ.messageDto;
 
 @Service
@@ -32,5 +33,13 @@ public class ProducerUseCase {
     public void sendFotoProdutoEvent(FotoProdutoEventMessageDto message) {
         String exchangeName = properties.fotoProdutoEvents().exchangeName();
         rabbitTemplate.convertAndSend(exchangeName, "", message);
+    }
+
+    public void sendNotificacaoWhatsappEvent(NotificacaoWhatsappEventMessageDto message) {
+        String exchangeName = properties.exchange().name();
+        // Supondo que você crie uma routingKey para o whatsapp no seu properties,
+        // ou você pode fixar uma string como "whatsapp.queue" temporariamente para testar.
+        String routingKey = "whatsapp.queue";
+        rabbitTemplate.convertAndSend(exchangeName, routingKey, message);
     }
 }

@@ -12,6 +12,7 @@ import school.sptech.EncantoPersonalizados.core.application.gateway.ProdutoGatew
 import school.sptech.EncantoPersonalizados.core.application.gateway.ProdutoPedidoGateway;
 import school.sptech.EncantoPersonalizados.core.application.gateway.StatusPedidoGateway;
 import school.sptech.EncantoPersonalizados.core.application.gateway.UsuarioGateway;
+import school.sptech.EncantoPersonalizados.core.application.usecase.producer.ProducerUseCase;
 import school.sptech.EncantoPersonalizados.core.domain.Cliente;
 import school.sptech.EncantoPersonalizados.core.domain.Pedido;
 import school.sptech.EncantoPersonalizados.core.domain.PedidoStatusPedido;
@@ -31,6 +32,7 @@ import school.sptech.EncantoPersonalizados.infrastructure.dto.pedidoStatusPedido
 import school.sptech.EncantoPersonalizados.infrastructure.dto.produtosEmUmPedido.ProdutosPedidoMapper;
 import school.sptech.EncantoPersonalizados.infrastructure.dto.produtosEmUmPedido.ProdutosPedidoRequestDto;
 import school.sptech.EncantoPersonalizados.infrastructure.dto.produtosEmUmPedido.ProdutosPedidoResponseDto;
+import school.sptech.EncantoPersonalizados.infrastructure.dto.rabbitMQ.NotificacaoWhatsappEventMessageDto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -47,7 +49,7 @@ public class PedidoUseCaseImpl implements PedidoUseCase {
     private final PedidoGateway pedidoGateway;
     private final StatusPedidoGateway statusPedidoGateway;
     private final UsuarioGateway usuarioGateway;
-    private final WhatsappUseCase whatsappUseCase;
+    private final ProducerUseCase producerUseCase;
 
     public PedidoUseCaseImpl(
             ProdutoGateway produtoGateway,
@@ -57,7 +59,7 @@ public class PedidoUseCaseImpl implements PedidoUseCase {
             PedidoGateway pedidoGateway,
             StatusPedidoGateway statusPedidoGateway,
             UsuarioGateway usuarioGateway,
-            WhatsappUseCase whatsappUseCase
+            ProducerUseCase producerUseCase
     ) {
         this.produtoGateway = produtoGateway;
         this.clienteGateway = clienteGateway;
@@ -66,7 +68,7 @@ public class PedidoUseCaseImpl implements PedidoUseCase {
         this.pedidoGateway = pedidoGateway;
         this.statusPedidoGateway = statusPedidoGateway;
         this.usuarioGateway = usuarioGateway;
-        this.whatsappUseCase = whatsappUseCase;
+        this.producerUseCase = producerUseCase;
     }
 
     @Override
@@ -288,7 +290,18 @@ public class PedidoUseCaseImpl implements PedidoUseCase {
         pedidoGateway.save(pedido);
 
         if (isStatusConcluido(statusPedido)) {
-            whatsappUseCase.enviarMensagemQuandoPedidoConcluido();
+            // Cria o evento (certifique-se de ter criado o record NotificacaoWhatsappEventMessageDto)
+            NotificacaoWhatsappEventMessageDto evento = new NotificacaoWhatsappEventMessageDto(
+                    pedido.getId(),
+                    pedido.getCliente() != null ? pedido.getCliente().getNome() : "Cliente",
+                    pedido.getCliente() != null ? pedido.getCliente().getTelefone() : "",
+                    statusPedido.getStatus(),
+                    LocalDateTime.now()
+            );
+
+            // Dispara para o RabbitMQ (NÃO CHAMA MAIS O WHATSAPP DIRETO AQUI)
+            // Isso libera o Front-end na hora!
+            producerUseCase.sendNotificacaoWhatsappEvent(evento);
         }
     }
 
