@@ -9,7 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public record UsuarioRequestDTO(
-         @Size(min = 3, max = 10)
+         @Size(min = 3, max = 100)
          @Schema(description = "Nome do usuário")
          String name,
          @Email

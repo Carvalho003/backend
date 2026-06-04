@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 public class CreateUserDTO {
 
-    @Size(min = 3, max = 10)
+    @Size(min = 3, max = 100)
     private String name;
     @Email
     @Schema(description = "Email do usuário", example = "email@.com")
