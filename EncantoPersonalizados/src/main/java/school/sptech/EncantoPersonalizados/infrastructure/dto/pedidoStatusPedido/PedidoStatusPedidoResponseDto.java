@@ -1,5 +1,7 @@
 package school.sptech.EncantoPersonalizados.infrastructure.dto.pedidoStatusPedido;
 
+import school.sptech.EncantoPersonalizados.core.domain.StatusPedidoRole;
+
 import java.time.LocalDateTime;
 
 public record PedidoStatusPedidoResponseDto(
@@ -8,6 +10,7 @@ public record PedidoStatusPedidoResponseDto(
     Integer idStatusPedido,
     Boolean statusAtual,
     LocalDateTime createdAt,
-    LocalDateTime updatedAt
+    LocalDateTime updatedAt,
+    StatusPedidoRole pedidoRole
 ) {
 }
