@@ -22,6 +22,7 @@ import school.sptech.EncantoPersonalizados.core.domain.StatusPedidoRole;
 import school.sptech.EncantoPersonalizados.core.domain.Usuario;
 import school.sptech.EncantoPersonalizados.core.domain.exception.EntidadeNaoEncontradaException;
 import school.sptech.EncantoPersonalizados.core.application.usecase.whatsapp.WhatsappUseCase;
+import school.sptech.EncantoPersonalizados.core.domain.exception.MovimentacaoInvalidaException;
 import school.sptech.EncantoPersonalizados.infrastructure.dto.pedido.PedidoCreatedResponseDto;
 import school.sptech.EncantoPersonalizados.infrastructure.dto.pedido.PedidoMapper;
 import school.sptech.EncantoPersonalizados.infrastructure.dto.pedido.PedidoRequestDto;
@@ -281,7 +282,13 @@ public class PedidoUseCaseImpl implements PedidoUseCase {
         pedidoStatusPedido.setStatusAtual(true);
 
         List<PedidoStatusPedido> statusAtuais = pedidoStatusPedidoGateway.findStatusAtualByPedidoId(pedido.getId());
+
         for (PedidoStatusPedido statusAtual : statusAtuais) {
+            if(statusAtual.isStatusAtual() && statusAtual.getStatus() != null &&
+                    statusAtual.getStatus().getRole() != null &&
+                    statusAtual.getStatus().getRole().equals(StatusPedidoRole.CANCELADO)){
+                throw new MovimentacaoInvalidaException("Mudança de status inválida, pedido cancelado");
+            }
             statusAtual.setStatusAtual(false);
             pedidoStatusPedidoGateway.salvar(statusAtual);
         }

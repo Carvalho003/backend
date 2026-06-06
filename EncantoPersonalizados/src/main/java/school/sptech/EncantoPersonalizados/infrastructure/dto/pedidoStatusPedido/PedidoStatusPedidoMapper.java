@@ -14,7 +14,8 @@ public class PedidoStatusPedidoMapper {
             entity.getStatus().getId(),
             entity.isStatusAtual(),
             entity.getCreatedAt(),
-            entity.getUpdatedAt()
+            entity.getUpdatedAt(),
+            entity.getStatus().getRole()
         );
 
     }
