@@ -11,13 +11,13 @@ import java.util.List;
 public interface DashboardLeadtimeMensalRepository extends JpaRepository<DashboardLeadtimeMensal, String> {
 
     @Query(value = """
-            SELECT DATE_FORMAT(p.created_at, '%Y-%m') AS mes,
+            SELECT DATE_FORMAT(psp.created_at, '%Y-%m') AS mes,
                    AVG(DATEDIFF(psp.created_at, p.created_at)) AS lead_time
             FROM pedido p
             JOIN pedido_status_pedido psp ON psp.pedido_id = p.id
             JOIN status_pedido sp ON sp.id = psp.status_id
             JOIN vw_tipo_pedido tp ON tp.id = p.id
-            WHERE psp.status_atual = 1 AND p.ativo = 1 AND sp.status_role = 'FINALIZADO'
+            WHERE psp.status_atual = 1 AND p.ativo = 1 AND sp.status_role IN ('ENTREGUE', 'FINALIZADO')
               AND (:tipoPedido IS NULL OR tp.tipo_pedido = :tipoPedido)
               AND (:produtoId IS NULL OR EXISTS (
                   SELECT 1 FROM produto_pedido pp WHERE pp.pedido_id = p.id AND pp.produto_id = :produtoId
@@ -27,8 +27,8 @@ public interface DashboardLeadtimeMensalRepository extends JpaRepository<Dashboa
                   JOIN produto prod2 ON prod2.id = pp2.produto_id
                   WHERE pp2.pedido_id = p.id AND prod2.tema_produto_id = :temaId
               ))
-              AND DATE(p.created_at) BETWEEN :inicio AND :fim
-            GROUP BY DATE_FORMAT(p.created_at, '%Y-%m')
+              AND DATE(psp.created_at) BETWEEN :inicio AND :fim
+            GROUP BY DATE_FORMAT(psp.created_at, '%Y-%m')
             ORDER BY mes ASC
             """, nativeQuery = true)
     List<DashboardLeadtimeMensal> findAllFiltered(

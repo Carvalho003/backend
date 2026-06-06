@@ -15,6 +15,7 @@ public interface DashboardFiltroProdutoItemRepository extends JpaRepository<Dash
                    pp.produto_id AS produto_id,
                    COALESCE(prod.item_produto_id, 0) AS qtd_prod
             FROM pedido p
+            JOIN pedido_status_pedido psp ON psp.pedido_id = p.id AND psp.status_atual = 1
             LEFT JOIN produto_pedido pp ON pp.pedido_id = p.id
             LEFT JOIN produto prod ON prod.id = pp.produto_id
             LEFT JOIN vw_tipo_pedido tp ON tp.id = p.id
@@ -23,7 +24,7 @@ public interface DashboardFiltroProdutoItemRepository extends JpaRepository<Dash
               AND (:tipoPedido IS NULL OR tp.tipo_pedido = :tipoPedido)
               AND (:produtoId IS NULL OR pp.produto_id = :produtoId)
               AND (:temaId IS NULL OR t.id = :temaId)
-              AND DATE(p.created_at) BETWEEN :inicio AND :fim
+              AND DATE(psp.created_at) BETWEEN :inicio AND :fim
             ORDER BY qtd_prod DESC
             """, nativeQuery = true)
     List<DashboardFiltroProdutoItem> findAllFiltered(

@@ -14,7 +14,7 @@ public interface DashboardLeadtimeEtapaRepository extends JpaRepository<Dashboar
             SELECT sp.status AS etapa,
                    AVG(DATEDIFF(psp.updated_at, psp.created_at)) AS lead_time
             FROM pedido p
-            JOIN pedido_status_pedido psp ON psp.pedido_id = p.id
+            JOIN pedido_status_pedido psp ON psp.pedido_id = p.id AND psp.status_atual = 1
             JOIN status_pedido sp ON sp.id = psp.status_id
             JOIN vw_tipo_pedido tp ON tp.id = p.id
             WHERE p.ativo = 1
@@ -27,7 +27,7 @@ public interface DashboardLeadtimeEtapaRepository extends JpaRepository<Dashboar
                   JOIN produto prod2 ON prod2.id = pp2.produto_id
                   WHERE pp2.pedido_id = p.id AND prod2.tema_produto_id = :temaId
               ))
-              AND DATE(p.created_at) BETWEEN :inicio AND :fim
+              AND DATE(psp.created_at) BETWEEN :inicio AND :fim
             GROUP BY sp.status
             ORDER BY lead_time DESC
             """, nativeQuery = true)

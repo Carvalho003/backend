@@ -14,13 +14,14 @@ public interface DashboardTipoPedidoRepository extends JpaRepository<DashboardTi
             SELECT tp.id, tp.origem, tp.observacoes, tp.status, tp.status_role, tp.tipo_pedido
             FROM vw_tipo_pedido tp
             JOIN pedido p ON p.id = tp.id
+            JOIN pedido_status_pedido psp ON psp.pedido_id = p.id AND psp.status_atual = 1
             LEFT JOIN produto_pedido pp ON pp.pedido_id = tp.id
             LEFT JOIN produto prod ON prod.id = pp.produto_id
             LEFT JOIN tema_produto t ON t.id = prod.tema_produto_id
             WHERE (:tipoPedido IS NULL OR tp.tipo_pedido = :tipoPedido)
               AND (:produtoId IS NULL OR pp.produto_id = :produtoId)
               AND (:temaId IS NULL OR t.id = :temaId)
-              AND DATE(p.created_at) BETWEEN :inicio AND :fim
+              AND DATE(psp.created_at) BETWEEN :inicio AND :fim
             GROUP BY tp.id, tp.origem, tp.observacoes, tp.status, tp.status_role, tp.tipo_pedido
             """, nativeQuery = true)
     List<DashboardTipoPedido> findAllFiltered(

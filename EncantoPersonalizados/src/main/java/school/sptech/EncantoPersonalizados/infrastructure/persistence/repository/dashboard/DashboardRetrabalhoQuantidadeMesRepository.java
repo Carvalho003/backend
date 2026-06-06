@@ -11,10 +11,11 @@ import java.util.List;
 public interface DashboardRetrabalhoQuantidadeMesRepository extends JpaRepository<DashboardRetrabalhoQuantidadeMes, String> {
 
     @Query(value = """
-            SELECT DATE_FORMAT(p.created_at, '%Y-%m') AS mes,
+            SELECT DATE_FORMAT(psp.created_at, '%Y-%m') AS mes,
                    COUNT(*) AS quantidade_pedidos
             FROM pedido p
             JOIN vw_tipo_pedido tp ON tp.id = p.id
+            JOIN pedido_status_pedido psp ON psp.pedido_id = p.id AND psp.status_atual = 1
             WHERE tp.tipo_pedido = 'Retrabalho' AND p.ativo = 1
               AND (:produtoId IS NULL OR EXISTS (
                   SELECT 1 FROM produto_pedido pp WHERE pp.pedido_id = p.id AND pp.produto_id = :produtoId
@@ -24,8 +25,8 @@ public interface DashboardRetrabalhoQuantidadeMesRepository extends JpaRepositor
                   JOIN produto prod2 ON prod2.id = pp2.produto_id
                   WHERE pp2.pedido_id = p.id AND prod2.tema_produto_id = :temaId
               ))
-              AND DATE(p.created_at) BETWEEN :inicio AND :fim
-            GROUP BY DATE_FORMAT(p.created_at, '%Y-%m')
+              AND DATE(psp.created_at) BETWEEN :inicio AND :fim
+            GROUP BY DATE_FORMAT(psp.created_at, '%Y-%m')
             ORDER BY mes ASC
             """, nativeQuery = true)
     List<DashboardRetrabalhoQuantidadeMes> findAllFiltered(
