@@ -29,7 +29,7 @@ public interface DashboardCargaTrabalhoRepository extends JpaRepository<Dashboar
                   JOIN produto prod2 ON prod2.id = pp2.produto_id
                   WHERE pp2.pedido_id = p.id AND prod2.tema_produto_id = :temaId
               ))
-              AND DATE(p.created_at) BETWEEN :inicio AND :fim
+              AND DATE(psp.created_at) BETWEEN :inicio AND :fim
             GROUP BY u.name
             ORDER BY em_andamento DESC
             """, nativeQuery = true)

@@ -34,7 +34,7 @@ public interface DashboardPedidoSemAtualizacaoRepository extends JpaRepository<D
                   JOIN produto prod2 ON prod2.id = pp2.produto_id
                   WHERE pp2.pedido_id = p.id AND prod2.tema_produto_id = :temaId
               ))
-              AND DATE(p.created_at) BETWEEN :inicio AND :fim
+              AND DATE(psp.created_at) BETWEEN :inicio AND :fim
             ORDER BY dias_parado DESC
             """, nativeQuery = true)
     List<DashboardPedidoSemAtualizacao> findAllFiltered(
