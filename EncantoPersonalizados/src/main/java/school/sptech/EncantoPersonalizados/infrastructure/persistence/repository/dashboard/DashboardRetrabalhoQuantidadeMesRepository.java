@@ -11,12 +11,22 @@ import java.util.List;
 public interface DashboardRetrabalhoQuantidadeMesRepository extends JpaRepository<DashboardRetrabalhoQuantidadeMes, String> {
 
     @Query(value = """
-            SELECT DATE_FORMAT(psp.created_at, '%Y-%m') AS mes,
-                   COUNT(*) AS quantidade_pedidos
+            SELECT DATE_FORMAT(psp_rework.created_at, '%Y-%m') AS mes,
+                   COUNT(DISTINCT p.id) AS quantidade_pedidos
             FROM pedido p
-            JOIN vw_tipo_pedido tp ON tp.id = p.id
-            JOIN pedido_status_pedido psp ON psp.pedido_id = p.id AND psp.status_atual = 1
-            WHERE tp.tipo_pedido = 'Retrabalho' AND p.ativo = 1
+            JOIN pedido_status_pedido psp_rework ON psp_rework.pedido_id = p.id
+            JOIN status_pedido sp_rework ON sp_rework.id = psp_rework.status_id
+            WHERE p.ativo = 1
+              -- Correção: Trata o valor NULL da etapa "Em Produção"
+              AND (sp_rework.status_role IS NULL OR sp_rework.status_role NOT IN ('FINALIZADO', 'ENTREGUE', 'CANCELADO'))
+              -- Correção: Utiliza o psp_hist.id para garantir a ordem temporal exata
+              AND EXISTS (
+                  SELECT 1 FROM pedido_status_pedido psp_hist
+                  JOIN status_pedido sp_hist ON sp_hist.id = psp_hist.status_id
+                  WHERE psp_hist.pedido_id = p.id
+                    AND sp_hist.status_role IN ('FINALIZADO', 'ENTREGUE')
+                    AND psp_hist.id < psp_rework.id
+              )
               AND (:produtoId IS NULL OR EXISTS (
                   SELECT 1 FROM produto_pedido pp WHERE pp.pedido_id = p.id AND pp.produto_id = :produtoId
               ))
@@ -25,8 +35,8 @@ public interface DashboardRetrabalhoQuantidadeMesRepository extends JpaRepositor
                   JOIN produto prod2 ON prod2.id = pp2.produto_id
                   WHERE pp2.pedido_id = p.id AND prod2.tema_produto_id = :temaId
               ))
-              AND DATE(psp.created_at) BETWEEN :inicio AND :fim
-            GROUP BY DATE_FORMAT(psp.created_at, '%Y-%m')
+              AND DATE(psp_rework.created_at) BETWEEN :inicio AND :fim
+            GROUP BY DATE_FORMAT(psp_rework.created_at, '%Y-%m')
             ORDER BY mes ASC
             """, nativeQuery = true)
     List<DashboardRetrabalhoQuantidadeMes> findAllFiltered(

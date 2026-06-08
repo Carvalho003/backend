@@ -923,34 +923,32 @@ SELECT
     sp.status,
     sp.status_role,
     CASE
-        WHEN (p.data_limite IS NOT NULL AND p.data_limite <= NOW()
-            AND (sp.status_role IS NULL OR sp.status_role NOT IN ('CANCELADO', 'ENTREGUE')))
-            THEN 'Atrasado'
+        -- 1º Avaliar primeiro o Retrabalho (inclui verificação de NULL e ambas as roles)
         WHEN (
-            EXISTS (
+            (sp.status_role IS NULL OR sp.status_role NOT IN ('ENTREGUE', 'CANCELADO', 'FINALIZADO'))
+            AND EXISTS (
                 SELECT 1
-                FROM pedido AS p1
-                         JOIN pedido_status_pedido psp1 ON psp1.pedido_id = p1.id
-                         JOIN status_pedido sp1 ON sp1.id = psp1.status_id
-                WHERE p1.id = p.id
-                  AND psp1.status_atual = 1
-                  AND (sp1.status_role IS NULL OR sp1.status_role NOT IN ('ENTREGUE', 'CANCELADO'))
-                  AND p1.id IN (
-                    SELECT psp2.pedido_id
-                    FROM pedido_status_pedido AS psp2
-                             JOIN status_pedido sp2 ON sp2.id = psp2.status_id
-                    WHERE sp2.status_role = 'ENTREGUE'
-                )
+                FROM pedido_status_pedido psp1
+                JOIN status_pedido sp1 ON sp1.id = psp1.status_id
+                WHERE psp1.pedido_id = p.id
+                  AND psp1.status_atual = 0
+                  AND sp1.status_role IN ('ENTREGUE', 'FINALIZADO')
             )
-            ) THEN 'Retrabalho'
+        ) THEN 'Retrabalho'
+
+        -- 2º Avaliar Atrasos
+        WHEN (p.data_limite IS NOT NULL AND p.data_limite <= NOW()
+            AND (sp.status_role IS NULL OR sp.status_role NOT IN ('CANCELADO', 'ENTREGUE', 'FINALIZADO')))
+            THEN 'Atrasado'
+
+        -- 3º Condição normal
         ELSE 'Normal'
-        END AS tipo_pedido
+    END AS tipo_pedido
 FROM pedido AS p
-         JOIN pedido_status_pedido psp ON psp.pedido_id = p.id
-         JOIN status_pedido sp ON sp.id = psp.status_id
+JOIN pedido_status_pedido psp ON psp.pedido_id = p.id
+JOIN status_pedido sp ON sp.id = psp.status_id
 WHERE p.ativo = 1
   AND psp.status_atual = 1;
---GROUP BY p.id, p.origem, p.observacoes, sp.status, sp.status_role, p.data_limite;
 
 CREATE OR REPLACE VIEW vw_leadtime_funcionario AS
 SELECT
