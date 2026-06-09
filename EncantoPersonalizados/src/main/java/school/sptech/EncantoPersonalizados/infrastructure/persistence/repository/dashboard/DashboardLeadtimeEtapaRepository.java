@@ -12,9 +12,9 @@ public interface DashboardLeadtimeEtapaRepository extends JpaRepository<Dashboar
 
     @Query(value = """
             SELECT sp.status AS etapa,
-                   AVG(DATEDIFF(psp.updated_at, psp.created_at)) AS lead_time
+                   AVG(GREATEST(DATEDIFF(COALESCE(psp.updated_at, psp.created_at), psp.created_at), 0)) AS lead_time
             FROM pedido p
-            JOIN pedido_status_pedido psp ON psp.pedido_id = p.id AND psp.status_atual = 1
+            JOIN pedido_status_pedido psp ON psp.pedido_id = p.id
             JOIN status_pedido sp ON sp.id = psp.status_id
             JOIN vw_tipo_pedido tp ON tp.id = p.id
             WHERE p.ativo = 1

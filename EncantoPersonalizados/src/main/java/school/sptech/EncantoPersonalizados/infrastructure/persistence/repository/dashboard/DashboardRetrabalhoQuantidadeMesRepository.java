@@ -19,13 +19,12 @@ public interface DashboardRetrabalhoQuantidadeMesRepository extends JpaRepositor
             WHERE p.ativo = 1
               -- Correção: Trata o valor NULL da etapa "Em Produção"
               AND (sp_rework.status_role IS NULL OR sp_rework.status_role NOT IN ('FINALIZADO', 'ENTREGUE', 'CANCELADO'))
-              -- Correção: Utiliza o psp_hist.id para garantir a ordem temporal exata
               AND EXISTS (
                   SELECT 1 FROM pedido_status_pedido psp_hist
                   JOIN status_pedido sp_hist ON sp_hist.id = psp_hist.status_id
                   WHERE psp_hist.pedido_id = p.id
                     AND sp_hist.status_role IN ('FINALIZADO', 'ENTREGUE')
-                    AND psp_hist.id < psp_rework.id
+                    AND psp_hist.created_at < psp_rework.created_at
               )
               AND (:produtoId IS NULL OR EXISTS (
                   SELECT 1 FROM produto_pedido pp WHERE pp.pedido_id = p.id AND pp.produto_id = :produtoId
